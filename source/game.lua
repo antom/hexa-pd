@@ -47,9 +47,24 @@ function game:init(...)
 					end)
 				end
 			end
-			menu:addCheckmarkMenuItem(text('flip'), save.flip, function()
-				save.flip = not save.flip
+			menu:addCheckmarkMenuItem(text('flip'), save.flip, function(value)
+				save.flip = value
 			end)
+		end
+	end
+
+	function pd.deviceWillLock()
+		if pd.buttonIsPressed('b') then
+			vars.cue_hard = true
+		end
+	end
+
+	function pd.deviceDidUnlock()
+		if vars.cue_hard and not vars.hard and (vars.mode == "arcade" or vars.mode == "dailyrun") then
+			vars.hard = true
+			if save.sfx then assets.sfx_boom:play() end
+			shakies()
+			shakies_y()
 		end
 	end
 
@@ -101,6 +116,8 @@ function game:init(...)
 		slot = 1,
 		score = 0,
 		combo = 0,
+		cue_hard = false,
+		hard = false,
 		anim_hexa = pd.timer.new(1, 11, 11),
 		anim_cursor_x = pd.timer.new(1, 106, 106),
 		anim_cursor_y = pd.timer.new(1, 42, 42),
@@ -121,6 +138,8 @@ function game:init(...)
 		skippedfanfare = false,
 		missioncomplete = false,
 		time = 0,
+		crank_deadzone = 0,
+		crank_change = 0,
 	}
 	vars.gameHandlers = {
 		leftButtonDown = function()
@@ -231,6 +250,12 @@ function game:init(...)
 	}
 	vars.losingHandlers = {
 		AButtonDown = function()
+			if vars.ended and not vars.skippedfanfare then
+				self:ersi()
+			end
+		end,
+
+		BButtonDown = function()
 			if vars.ended and not vars.skippedfanfare then
 				self:ersi()
 			end
@@ -455,15 +480,15 @@ function game:init(...)
 		end)
 	end
 
-	class('game_canvas').extends(gfx.sprite)
-	function game_canvas:init()
-		game_canvas.super.init(self)
+	class('game_canvas', _, classes).extends(gfx.sprite)
+	function classes.game_canvas:init()
+		classes.game_canvas.super.init(self)
 		self:setCenter(0, 0)
 		self:setSize(400, 240)
 		self:setOpaque(true)
 		self:add()
 	end
-	function game_canvas:draw()
+	function classes.game_canvas:draw()
 		assets.bg:draw(0, 0)
 		if vars.mode ~= "dailyrun" then
 			assets.bg_tile:draw((floor(vars.anim_bg_tile_x.value / 2) * 2) - 1, (floor(vars.anim_bg_tile_y.value / 2) * 2) - 1)
@@ -487,6 +512,9 @@ function game:init(...)
 			else
 				assets.half_circle:drawText(text('seed'), 10, 45)
 				assets.full_circle:drawText(pd.getGMTTime().year .. pd.getGMTTime().month .. pd.getGMTTime().day, 10, 60)
+			end
+			if vars.hard then
+				assets.half_circle:drawText(text('hardmode'), 10, 80)
 			end
 		elseif vars.mode == "zen" then
 			assets.half_circle:drawText(text('swaps'), 10, 10)
@@ -523,7 +551,7 @@ function game:init(...)
 		assets.modal:draw(0, vars.anim_modal.value)
 	end
 
-	sprites.canvas = game_canvas()
+	sprites.canvas = classes.game_canvas()
 	sprites.code = Tanuk_CodeSequence({pd.kButtonRight, pd.kButtonUp, pd.kButtonB, pd.kButtonDown, pd.kButtonUp, pd.kButtonB, pd.kButtonDown, pd.kButtonUp, pd.kButtonB}, function() self:boom(true) end)
 	self:add()
 	pd.datastore.write(save)
@@ -643,6 +671,13 @@ function game:check()
 		local temp4
 		local temp5
 		local temp6
+		local bomb_temp1
+		local bomb_temp2
+		local bomb_temp3
+		local bomb_temp4
+		local bomb_temp5
+		local bomb_temp6
+		local bomb_imminent = false
 		local color
 		for i = 1, 5 do
 			temp1, temp2, temp3, temp4, temp5, temp6 = self:findslot(i)
@@ -655,10 +690,24 @@ function game:check()
 					color = "gray"
 				end
 				if (temp1.color == color or temp1.powerup == "wild") and (temp2.color == color or temp2.powerup == "wild") and (temp3.color == color or temp3.powerup == "wild") and (temp4.color == color or temp4.powerup == "wild") and (temp5.color == color or temp5.powerup == "wild") and (temp6.color == color or temp6.powerup == "wild") then
-					self:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
-					return
+					if temp1.powerup == "bomb" or temp2.powerup == "bomb" or temp3.powerup == "bomb" or temp4.powerup == "bomb" or temp5.powerup == "bomb" or temp6.powerup == "bomb" then
+						bomb_temp1 = temp1
+						bomb_temp2 = temp2
+						bomb_temp3 = temp3
+						bomb_temp4 = temp4
+						bomb_temp5 = temp5
+						bomb_temp6 = temp6
+						bomb_imminent = true
+					else
+						self:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
+						return
+					end
 				end
 			end
+		end
+		if bomb_imminent then
+			self:hexa(bomb_temp1, bomb_temp2, bomb_temp3, bomb_temp4, bomb_temp5, bomb_temp6)
+			return
 		end
 		if vars.combo > 0 then
 			vars.combo = 0
@@ -745,7 +794,11 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 					assets.draw_label = nil
 				end
 				if (vars.mode == "arcade" or vars.mode == "dailyrun") and vars.can_do_stuff then
-					vars.timer:resetnew(min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 2750, 60000), min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 2750, 60000), 0)
+					if vars.hard then
+						vars.timer:resetnew(min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 1375, 60000), min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 1375, 60000), 0)
+					else
+						vars.timer:resetnew(min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 2750, 60000), min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 2750, 60000), 0)
+					end
 				end
 			else
 				if (temp1.color == "white" and temp1.powerup ~= "wild") or (temp2.color == "white" and temp2.powerup ~= "wild") or (temp3.color == "white" and temp3.powerup ~= "wild") or (temp4.color == "white" and temp4.powerup ~= "wild") or (temp5.color == "white" and temp5.powerup ~= "wild") or (temp6.color == "white" and temp6.powerup ~= "wild") then
@@ -756,7 +809,11 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 					vars.score += 200 * vars.combo
 				end
 				if (vars.mode == "arcade" or vars.mode == "dailyrun") and vars.can_do_stuff then
-					vars.timer:resetnew(min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 1750, 60000), min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 1750, 60000), 0)
+					if vars.hard then
+						vars.timer:resetnew(min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 875, 60000), min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 875, 60000), 0)
+					else
+						vars.timer:resetnew(min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 1750, 60000), min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 1750, 60000), 0)
+					end
 				end
 			end
 			vars.score += 10 * vars.movesbonus
@@ -1323,24 +1380,37 @@ end
 function game:update()
 	if save.crank and vars.can_do_stuff and not vars.active_hexa then
 		local ticks = pd.getCrankTicks(3 * save.sensitivity)
-		if ticks >= 1 then
-			for i = 1, ticks do
-				if save.flip then
-					self:swap(vars.slot, false)
-				else
-					self:swap(vars.slot, true)
+		if vars.crank_change > 0 and vars.crank_deadzone < 0 then
+			vars.crank_deadzone = 0
+		elseif vars.crank_change < 0 and vars.crank_deadzone > 0 then
+			vars.crank_deadzone = 0
+		else
+			vars.crank_deadzone += vars.crank_change
+		end
+		if vars.crank_deadzone >= 5 or vars.crank_deadzone <= -5 then
+			if ticks >= 1 then
+				vars.crank_deadzone = 0
+				for i = 1, ticks do
+					if save.flip then
+						self:swap(vars.slot, false)
+					else
+						self:swap(vars.slot, true)
+					end
 				end
-			end
-		elseif ticks <= -1 then
-			for i = 1, -ticks do
-				if save.flip then
-					self:swap(vars.slot, true)
-				else
-					self:swap(vars.slot, false)
+			elseif ticks <= -1 then
+				vars.crank_deadzone = 0
+				for i = 1, -ticks do
+					if save.flip then
+						self:swap(vars.slot, true)
+					else
+						self:swap(vars.slot, false)
+					end
 				end
 			end
 		end
 	end
+	vars.crank_change = pd.getCrankChange()
+
 	if vars.mode == "arcade" or vars.mode == "dailyrun" or vars.mode == "time" then
 		if vars.old_timer_value > 10000 and vars.timer.value <= 10000 then
 			shakies(500, 1)

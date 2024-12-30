@@ -1,3 +1,5 @@
+classes = {}
+
 -- Importing things
 import 'gridview'
 import 'CoreLibs/math'
@@ -54,15 +56,20 @@ function savecheck()
     save.score = save.score or 0
     save.swaps = save.swaps or 0
     save.hexas = save.hexas or 0
-    if save.mission_bests == nil then save.mission_bests = {} end
     save.highest_mission = save.highest_mission or 1
-    for i = 1, 50 do
-        save.mission_bests['mission' .. i] = save.mission_bests['mission' .. i] or 0
+    if save.mission_bests == nil then save.mission_bests = {} end
+    for i = 1, #save.mission_bests do
+        save.mission_bests[i] = save.mission_bests[i] or 0
     end
 end
 
 -- ... now we run that!
 savecheck()
+
+-- Create custom missions folder.
+if not pd.file.isdir('missions') then
+	pd.file.mkdir('missions')
+end
 
 -- When the game closes...
 function pd.gameWillTerminate()
