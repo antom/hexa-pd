@@ -173,9 +173,9 @@ function missions:init(...)
 				assets.full_circle:drawTextAligned(text('mission_' .. missions_list[column].type), x + (width / 2), y + (height / 3.7), kTextAlignment.center)
 			end
 			if missions_list[column].type == "picture" or missions_list[column].type == "logic" then
-				assets.full_circle:drawTextAligned(text('swaps') .. text('divvy') .. commalize(save.mission_bests['mission' .. column]), x + (width / 2), y + (height - 22), kTextAlignment.center)
+				assets.full_circle:drawTextAligned(text('swaps') .. text('divvy') .. commalize(save.mission_bests['mission' .. column] or 0), x + (width / 2), y + (height - 22), kTextAlignment.center)
 			elseif missions_list[column].type == "time" then
-				assets.full_circle:drawTextAligned(text('score') .. text('divvy') .. commalize(save.mission_bests['mission' .. column]), x + (width / 2), y + (height - 22), kTextAlignment.center)
+				assets.full_circle:drawTextAligned(text('score') .. text('divvy') .. commalize(save.mission_bests['mission' .. column] or 0), x + (width / 2), y + (height - 22), kTextAlignment.center)
 			elseif missions_list[column].type == "speedrun" then
 				local mins, secs, mils = timecalc(save.mission_bests['mission' .. column])
 				assets.full_circle:drawTextAligned(text('time') .. text('divvy') .. mins .. ':' .. secs .. '.' .. mils, x + (width / 2), y + (height - 22), kTextAlignment.center)

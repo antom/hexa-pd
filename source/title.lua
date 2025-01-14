@@ -177,7 +177,7 @@ function title:init(...)
 		assets.stars_large:draw(vars.anim_stars_large_x.value, vars.anim_stars_large_y.value)
 		gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
 		if catalog then
-			gfx.fillRect(250 + vars.anim_title.value, 52, 200, 160)
+			gfx.fillRect(250 + vars.anim_title.value, 52, 200, 250)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			if pd.getGMTTime().hour < 23 then
 				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 265 + vars.anim_title.value, 110)

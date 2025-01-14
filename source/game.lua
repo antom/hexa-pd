@@ -53,21 +53,6 @@ function game:init(...)
 		end
 	end
 
-	function pd.deviceWillLock()
-		if pd.buttonIsPressed('b') then
-			vars.cue_hard = true
-		end
-	end
-
-	function pd.deviceDidUnlock()
-		if vars.cue_hard and not vars.hard and (vars.mode == "arcade" or vars.mode == "dailyrun") then
-			vars.hard = true
-			if save.sfx then assets.sfx_boom:play() end
-			shakies()
-			shakies_y()
-		end
-	end
-
 	assets = {
 		cursor = gfx.imagetable.new('images/cursor'),
 		full_circle = gfx.font.new('fonts/full-circle'),
@@ -116,8 +101,6 @@ function game:init(...)
 		slot = 1,
 		score = 0,
 		combo = 0,
-		cue_hard = false,
-		hard = false,
 		anim_hexa = pd.timer.new(1, 11, 11),
 		anim_cursor_x = pd.timer.new(1, 106, 106),
 		anim_cursor_y = pd.timer.new(1, 42, 42),
@@ -140,6 +123,7 @@ function game:init(...)
 		time = 0,
 		crank_deadzone = 0,
 		crank_change = 0,
+		crank_degrees = 0,
 	}
 	vars.gameHandlers = {
 		leftButtonDown = function()
@@ -513,8 +497,8 @@ function game:init(...)
 				assets.half_circle:drawText(text('seed'), 10, 45)
 				assets.full_circle:drawText(pd.getGMTTime().year .. pd.getGMTTime().month .. pd.getGMTTime().day, 10, 60)
 			end
-			if vars.hard then
-				assets.half_circle:drawText(text('hardmode'), 10, 80)
+			if save.hardmode then
+				assets.half_circle:drawText(text('hardmodeg'), 10, 80)
 			end
 		elseif vars.mode == "zen" then
 			assets.half_circle:drawText(text('swaps'), 10, 10)
@@ -794,7 +778,7 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 					assets.draw_label = nil
 				end
 				if (vars.mode == "arcade" or vars.mode == "dailyrun") and vars.can_do_stuff then
-					if vars.hard then
+					if save.hardmode then
 						vars.timer:resetnew(min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 1375, 60000), min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 1375, 60000), 0)
 					else
 						vars.timer:resetnew(min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 2750, 60000), min(vars.timer.value + (11000 * exp(-0.105 * vars.hexas)) + 2750, 60000), 0)
@@ -809,7 +793,7 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 					vars.score += 200 * vars.combo
 				end
 				if (vars.mode == "arcade" or vars.mode == "dailyrun") and vars.can_do_stuff then
-					if vars.hard then
+					if save.hardmode then
 						vars.timer:resetnew(min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 875, 60000), min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 875, 60000), 0)
 					else
 						vars.timer:resetnew(min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 1750, 60000), min(vars.timer.value + (7000 * exp(-0.105 * vars.hexas)) + 1750, 60000), 0)
@@ -1379,27 +1363,31 @@ end
 
 function game:update()
 	if save.crank and vars.can_do_stuff and not vars.active_hexa then
+		vars.crank_degrees += pd.getCrankChange()
 		local ticks = pd.getCrankTicks(3 * save.sensitivity)
-		if vars.crank_change > 0 and vars.crank_deadzone < 0 then
-			vars.crank_deadzone = 0
-		elseif vars.crank_change < 0 and vars.crank_deadzone > 0 then
-			vars.crank_deadzone = 0
-		else
-			vars.crank_deadzone += vars.crank_change
+		if ticks ~= 0 and vars.crank_deadzone == 0 then
+			vars.crank_deadzone = ticks
 		end
-		if vars.crank_deadzone >= 5 or vars.crank_deadzone <= -5 then
-			if ticks >= 1 then
-				vars.crank_deadzone = 0
-				for i = 1, ticks do
+		if vars.crank_deadzone == 0 then
+			vars.crank_change += pd.getCrankChange()
+		end
+		if vars.crank_degrees >= (vars.crank_change + 2) then
+			if vars.crank_deadzone > 0 then
+				for i = 1, vars.crank_deadzone do
 					if save.flip then
 						self:swap(vars.slot, false)
 					else
 						self:swap(vars.slot, true)
 					end
 				end
-			elseif ticks <= -1 then
-				vars.crank_deadzone = 0
-				for i = 1, -ticks do
+			end
+			vars.crank_deadzone = 0
+			vars.crank_degrees = 0
+			vars.crank_change = 0
+		end
+		if vars.crank_degrees <= (vars.crank_change - 2) then
+			if vars.crank_deadzone < 0 then
+				for i = 1, -vars.crank_deadzone do
 					if save.flip then
 						self:swap(vars.slot, true)
 					else
@@ -1407,9 +1395,11 @@ function game:update()
 					end
 				end
 			end
+			vars.crank_deadzone = 0
+			vars.crank_degrees = 0
+			vars.crank_change = 0
 		end
 	end
-	vars.crank_change = pd.getCrankChange()
 
 	if vars.mode == "arcade" or vars.mode == "dailyrun" or vars.mode == "time" then
 		if vars.old_timer_value > 10000 and vars.timer.value <= 10000 then

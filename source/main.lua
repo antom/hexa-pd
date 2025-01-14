@@ -58,8 +58,9 @@ function savecheck()
     save.hexas = save.hexas or 0
     save.highest_mission = save.highest_mission or 1
     if save.mission_bests == nil then save.mission_bests = {} end
+	if save.hardmode == nil then save.hardmode = false end
     for i = 1, #save.mission_bests do
-        save.mission_bests[i] = save.mission_bests[i] or 0
+        save.mission_bests['mission' .. i] = save.mission_bests['mission' .. i] or 0
     end
 end
 

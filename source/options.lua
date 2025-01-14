@@ -42,7 +42,7 @@ function options:init(...)
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
 		anim_stars_large_y = pd.timer.new(1250, 0, -239),
 		anim_fg_hexa = pd.timer.new(3000, 0, 7, pd.easingFunctions.inOutSine),
-		selections = {'music', 'sfx', 'flip', 'crank', 'skipfanfare', 'reset'},
+		selections = {'music', 'sfx', 'flip', 'crank', 'skipfanfare', 'hardmode', 'reset'},
 		selection = 0,
 		resetprogress = 1,
 	}
@@ -122,6 +122,8 @@ function options:init(...)
 				end
 			elseif vars.selections[vars.selection] == "skipfanfare" then
 				save.skipfanfare = not save.skipfanfare
+			elseif vars.selections[vars.selection] == "hardmode" then
+				save.hardmode = not save.hardmode
 			elseif vars.selections[vars.selection] == "reset" then
 				if vars.resetprogress < 3 then
 					vars.resetprogress += 1
@@ -160,19 +162,20 @@ function options:init(...)
 		gfx.fillRect(0, 0, 400, 240)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		assets.half_circle:drawTextAligned(text('swaps') .. text('divvy') .. commalize(save.swaps) .. text('dash') .. text('hexas') .. text('divvy') .. commalize(save.hexas), 200, 5, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_music') .. text(tostring(save.music)), 200, 60, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_sfx') .. text(tostring(save.sfx)), 200, 80, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_flip') .. text(tostring(save.flip)), 200, 100, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 120, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_skipfanfare') .. text(tostring(save.skipfanfare)), 200, 140, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 160, kTextAlignment.center)
+		assets.half_circle:drawTextAligned(text('options_music') .. text(tostring(save.music)), 200, 50, kTextAlignment.center)
+		assets.half_circle:drawTextAligned(text('options_sfx') .. text(tostring(save.sfx)), 200, 70, kTextAlignment.center)
+		assets.half_circle:drawTextAligned(text('options_flip') .. text(tostring(save.flip)), 200, 90, kTextAlignment.center)
+		assets.half_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 110, kTextAlignment.center)
+		assets.half_circle:drawTextAligned(text('options_skipfanfare') .. text(tostring(save.skipfanfare)), 200, 130, kTextAlignment.center)
+		assets.half_circle:drawTextAligned(text('options_hardmode') .. text(tostring(save.hardmode)), 200, 150, kTextAlignment.center)
+		assets.half_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 170, kTextAlignment.center)
 		if vars.selections[vars.selection] == 'reset' then
-			assets.full_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 40 + (20 * vars.selection), kTextAlignment.center)
+			assets.full_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 30 + (20 * vars.selection), kTextAlignment.center)
 		else
 			if vars.selections[vars.selection] == "crank" then
-				assets.full_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 40 + (20 * vars.selection), kTextAlignment.center)
+				assets.full_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 30 + (20 * vars.selection), kTextAlignment.center)
 			else
-				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. text(tostring(save[vars.selections[vars.selection]]))) or (' '), 200, 40 + (20 * vars.selection), kTextAlignment.center)
+				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. text(tostring(save[vars.selections[vars.selection]]))) or (' '), 200, 30 + (20 * vars.selection), kTextAlignment.center)
 			end
 		end
 		assets.half_circle:drawText('v' .. pd.metadata.version, 65, 205)
