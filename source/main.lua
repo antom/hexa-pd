@@ -62,6 +62,11 @@ function savecheck()
     for i = 1, #save.mission_bests do
         save.mission_bests['mission' .. i] = save.mission_bests['mission' .. i] or 0
     end
+	for i = 1, 50 do
+		if save.mission_bests['mission' .. i] == nil then
+			save.mission_bests['mission' .. i] = 0
+		end
+	end
 end
 
 -- ... now we run that!
