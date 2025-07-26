@@ -135,9 +135,17 @@ function options:init(...)
 					save.hexas = 0
 					save.mission_bests = {}
 					save.highest_mission = 1
-					for i = 1, 50 do
-						save.mission_bests['mission' .. i] = 0
+					for i = 1, #save.mission_bests do
+						save.mission_bests[i] = save.mission_bests[i] or 0
 					end
+					for i = 1, 50 do
+						if save.mission_bests['mission' .. i] == nil then
+							save.mission_bests['mission' .. i] = 0
+						end
+					end
+					save.author_name = ''
+					save.exported_mission = false
+					updatecheevos()
 				end
 			end
 			if save.sfx then assets.sfx_select:play() end

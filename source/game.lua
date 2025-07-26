@@ -97,6 +97,7 @@ function game:init(...)
 		modifier = args[3], -- modifier for whatever, depending on the mission
 		start = args[4], -- starting layout
 		goal = args[5], -- finishing layout, for picture mode
+		seed = args[6], -- number seed, for time attack
 		tris = {},
 		slot = 1,
 		score = 0,
@@ -274,7 +275,11 @@ function game:init(...)
 	if vars.mode == "dailyrun" then
 		math.randomseed(pd.getGMTTime().year .. pd.getGMTTime().month .. pd.getGMTTime().day)
 	elseif vars.mode == "time" then
-		math.randomseed(123459 * vars.mission)
+		if vars.seed ~= nil and vars.seed ~= 0 then
+			math.randomseed(vars.seed)
+		else
+			math.randomseed(123459 * vars.mission)
+		end
 	else
 		math.randomseed(playdate.getSecondsSinceEpoch())
 	end
@@ -289,6 +294,10 @@ function game:init(...)
 			vars.anim_bg_tile_x.repeats = true
 			vars.anim_bg_tile_y.repeats = true
 		end
+	end
+
+	if vars.mode == "zen" then
+		achievements.grant("chill")
 	end
 
 	vars.anim_cursor_x.discardOnCompletion = false
@@ -315,6 +324,7 @@ function game:init(...)
 	end
 
 	if vars.mode == "arcade" or vars.mode == "dailyrun" then
+		save.lbs_lastmode = vars.mode
 		assets.ui = gfx.image.new('images/ui_arcade')
 		vars.timer = pd.timer.new(45000, 45000, 0)
 		vars.timer.delay = 4000
@@ -578,15 +588,15 @@ function game:tri(x, y, up, color, powerup)
 	if powerup ~= "" then
 		if flash then
 			if up then
-				assets['powerup_' .. powerup .. '_up'][1]:draw(x - 28, y - 23)
+				if assets['powerup_' .. powerup .. '_up'] ~= nil then assets['powerup_' .. powerup .. '_up'][1]:draw(x - 28, y - 23) end
 			else
-				assets['powerup_' .. powerup .. '_down'][1]:draw(x - 28, y - 23)
+				if assets['powerup_' .. powerup .. '_down'] ~= nil then assets['powerup_' .. powerup .. '_down'][1]:draw(x - 28, y - 23) end
 			end
 		else
 			if up then
-				assets['powerup_' .. powerup .. '_up'][floor(vars.anim_powerup.value)]:draw(x - 28, y - 23)
+				if assets['powerup_' .. powerup .. '_up'] ~= nil then assets['powerup_' .. powerup .. '_up'][floor(vars.anim_powerup.value)]:draw(x - 28, y - 23) end
 			else
-				assets['powerup_' .. powerup .. '_down'][floor(vars.anim_powerup.value)]:draw(x - 28, y - 23)
+				if assets['powerup_' .. powerup .. '_down'] ~= nil then assets['powerup_' .. powerup .. '_down'][floor(vars.anim_powerup.value)]:draw(x - 28, y - 23) end
 			end
 		end
 	end
@@ -1106,11 +1116,11 @@ function game:endround()
 			if not save.skipfanfare then
 				pd.inputHandlers.push(vars.losingHandlers, true)
 			end
-			if catalog then
-				if vars.mode == "dailyrun" then
-					if save.lastdaily.year == pd.getGMTTime().year and save.lastdaily.month == pd.getGMTTime().month and save.lastdaily.day == pd.getGMTTime().day then
-						save.lastdaily.score = vars.score
-						pd.scoreboards.addScore(vars.mode, vars.score, function(status, result)
+			if vars.mode == "dailyrun" then
+				if save.lastdaily.year == pd.getGMTTime().year and save.lastdaily.month == pd.getGMTTime().month and save.lastdaily.day == pd.getGMTTime().day then
+					save.lastdaily.score = vars.score
+					if catalog then
+						pd.scoreboards.addScore((save.hardmode and 'hard' .. vars.mode) or (vars.mode), vars.score, function(status, result)
 							if status.code == "OK" then
 								save.lastdaily.sent = true
 							else
@@ -1122,8 +1132,10 @@ function game:endround()
 							end
 						end)
 					end
-				else
-					pd.scoreboards.addScore('arcade', vars.score, function(status, result)
+				end
+			else
+				if catalog then
+					pd.scoreboards.addScore((save.hardmode and 'hardarcade') or ('arcade'), vars.score, function(status, result)
 						if pd.isSimulator == 1 then
 							printTable(status)
 							printTable(result)
@@ -1132,6 +1144,7 @@ function game:endround()
 				end
 			end
 			if vars.score > save.score and vars.mode == "arcade" then save.score = vars.score end
+			updatecheevos()
 			pd.datastore.write(save)
 			newmusic('audio/music/lose')
 			vars.anim_modal:resetnew(500, 240, 0, pd.easingFunctions.outBack)
@@ -1285,6 +1298,7 @@ function game:endround()
 		pd.timer.performAfterDelay(1500, function()
 			if save.sfx then assets.sfx_mission:play() end
 			vars.missioncomplete = true
+			updatecheevos()
 			pd.datastore.write(save)
 		end)
 		pd.timer.performAfterDelay(3000, function()
@@ -1307,6 +1321,7 @@ function game:endround()
 			end
 			if save.sfx then assets.sfx_mission:play() end
 			vars.missioncomplete = true
+			updatecheevos()
 			pd.datastore.write(save)
 			pd.timer.performAfterDelay(1500, function()
 				scenemanager:transitionscene(missions)
@@ -1329,6 +1344,7 @@ function game:endround()
 			end
 			if save.sfx then assets.sfx_mission:play() end
 			vars.missioncomplete = true
+			updatecheevos()
 			pd.datastore.write(save)
 			pd.timer.performAfterDelay(1500, function()
 				scenemanager:transitionscene(missions)
@@ -1351,6 +1367,7 @@ function game:endround()
 			end
 			if save.sfx then assets.sfx_mission:play() end
 			vars.missioncomplete = true
+			updatecheevos()
 			pd.datastore.write(save)
 			pd.timer.performAfterDelay(1500, function()
 				scenemanager:transitionscene(missions)
@@ -1362,9 +1379,9 @@ function game:endround()
 end
 
 function game:update()
+	local ticks = pd.getCrankTicks(3 * save.sensitivity)
 	if save.crank and vars.can_do_stuff and not vars.active_hexa then
 		vars.crank_degrees += pd.getCrankChange()
-		local ticks = pd.getCrankTicks(3 * save.sensitivity)
 		if ticks ~= 0 and vars.crank_deadzone == 0 then
 			vars.crank_deadzone = ticks
 		end

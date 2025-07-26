@@ -87,15 +87,15 @@ function highscores:init(...)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		if vars.mode == "arcade" then
 			assets.full_circle:drawTextAligned(text('arcade'), 200, 10, kTextAlignment.center)
-			assets.half_circle:drawTextAligned(text('highscores'), 200, 25, kTextAlignment.center)
+			assets.half_circle:drawTextAligned(text('highscores') .. (save.hardmode and text('hard') or ''), 200, 25, kTextAlignment.center)
 		elseif vars.mode == "dailyrun" then
 			assets.full_circle:drawTextAligned(text('dailyrun'), 200, 10, kTextAlignment.center)
 			if pd.getGMTTime().hour < 23 then
-				assets.half_circle:drawTextAligned(text('todaysscores') .. '   ⏰ ' .. (24 - pd.getGMTTime().hour) .. text('hrs'), 200, 25, kTextAlignment.center)
+				assets.half_circle:drawTextAligned(text('todaysscores') .. (save.hardmode and text('hard') or '') .. '   ⏰ ' .. (24 - pd.getGMTTime().hour) .. text('hrs'), 200, 25, kTextAlignment.center)
 			elseif pd.getGMTTime().minute < 59 then
-				assets.half_circle:drawTextAligned(text('todaysscores') .. '   ⏰ ' .. (60 - pd.getGMTTime().minute) .. text('mins'), 200, 25, kTextAlignment.center)
+				assets.half_circle:drawTextAligned(text('todaysscores') .. (save.hardmode and text('hard') or '') .. '   ⏰ ' .. (60 - pd.getGMTTime().minute) .. text('mins'), 200, 25, kTextAlignment.center)
 			else
-				assets.half_circle:drawTextAligned(text('todaysscores') .. '   ⏰ ' .. (60 - pd.getGMTTime().second) .. text('secs'), 200, 25, kTextAlignment.center)
+				assets.half_circle:drawTextAligned(text('todaysscores') .. (save.hardmode and text('hard') or '') .. '   ⏰ ' .. (60 - pd.getGMTTime().second) .. text('secs'), 200, 25, kTextAlignment.center)
 			end
 		end
 		if vars.result.scores ~= nil and next(vars.result.scores) ~= nil and not vars.loading then
@@ -150,17 +150,17 @@ function highscores:refreshboards(mode)
 		vars.loading = true
 		vars.mode = mode
 		if vars.mode == "arcade" and save.score ~= 0 then
-			pd.scoreboards.addScore("arcade", 0, function(status, result)
+			pd.scoreboards.addScore((save.hardmode and 'hardarcade') or ('arcade'), 0, function(status, result)
 				if vars.debug then
-					print('--- Arcade fake score check ---')
+					print('--- ' .. (save.hardmode and 'hard' .. vars.mode) or (vars.mode) .. ' fake score check ---')
 					printTable(status)
 					printTable(result)
 				end
 			end)
 		elseif vars.mode == "dailyrun" and save.lastdaily.score ~= 0 and save.lastdaily.sent == false and (save.lastdaily.year == pd.getGMTTime().year and save.lastdaily.month == pd.getGMTTime().month and save.lastdaily.day == pd.getGMTTime().day) then
-			pd.scoreboards.addScore("dailyrun", 0, function(status, result)
+			pd.scoreboards.addScore((save.hardmode and 'harddailyrun') or ('dailyrun'), 0, function(status, result)
 				if vars.debug then
-					print('--- Daily fake score check ---')
+					print('--- ' .. (save.hardmode and 'hard' .. vars.mode) or (vars.mode) .. ' fake score check ---')
 					printTable(status)
 					printTable(result)
 				end
@@ -173,9 +173,9 @@ function highscores:refreshboards(mode)
 				printTable(result)
 			end)
 		end
-		pd.scoreboards.getScores(vars.mode, function(status, result)
+		pd.scoreboards.getScores((save.hardmode and 'hard' .. vars.mode) or (vars.mode), function(status, result)
 			if vars.debug then
-				print('--- ' .. vars.mode .. ' scoreboard ---')
+				print('--- ' .. (save.hardmode and 'hard' .. vars.mode) or (vars.mode) .. ' scoreboard ---')
 				printTable(status)
 				printTable(result)
 			end
@@ -185,10 +185,10 @@ function highscores:refreshboards(mode)
 				vars.result = "fail"
 			end
 		end)
-		pd.scoreboards.getPersonalBest(vars.mode, function(status, result)
+		pd.scoreboards.getPersonalBest((save.hardmode and 'hard' .. vars.mode) or (vars.mode), function(status, result)
 			vars.loading = false
 			if vars.debug then
-				print('--- ' .. vars.mode .. ' personal best ---')
+				print('--- ' .. (save.hardmode and 'hard' .. vars.mode) or (vars.mode) .. ' personal best ---')
 				printTable(status)
 				printTable(result)
 			end

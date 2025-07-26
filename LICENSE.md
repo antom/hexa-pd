@@ -2,6 +2,8 @@
 
 (source/images) Righteous font made by Astigmatic, under [OFL](https://openfontlicense.org)
 
+(source/images/mask_arcade_false.png, source/images/mask_arcade_true.png) Playdate input prompts made by Kenney, under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
+
 (key art, source/images) Art and the rest of the graphical assets made by rae, under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
 (source/audio/music) Music made by [Watson at MusMus](https://musmus.main.jp/), under [their terms](https://musmus.main.jp/info.html)

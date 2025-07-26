@@ -124,7 +124,7 @@ function title:init(...)
 					if save.sfx then assets.sfx_bonk:play() end
 				end
 			elseif vars.selections[vars.selection] == "highscores" then
-				scenemanager:transitionscene(highscores, "arcade")
+				scenemanager:transitionscene(highscores, save.lbs_lastmode)
 			elseif vars.selections[vars.selection] == "missions" then
 				scenemanager:transitionscene(missions)
 			elseif vars.selections[vars.selection] == "howtoplay" then

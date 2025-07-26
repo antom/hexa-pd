@@ -7,9 +7,12 @@ import 'CoreLibs/timer'
 import 'CoreLibs/crank'
 import 'CoreLibs/object'
 import 'CoreLibs/sprites'
+import 'CoreLibs/keyboard'
 import 'CoreLibs/graphics'
 import 'CoreLibs/animation'
+import 'achievements'
 import 'scenemanager'
+import 'cheevos'
 import 'title'
 scenemanager = scenemanager()
 
@@ -57,20 +60,47 @@ function savecheck()
     save.swaps = save.swaps or 0
     save.hexas = save.hexas or 0
     save.highest_mission = save.highest_mission or 1
+	save.lbs_lastmode = save.lbs_lastmode or 'arcade'
     if save.mission_bests == nil then save.mission_bests = {} end
+	if save.author_name == nil then save.author_name = '' end
 	if save.hardmode == nil then save.hardmode = false end
-    for i = 1, #save.mission_bests do
-        save.mission_bests['mission' .. i] = save.mission_bests['mission' .. i] or 0
-    end
+	if save.exported_mission == nil then save.exported_mission = false end
 	for i = 1, 50 do
 		if save.mission_bests['mission' .. i] == nil then
 			save.mission_bests['mission' .. i] = 0
 		end
 	end
+    for i = 1, #save.mission_bests do
+        save.mission_bests[i] = save.mission_bests[i] or 0
+    end
 end
 
 -- ... now we run that!
 savecheck()
+
+achievements.initialize(achievementData, true)
+
+function updatecheevos()
+	achievements.advanceTo('arcade1000', save.score)
+	achievements.advanceTo('arcade5000', save.score)
+	achievements.advanceTo('arcade10000', save.score)
+	achievements.advanceTo('arcade25000', save.score)
+	achievements.advanceTo('swaps50', save.swaps)
+	achievements.advanceTo('swaps100', save.swaps)
+	achievements.advanceTo('swaps250', save.swaps)
+	achievements.advanceTo('swaps500', save.swaps)
+	achievements.advanceTo('hexas50', save.hexas)
+	achievements.advanceTo('hexas100', save.hexas)
+	achievements.advanceTo('hexas250', save.hexas)
+	achievements.advanceTo('hexas500', save.hexas)
+	if (save.lastdaily.year ~= nil and save.lastdaily.year > 0) then achievements.grant('daily') end
+	if save.highest_mission > 1 then achievements.grant('mission1') end
+	achievements.advanceTo('mission50', save.highest_mission)
+	if save.exported_mission then achievements.grant('missioncommand') end
+	achievements.save()
+end
+
+updatecheevos()
 
 -- Create custom missions folder.
 if not pd.file.isdir('missions') then

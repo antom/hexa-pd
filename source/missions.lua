@@ -1,4 +1,5 @@
 import 'missions_list'
+import 'mission_command'
 import 'title'
 import 'game'
 
@@ -21,6 +22,10 @@ function missions:init(...)
 		if not scenemanager.transitioning then
 			menu:addCheckmarkMenuItem(text('custom'), vars.custom, function(value)
 				vars.custom = value
+			end)
+			menu:addMenuItem(text('create'), function()
+				scenemanager:transitionscene(mission_command)
+				fademusic()
 			end)
 			menu:addMenuItem(text('goback'), function()
 				scenemanager:transitionscene(title, false, 'missions')
@@ -124,7 +129,7 @@ function missions:init(...)
 				local _, _, column = assets.custom_grid:getSelection()
 				if vars.keytimer ~= nil then vars.keytimer:remove() end
 				if save.sfx then assets.sfx_select:play() end
-				scenemanager:transitionscene(game, vars.custom_missions[column].type, column, vars.custom_missions[column].modifier or nil, vars.custom_missions[column].start, vars.custom_missions[column].goal)
+				scenemanager:transitionscene(game, vars.custom_missions[column].type, vars.custom_missions[column].mission, vars.custom_missions[column].modifier or nil, vars.custom_missions[column].start or nil, vars.custom_missions[column].goal or nil, vars.custom_missions[column].seed or nil)
 				fademusic()
 			else
 				local _, _, column = assets.grid:getSelection()
@@ -191,21 +196,28 @@ function missions:init(...)
 	if #vars.custom_files > 0 then
 		vars.custom_missions = {}
 		for i = 1, #vars.custom_files do
-			save.mission_bests['mission' .. string.gsub(tostring(vars.custom_files[i]), ".json", "")] = 0
-			vars.custom_missions[i] = pd.datastore.read('missions/' .. string.gsub(tostring(vars.custom_files[i]), ".json", ""))
-			if vars.custom_missions[i].start_point ~= nil then
-				vars.custom_missions[i].start = {}
-				for n = 1, 19 do
-					table.insert(vars.custom_missions[i].start, vars.custom_missions[i].start_point['tri' .. n])
-				end
-				vars.custom_missions[i].start_point = nil
+			if save.mission_bests['mission' .. string.gsub(tostring(vars.custom_files[i]), ".json", "")] == nil then
+				save.mission_bests['mission' .. string.gsub(tostring(vars.custom_files[i]), ".json", "")] = 0
 			end
-			if vars.custom_missions[i].goal_point ~= nil then
-				vars.custom_missions[i].goal = {}
-				for n = 1, 19 do
-					table.insert(vars.custom_missions[i].goal, vars.custom_missions[i].goal_point['tri' .. n])
+			vars.custom_missions[i] = pd.datastore.read('missions/' .. string.gsub(tostring(vars.custom_files[i]), ".json", ""))
+			if vars.custom_missions[i].type == 'time' then
+			elseif vars.custom_missions[i].type == 'speedrun' then
+			elseif vars.custom_missions[i].type == 'picture' then
+				if vars.custom_missions[i].start_point ~= nil then
+					vars.custom_missions[i].start = {}
+					for n = 1, 19 do
+						table.insert(vars.custom_missions[i].start, vars.custom_missions[i].start_point['tri' .. n])
+					end
+					vars.custom_missions[i].start_point = nil
 				end
-				vars.custom_missions[i].goal_point = nil
+				if vars.custom_missions[i].goal_point ~= nil then
+					vars.custom_missions[i].goal = {}
+					for n = 1, 19 do
+						table.insert(vars.custom_missions[i].goal, vars.custom_missions[i].goal_point['tri' .. n])
+					end
+					vars.custom_missions[i].goal_point = nil
+				end
+			elseif vars.custom_missions[i].type == 'logic' then
 			end
 		end
 
@@ -236,7 +248,7 @@ function missions:init(...)
 			end
 			if vars.custom_missions[column].type == "picture" or vars.custom_missions[column].type == "logic" then
 				assets.full_circle:drawTextAligned(text('swaps') .. text('divvy') .. commalize(save.mission_bests['mission' .. vars.custom_missions[column].mission]), x + (width / 2), y + (height - 22), kTextAlignment.center)
-			elseif missions_list[column].type == "time" then
+			elseif vars.custom_missions[column].type == "time" then
 				assets.full_circle:drawTextAligned(text('score') .. text('divvy') .. commalize(save.mission_bests['mission' .. vars.custom_missions[column].mission]), x + (width / 2), y + (height - 22), kTextAlignment.center)
 			elseif vars.custom_missions[column].type == "speedrun" then
 				local mins, secs, mils = timecalc(save.mission_bests['mission' .. vars.custom_missions[column].mission])
