@@ -27,6 +27,8 @@ local mask_arcade_false <const> = gfx.image.new('images/mask_arcade_false')
 local mask_zen <const> = gfx.image.new('images/mask_zen')
 local pause <const> = gfx.image.new('images/pause')
 local pause_luci <const> = gfx.image.new('images/pause_luci')
+local full_circle <const> = gfx.font.new('fonts/full-circle')
+local manual_qr <const> = gfx.image.new('images/manual_qr')
 local tris_x <const> = {140, 170, 200, 230, 260, 110, 140, 170, 200, 230, 260, 290, 110, 140, 170, 200, 230, 260, 290}
 local tris_y <const> = {70, 70, 70, 70, 70, 120, 120, 120, 120, 120, 120, 120, 170, 170, 170, 170, 170, 170, 170}
 local tris_flip <const> = {true, false, true, false, true, true, false, true, false, true, false, true, false, true, false, true, false, true, false}
@@ -57,6 +59,7 @@ function savecheck()
     save.lastdaily.score = save.lastdaily.score or 0
     if save.lastdaily.sent == nil then save.lastdaily.sent = false end
     save.score = save.score or 0
+	save.hard_score = save.hard_score or 0
     save.swaps = save.swaps or 0
     save.hexas = save.hexas or 0
     save.highest_mission = save.highest_mission or 1
@@ -85,14 +88,14 @@ function updatecheevos()
 	achievements.advanceTo('arcade5000', save.score)
 	achievements.advanceTo('arcade10000', save.score)
 	achievements.advanceTo('arcade25000', save.score)
-	achievements.advanceTo('swaps50', save.swaps)
-	achievements.advanceTo('swaps100', save.swaps)
-	achievements.advanceTo('swaps250', save.swaps)
-	achievements.advanceTo('swaps500', save.swaps)
-	achievements.advanceTo('hexas50', save.hexas)
-	achievements.advanceTo('hexas100', save.hexas)
+	achievements.advanceTo('swaps1000', save.swaps)
+	achievements.advanceTo('swaps2500', save.swaps)
+	achievements.advanceTo('swaps5000', save.swaps)
+	achievements.advanceTo('swaps10000', save.swaps)
 	achievements.advanceTo('hexas250', save.hexas)
 	achievements.advanceTo('hexas500', save.hexas)
+	achievements.advanceTo('hexas1000', save.hexas)
+	achievements.advanceTo('hexas2500', save.hexas)
 	if (save.lastdaily.year ~= nil and save.lastdaily.year > 0) then achievements.grant('daily') end
 	if save.highest_mission > 1 then achievements.grant('mission1') end
 	achievements.advanceTo('mission50', save.highest_mission)
@@ -114,7 +117,34 @@ end
 
 function pauseimage(mode)
     if mode == nil or not vars.can_do_stuff then
-        pd.setMenuImage(pause_luci)
+		if vars.mode ~= nil and (vars.mode == 'edit' or vars.mode == 'save') then
+			local pauseimg = pause:copy()
+			gfx.pushContext(pauseimg)
+			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+			full_circle:drawText(text('mission_type'), 10, 70)
+			full_circle:drawTextAligned(text('command_' .. vars.mission_types[vars.mission_type]), 190, 85, kTextAlignment.right)
+			if vars.mission_types[vars.mission_type] ~= 'picture' then
+				gfx.setColor(gfx.kColorWhite)
+				gfx.drawLine(20, 104, 170, 104)
+				gfx.setColor(gfx.kColorBlack)
+			end
+			if vars.mission_types[vars.mission_type] == 'time' then
+				full_circle:drawText(text('time_limit'), 10, 111)
+				full_circle:drawTextAligned(vars.time_limits[vars.time_limit] .. text('secs'), 190, 111, kTextAlignment.right)
+				full_circle:drawText(text('number_seed'), 10, 127)
+				full_circle:drawTextAligned(tonumber(vars.seed_string), 190, 142, kTextAlignment.right)
+			elseif vars.mission_types[vars.mission_type] == 'logic' or vars.mission_types[vars.mission_type] == 'speedrun' then
+				full_circle:drawText(text('clear_goal'), 10, 111)
+				full_circle:drawTextAligned(text('command_' .. vars.clear_goals[vars.clear_goal]), 190, 111, kTextAlignment.right)
+			end
+			full_circle:drawText(text('need_help'), 90, 176)
+			gfx.setImageDrawMode(gfx.kDrawModeCopy)
+			manual_qr:draw(0, 158)
+			gfx.popContext()
+			pd.setMenuImage(pauseimg)
+		else
+        	pd.setMenuImage(pause_luci)
+		end
     else
         local image = gfx.getDisplayImage()
         local pauseimg = pause:copy()
@@ -142,24 +172,34 @@ function pauseimage(mode)
             image:drawScaled(-33, 65, 0.666)
         end
         if vars.mode == "time" or vars.mode == "speedrun" or vars.mode == "picture" or vars.mode == "logic" then
-          local x = 0
-          local y = 0
-          local width = 200
-          local height = 80
-          local column = vars.mission
-          gfx.setColor(gfx.kColorWhite)
-          gfx.fillRect(x, y, width, height)
-          gfx.setColor(gfx.kColorBlack)
-          gfx.setDitherPattern(0.75, gfx.image.kDitherTypeBayer2x2)
-          gfx.fillPolygon(x, y, x + width, y, x + width, y + height, x + width - (width * 0.2), y + height, x + width - (width * 0.05), y + (height / 2), x + width - (width * 0.2), y, x + width * 0.2, y, x + width * 0.05, y + (height / 2), x + width * 0.2, y + height, x, y + height, x, y)
-          gfx.setColor(gfx.kColorBlack)
-          if missions_list[column].type == "picture" then
-            assets.full_circle:drawTextAligned(text('mission_picture1') .. missions_list[column].name .. text('mission_picture2'), x + (width / 2), y + (height / 8), kTextAlignment.center)
-          elseif missions_list[column].type == "logic" or missions_list[column].type == "speedrun" then
-            assets.full_circle:drawTextAligned(text('mission_' .. missions_list[column].type .. '_' .. missions_list[column].modifier), x + (width / 2), y + (height / 8), kTextAlignment.center)
-          else
-            assets.full_circle:drawTextAligned(text('mission_' .. missions_list[column].type), x + (width / 2), y + (height / 8), kTextAlignment.center)
-          end
+			local x = 0
+			local y = 0
+			local width = 200
+			local height = 80
+			local column = vars.mission
+			gfx.setColor(gfx.kColorWhite)
+			gfx.fillRect(x, y, width, height)
+			gfx.setColor(gfx.kColorBlack)
+			gfx.setDitherPattern(0.75, gfx.image.kDitherTypeBayer2x2)
+			gfx.fillPolygon(x, y, x + width, y, x + width, y + height, x + width - (width * 0.2), y + height, x + width - (width * 0.05), y + (height / 2), x + width - (width * 0.2), y, x + width * 0.2, y, x + width * 0.05, y + (height / 2), x + width * 0.2, y + height, x, y + height, x, y)
+			gfx.setColor(gfx.kColorBlack)
+			if missions_list[column] ~= nil then
+				if missions_list[column].type == "picture" then
+					assets.full_circle:drawTextAligned(text('mission_picture1') .. missions_list[column].name .. text('mission_picture2'), x + (width / 2), y + (height / 8), kTextAlignment.center)
+				elseif missions_list[column].type == "logic" or missions_list[column].type == "speedrun" then
+					assets.full_circle:drawTextAligned(text('mission_' .. missions_list[column].type .. '_' .. missions_list[column].modifier), x + (width / 2), y + (height / 8), kTextAlignment.center)
+				else
+					assets.full_circle:drawTextAligned(text('mission_' .. missions_list[column].type), x + (width / 2), y + (height / 8), kTextAlignment.center)
+				end
+			else
+				if vars.mode == "picture" then
+					assets.full_circle:drawTextAligned(text('mission_picture1') .. vars.name .. text('mission_picture2'), x + (width / 2), y + (height / 8), kTextAlignment.center)
+				elseif vars.mode == "logic" or vars.mode == "speedrun" then
+					assets.full_circle:drawTextAligned(text('mission_' .. vars.mode .. '_' .. vars.modifier), x + (width / 2), y + (height / 8), kTextAlignment.center)
+				else
+					assets.full_circle:drawTextAligned(text('mission_time'), x + (width / 2), y + (height / 8), kTextAlignment.center)
+				end
+			end
         end
         gfx.popContext()
         pd.setMenuImage(pauseimg)

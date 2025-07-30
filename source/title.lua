@@ -217,8 +217,14 @@ function title:init(...)
 			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 70 + (20 * vars.selection), kTextAlignment.right)
 		end
 		if vars.selections[vars.selection] == "arcade" then
-			if save.score ~= 0 then
-				assets.full_circle:drawText(text('high') .. text('divvy') .. commalize(save.score), 10 - vars.anim_title.value, 205)
+			if save.hardmode then
+				if save.hard_score ~= 0 then
+					assets.full_circle:drawText(text('high') .. text('divvy') .. commalize(save.hard_score), 10 - vars.anim_title.value, 205)
+				end
+			else
+				if save.score ~= 0 then
+					assets.full_circle:drawText(text('high') .. text('divvy') .. commalize(save.score), 10 - vars.anim_title.value, 205)
+				end
 			end
 		elseif vars.selections[vars.selection] == "dailyrun" then
 			if save.lastdaily.score ~= 0 then

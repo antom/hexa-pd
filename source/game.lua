@@ -33,7 +33,11 @@ function game:init(...)
 						vars.timer:pause()
 					end
 					vars.can_do_stuff = false
-					scenemanager:transitionscene(missions)
+					if vars.mission ~= nil and vars.mission > 50 then
+						scenemanager:transitionscene(missions, true)
+					else
+						scenemanager:transitionscene(missions)
+					end
 					fademusic()
 				end)
 			end
@@ -98,6 +102,7 @@ function game:init(...)
 		start = args[4], -- starting layout
 		goal = args[5], -- finishing layout, for picture mode
 		seed = args[6], -- number seed, for time attack
+		name = args[7], -- name, for picture puzzles
 		tris = {},
 		slot = 1,
 		score = 0,
@@ -502,7 +507,11 @@ function game:init(...)
 			assets.clock:drawText(ceil(vars.timer.value / 1000), 305, 55)
 			if vars.mode == "arcade" then
 				assets.half_circle:drawText(text('high'), 10, 45)
-				assets.full_circle:drawText(commalize((vars.score > save.score and vars.score) or (save.score)), 10, 60)
+				if save.hardmode then
+					assets.full_circle:drawText(commalize((vars.score > save.hard_score and vars.score) or (save.hard_score)), 10, 60)
+				else
+					assets.full_circle:drawText(commalize((vars.score > save.score and vars.score) or (save.score)), 10, 60)
+				end
 			else
 				assets.half_circle:drawText(text('seed'), 10, 45)
 				assets.full_circle:drawText(pd.getGMTTime().year .. pd.getGMTTime().month .. pd.getGMTTime().day, 10, 60)
@@ -1143,7 +1152,11 @@ function game:endround()
 					end)
 				end
 			end
-			if vars.score > save.score and vars.mode == "arcade" then save.score = vars.score end
+			if save.hardmode then
+				if vars.score > save.hard_score and vars.mode == "arcade" then save.hard_score = vars.score end
+			else
+				if vars.score > save.score and vars.mode == "arcade" then save.score = vars.score end
+			end
 			updatecheevos()
 			pd.datastore.write(save)
 			newmusic('audio/music/lose')
@@ -1302,7 +1315,11 @@ function game:endround()
 			pd.datastore.write(save)
 		end)
 		pd.timer.performAfterDelay(3000, function()
-			scenemanager:transitionscene(missions)
+			if vars.mission ~= nil and vars.mission > 50 then
+				scenemanager:transitionscene(missions, true)
+			else
+				scenemanager:transitionscene(missions)
+			end
 		end)
 	elseif vars.mode == "time" then
 		if not vars.ended then
@@ -1324,7 +1341,11 @@ function game:endround()
 			updatecheevos()
 			pd.datastore.write(save)
 			pd.timer.performAfterDelay(1500, function()
-				scenemanager:transitionscene(missions)
+				if vars.mission ~= nil and vars.mission > 50 then
+					scenemanager:transitionscene(missions, true)
+				else
+					scenemanager:transitionscene(missions)
+				end
 			end)
 		end)
 	elseif vars.mode == "logic" then
@@ -1347,7 +1368,11 @@ function game:endround()
 			updatecheevos()
 			pd.datastore.write(save)
 			pd.timer.performAfterDelay(1500, function()
-				scenemanager:transitionscene(missions)
+				if vars.mission ~= nil and vars.mission > 50 then
+					scenemanager:transitionscene(missions, true)
+				else
+					scenemanager:transitionscene(missions)
+				end
 			end)
 		end)
 	elseif vars.mode == "speedrun" then
@@ -1370,7 +1395,11 @@ function game:endround()
 			updatecheevos()
 			pd.datastore.write(save)
 			pd.timer.performAfterDelay(1500, function()
-				scenemanager:transitionscene(missions)
+				if vars.mission ~= nil and vars.mission > 50 then
+					scenemanager:transitionscene(missions, true)
+				else
+					scenemanager:transitionscene(missions)
+				end
 			end)
 		end)
 	end

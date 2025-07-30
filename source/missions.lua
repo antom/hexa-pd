@@ -24,7 +24,7 @@ function missions:init(...)
 				vars.custom = value
 			end)
 			menu:addMenuItem(text('create'), function()
-				scenemanager:transitionscene(mission_command)
+				scenemanager:transitionscene(mission_command, vars.custom)
 				fademusic()
 			end)
 			menu:addMenuItem(text('goback'), function()
@@ -53,7 +53,7 @@ function missions:init(...)
 	assets.grid:scrollCellToCenter(1, 1, math.min((((save.highest_mission > 50) and 1) or (save.highest_mission)), 50), false)
 
 	vars = {
-		custom = false,
+		custom = args[1],
 		anim_stars_small_x = pd.timer.new(4000, 0, -399),
 		anim_stars_small_y = pd.timer.new(2750, 0, -239),
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
@@ -129,7 +129,7 @@ function missions:init(...)
 				local _, _, column = assets.custom_grid:getSelection()
 				if vars.keytimer ~= nil then vars.keytimer:remove() end
 				if save.sfx then assets.sfx_select:play() end
-				scenemanager:transitionscene(game, vars.custom_missions[column].type, vars.custom_missions[column].mission, vars.custom_missions[column].modifier or nil, vars.custom_missions[column].start or nil, vars.custom_missions[column].goal or nil, vars.custom_missions[column].seed or nil)
+				scenemanager:transitionscene(game, vars.custom_missions[column].type, vars.custom_missions[column].mission, vars.custom_missions[column].modifier or nil, vars.custom_missions[column].start or nil, vars.custom_missions[column].goal or nil, vars.custom_missions[column].seed or nil, vars.custom_missions[column].name or nil)
 				fademusic()
 			else
 				local _, _, column = assets.grid:getSelection()
@@ -140,7 +140,7 @@ function missions:init(...)
 					shakies()
 				else
 					if save.sfx then assets.sfx_select:play() end
-					scenemanager:transitionscene(game, missions_list[column].type, column, missions_list[column].modifier or nil, missions_list[column].start, missions_list[column].goal)
+					scenemanager:transitionscene(game, missions_list[column].type, column, missions_list[column].modifier or nil, missions_list[column].start, missions_list[column].goal, mission_list[column].name)
 					fademusic()
 				end
 			end
@@ -284,6 +284,7 @@ function missions:init(...)
 			assets.grid:drawInRect(0,50, 400, 125)
 		end
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+		assets.half_circle:drawText(text('menucustom'), 10, 205)
 		assets.half_circle:drawText(text('move') .. ' ' .. text('select') .. ' ' .. text('back'), 10, 220)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 	end)

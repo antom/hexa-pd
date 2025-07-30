@@ -1,5 +1,4 @@
 import 'missions'
-import 'title'
 
 -- Setting up consts
 local pd <const> = playdate
@@ -25,7 +24,7 @@ function mission_command:init(...)
 		if not scenemanager.transitioning then
 			if vars.mode == 'start' then
 				menu:addMenuItem(text('goback'), function()
-					scenemanager:transitionscene(missions)
+					scenemanager:transitionscene(missions, vars.custom)
 					fademusic()
 				end)
 			elseif vars.mode == 'edit' then
@@ -35,223 +34,17 @@ function mission_command:init(...)
 					pd.inputHandlers.push(vars.mission_command_startHandlers)
 					vars.scroll_x_target = 400
 					gfx.sprite.setAlwaysRedraw(false)
+					sprites.error.x_target = -355
 				end)
-				menu:addMenuItem(text('export'), function()
-					if vars.mission_types[vars.mission_type] == 'logic' or vars.mission_types[vars.mission_type] == 'speedrun' then
-						local black_tiles = 0
-						local gray_tiles = 0
-						local white_tiles = 0
-						local wild_tiles = 0
-						local double_black_tiles = 0
-						local double_gray_tiles = 0
-						local double_white_tiles = 0
-						local bomb_black_tiles = 0
-						local bomb_gray_tiles = 0
-						local bomb_white_tiles = 0
-						for i = 1, 19 do
-							local tri = vars.tris[i]
-							if tri.color == 'black' then
-								black_tiles += 1
-							elseif tri.color == 'gray' then
-								gray_tiles += 1
-							elseif tri.color == 'white' then
-								white_tiles += 1
-							end
-							if tri.powerup == 'wild' then
-								wild_tiles += 1
-							elseif tri.powerup == 'double' then
-								if tri.color == 'black' then
-									double_black_tiles += 1
-								elseif tri.color == 'gray' then
-									double_gray_tiles += 1
-								elseif tri.color == 'white' then
-									double_white_tiles += 1
-								end
-							elseif tri.powerup == 'bomb' then
-								if tri.color == 'black' then
-									bomb_black_tiles += 1
-								elseif tri.color == 'gray' then
-									bomb_gray_tiles += 1
-								elseif tri.color == 'white' then
-									bomb_white_tiles += 1
-								end
-							end
-						end
-						if vars.clear_goals[vars.clear_goal] == 'black' then
-							local exportable = false
-							if black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if exportable then
-								vars.mode = 'save'
-								pd.inputHandlers.pop()
-								pd.inputHandlers.push(vars.mission_command_saveHandlers)
-								vars.scroll_x_target = 1200
-								gfx.sprite.setAlwaysRedraw(false)
-							else
-								sprites.error:popup()
-								if save.sfx then assets.sfx_bonk:play() end
-							end
-						elseif vars.clear_goals[vars.clear_goal] == 'gray' then
-							local exportable = false
-							if gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if exportable then
-								vars.mode = 'save'
-								pd.inputHandlers.pop()
-								pd.inputHandlers.push(vars.mission_command_saveHandlers)
-								vars.scroll_x_target = 1200
-								gfx.sprite.setAlwaysRedraw(false)
-							else
-								sprites.error:popup()
-								if save.sfx then assets.sfx_bonk:play() end
-							end
-						elseif vars.clear_goals[vars.clear_goal] == 'white' then
-							local exportable = false
-							if white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if exportable then
-								vars.mode = 'save'
-								pd.inputHandlers.pop()
-								pd.inputHandlers.push(vars.mission_command_saveHandlers)
-								vars.scroll_x_target = 1200
-								gfx.sprite.setAlwaysRedraw(false)
-							else
-								sprites.error:popup()
-								if save.sfx then assets.sfx_bonk:play() end
-							end
-						elseif vars.clear_goals[vars.clear_goal] == 'wild' then
-							if wild_tiles > 0 and ((wild_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							local exportable = false
-							if exportable then
-								vars.mode = 'save'
-								pd.inputHandlers.pop()
-								pd.inputHandlers.push(vars.mission_command_saveHandlers)
-								vars.scroll_x_target = 1200
-								gfx.sprite.setAlwaysRedraw(false)
-							else
-								sprites.error:popup()
-								if save.sfx then assets.sfx_bonk:play() end
-							end
-						elseif vars.clear_goals[vars.clear_goal] == '2x' then
-							local exportable = false
-							if double_black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if double_gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if double_white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if exportable then
-								vars.mode = 'save'
-								pd.inputHandlers.pop()
-								pd.inputHandlers.push(vars.mission_command_saveHandlers)
-								vars.scroll_x_target = 1200
-								gfx.sprite.setAlwaysRedraw(false)
-							else
-								sprites.error:popup()
-								if save.sfx then assets.sfx_bonk:play() end
-							end
-						elseif vars.clear_goals[vars.clear_goal] == 'bomb' then
-							local exportable = false
-							if bomb_black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if exportable then
-								vars.mode = 'save'
-								pd.inputHandlers.pop()
-								pd.inputHandlers.push(vars.mission_command_saveHandlers)
-								vars.scroll_x_target = 1200
-								gfx.sprite.setAlwaysRedraw(false)
-							else
-								sprites.error:popup()
-								if save.sfx then assets.sfx_bonk:play() end
-							end
-						elseif vars.clear_goals[vars.clear_goal] == 'board' then
-							local exportable = false
-							if black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								if gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-									if white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-										exportable = true
-									end
-								end
-							end
-							if bomb_black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if bomb_white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
-								exportable = true
-							end
-							if exportable then
-								vars.mode = 'save'
-								pd.inputHandlers.pop()
-								pd.inputHandlers.push(vars.mission_command_saveHandlers)
-								vars.scroll_x_target = 1200
-								gfx.sprite.setAlwaysRedraw(false)
-							else
-								sprites.error:popup()
-								if save.sfx then assets.sfx_bonk:play() end
-							end
-						end
-					else
+				if mission_command:check_validity() then
+					menu:addMenuItem(text('export'), function()
 						vars.mode = 'save'
 						pd.inputHandlers.pop()
 						pd.inputHandlers.push(vars.mission_command_saveHandlers)
 						vars.scroll_x_target = 1200
 						gfx.sprite.setAlwaysRedraw(false)
-					end
-				end)
+					end)
+				end
 			elseif vars.mode == 'save' then
 				menu:addMenuItem(text('goback'), function()
 					vars.mode = 'edit'
@@ -289,6 +82,7 @@ function mission_command:init(...)
 	}
 
 	vars = {
+		custom = args[1],
 		mode = 'start', -- "start", "edit", or "save"
 		start_selection = 1,
 		start_selections = {'type', 'timelimit', 'cleargoal', 'seed', 'start'},
@@ -298,6 +92,7 @@ function mission_command:init(...)
 		time_limits = {'5', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55', '60'},
 		clear_goal = 1,
 		clear_goals = {'black', 'gray', 'white', 'wild', '2x', 'bomb', 'board'},
+		seed_string = '0',
 		seed = 0,
 		keyboard = 'seed',
 		seed_old = '0',
@@ -389,10 +184,12 @@ function mission_command:init(...)
 			if vars.start_selections[vars.start_selection] == 'type' then
 				vars.mission_type += 1
 				if vars.mission_type > #vars.mission_types then vars.mission_type = 1 end
+				if save.sfx then assets.sfx_move:play() end
 			elseif vars.start_selections[vars.start_selection] == 'timelimit' then
 				if vars.mission_types[vars.mission_type] == 'time' then
 					vars.time_limit += 1
 					if vars.time_limit > #vars.time_limits then vars.time_limit = 1 end
+					if save.sfx then assets.sfx_move:play() end
 				else
 					shakies()
 					if save.sfx then assets.sfx_bonk:play() end
@@ -401,14 +198,16 @@ function mission_command:init(...)
 				if vars.mission_types[vars.mission_type] == 'speedrun' or vars.mission_types[vars.mission_type] == 'logic' then
 					vars.clear_goal += 1
 					if vars.clear_goal > #vars.clear_goals then vars.clear_goal = 1 end
+					if save.sfx then assets.sfx_move:play() end
 				else
 					shakies()
 					if save.sfx then assets.sfx_bonk:play() end
 				end
 			elseif vars.start_selections[vars.start_selection] == 'seed' then
 				if vars.mission_types[vars.mission_type] == 'time' then
-					pd.keyboard.show(vars.seed)
+					pd.keyboard.show(vars.seed_string)
 					vars.keyboard = 'seed'
+					if save.sfx then assets.sfx_select:play() end
 				else
 					shakies()
 					if save.sfx then assets.sfx_bonk:play() end
@@ -435,13 +234,19 @@ function mission_command:init(...)
 				vars.scroll_x_target = 800
 				gfx.sprite.setAlwaysRedraw(true)
 				if save.sfx then assets.sfx_select:play() end
+				if mission_command:check_validity() then
+					sprites.error.x_target = -355
+				elseif sprites.error.x_target ~= 5 then
+					sprites.error.x_target = 5
+					if save.sfx then assets.sfx_bonk:play() end
+				end
 			end
 			gfx.sprite.redrawBackground()
 		end,
 
 		BButtonDown = function()
 			if save.sfx then assets.sfx_back:play() end
-			scenemanager:transitionscene(missions)
+			scenemanager:transitionscene(missions, vars.custom)
 			fademusic()
 		end,
 	}
@@ -702,6 +507,7 @@ function mission_command:init(...)
 				if vars.mission_types[vars.mission_type] == 'picture' then
 					pd.keyboard.show(vars.picture_name)
 					vars.keyboard = 'picture'
+					if save.sfx then assets.sfx_select:play() end
 				else
 					shakies()
 					if save.sfx then assets.sfx_bonk:play() end
@@ -709,6 +515,7 @@ function mission_command:init(...)
 			elseif vars.save_selections[vars.save_selection] == 'author_name' then
 				pd.keyboard.show(vars.author_name)
 				vars.keyboard = 'author'
+				if save.sfx then assets.sfx_select:play() end
 			elseif vars.save_selections[vars.save_selection] == 'save' then
 				mission_command:save()
 				if save.sfx then assets.sfx_select:play() end
@@ -737,6 +544,9 @@ function mission_command:init(...)
 					else
 						if save.sfx then assets.sfx_move:play() end
 					end
+				else
+					shakies()
+					if save.sfx then assets.sfx_bonk:play() end
 				end
 			else
 				if not (sprites.selector.show_no_color and sprites.selector.rack1selection == 1) then
@@ -748,6 +558,9 @@ function mission_command:init(...)
 					else
 						if save.sfx then assets.sfx_move:play() end
 					end
+				else
+					shakies()
+					if save.sfx then assets.sfx_bonk:play() end
 				end
 			end
 		end,
@@ -767,6 +580,9 @@ function mission_command:init(...)
 					else
 						if save.sfx then assets.sfx_move:play() end
 					end
+				else
+					shakies()
+					if save.sfx then assets.sfx_bonk:play() end
 				end
 			else
 				if not (sprites.selector.show_no_color and sprites.selector.rack1selection == 1) then
@@ -778,6 +594,9 @@ function mission_command:init(...)
 					else
 						if save.sfx then assets.sfx_move:play() end
 					end
+				else
+					shakies()
+					if save.sfx then assets.sfx_bonk:play() end
 				end
 			end
 		end,
@@ -805,21 +624,33 @@ function mission_command:init(...)
 		AButtonDown = function()
 			sprites.selector:close(true)
 			if save.sfx then assets.sfx_select:play() end
+			if mission_command:check_validity() then
+				sprites.error.x_target = -355
+			elseif sprites.error.x_target ~= 5 then
+				sprites.error.x_target = 5
+				if save.sfx then assets.sfx_bonk:play() end
+			end
 		end,
 
 		BButtonDown = function()
 			sprites.selector:close(false)
 			if save.sfx then assets.sfx_back:play() end
+			if mission_command:check_validity() then
+				sprites.error.x_target = -355
+			elseif sprites.error.x_target ~= 5 then
+				sprites.error.x_target = 5
+				if save.sfx then assets.sfx_bonk:play() end
+			end
 		end,
 	}
 	vars.mission_command_doneHandlers = {
 		AButtonDown = function()
-			scenemanager:transitionscene(missions)
+			scenemanager:transitionscene(missions, vars.custom)
 			fademusic()
 		end,
 
 		BButtonDown = function()
-			scenemanager:transitionscene(missions)
+			scenemanager:transitionscene(missions, vars.custom)
 			fademusic()
 		end,
 	}
@@ -863,7 +694,7 @@ function mission_command:init(...)
 		assets.full_circle:drawText(text('number_seed'), 50 + x, 153)
 		assets.half_circle:drawText('(' .. text('command_time') .. ')', 50 + x, 167)
 		gfx.drawRect(195 + x, 157, 155, 20)
-		assets.full_circle:drawTextAligned(tonumber(vars.seed), 273 + x, 160, kTextAlignment.center)
+		assets.full_circle:drawTextAligned(tonumber(vars.seed_string), 273 + x, 160, kTextAlignment.center)
 
 		if vars.start_selection == 1 then
 			assets.mcsel:draw(0 + x, 46)
@@ -990,17 +821,28 @@ function mission_command:init(...)
 	end)
 
 	pd.keyboard.keyboardWillHideCallback = function(ok)
+		if save.sfx then
+			if ok then
+				assets.sfx_select:play()
+			else
+				assets.sfx_back:play()
+			end
+		end
 		if vars.keyboard == 'seed' then
 			if not ok then
 				pd.keyboard.text = vars.seed_old
-				if pd.keyboard.text ~= tonumber(pd.keyboard.text) then
-					vars.seed = tonumber(pd.keyboard.text:gsub("%D+", ""):sub(1, 10))
+				vars.seed_string = vars.seed_old
+				if vars.seed_string ~= tonumber(vars.seed_string) then
+					vars.seed_string:gsub("%D+", ""):sub(1, 10)
 				end
+				vars.seed = tonumber(vars.seed_string)
 			else
-				vars.seed_old = pd.keyboard.text
+				vars.seed_old = vars.seed_string
+				vars.seed = tonumber(vars.seed_string)
 			end
 			if pd.keyboard.text == '' then
 				pd.keyboard.text = '0'
+				vars.seed_string = '0'
 				vars.seed = 0
 			end
 		elseif vars.keyboard == 'picture' then
@@ -1028,16 +870,21 @@ function mission_command:init(...)
 		end
 	end
 
+	pd.keyboard.keyboardDidHideCallback = function()
+		gfx.sprite.redrawBackground()
+	end
+
 	pd.keyboard.textChangedCallback = function()
 		if vars.keyboard == 'seed' then
 			if pd.keyboard.text == '' then
 				pd.keyboard.text = '0'
-				vars.seed = 0
+				vars.seed_string = '0'
 			end
 			if pd.keyboard.text ~= tonumber(pd.keyboard.text) then
-				vars.seed = tonumber(pd.keyboard.text:gsub("%D+", ""):sub(1, 10))
+				vars.seed_string = pd.keyboard.text:gsub("%D+", ""):sub(1, 10)
+			else
+				vars.seed_string = pd.keyboard.text
 			end
-			pd.keyboard.text = tostring(vars.seed)
 		elseif vars.keyboard == 'picture' then
 			vars.picture_name = string.sub(pd.keyboard.text, 1, 10)
 			pd.keyboard.text = vars.picture_name
@@ -1051,6 +898,7 @@ function mission_command:init(...)
 	function classes.selector:init()
 		self:setSize(306, 169)
 		self:moveTo(200, 120)
+		self.opened = false
 		self.show_powerup = true
 		self.show_no_color = true
 		self.rack = 1
@@ -1101,6 +949,7 @@ function mission_command:init(...)
 		vars.anim_modal:resetnew(300, 400, 120, pd.easingFunctions.outBack)
 		pd.inputHandlers.pop()
 		pd.timer.performAfterDelay(300, function()
+			self.opened = true
 			pd.inputHandlers.push(vars.mission_command_selectorHandlers)
 		end)
 	end
@@ -1144,6 +993,7 @@ function mission_command:init(...)
 		vars.anim_modal:resetnew(300, 120, 400, pd.easingFunctions.inBack)
 		pd.inputHandlers.pop()
 		pd.timer.performAfterDelay(300, function()
+			self.opened = false
 			pd.inputHandlers.push(vars['mission_command_' .. vars.mode .. 'Handlers'])
 		end)
 	end
@@ -1171,12 +1021,7 @@ function mission_command:init(...)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 		gfx.setLineWidth(2)
 		if self.show_powerup then
-			gfx.drawRoundRect(153 - 110, 110, 45, 45, 5)
-			gfx.drawRoundRect(153 - 55, 110, 45, 45, 5)
-			gfx.drawRoundRect(153, 110, 45, 45, 5)
-			gfx.drawRoundRect(153 + 55, 110, 45, 45, 5)
-
-			assets.x:draw(50, 117)
+			assets.x:draw(50, 116)
 			if flash then
 				if assets['powerup_double_up'] ~= nil then assets['powerup_double_up'][1]:draw(91, 104) end
 				if assets['powerup_bomb_up'] ~= nil then assets['powerup_bomb_up'][1]:draw(148, 102) end
@@ -1189,11 +1034,6 @@ function mission_command:init(...)
 				gfx.clearClipRect()
 			end
 			if self.show_no_color then
-				gfx.drawRoundRect(153 - 110, 32, 45, 45, 5)
-				gfx.drawRoundRect(153 - 55, 32, 45, 45, 5)
-				gfx.drawRoundRect(153, 32, 45, 45, 5)
-				gfx.drawRoundRect(153 + 55, 32, 45, 45, 5)
-
 				assets.x:draw(50, 38)
 				gfx.fillRoundRect(156 - 55, 35, 39, 39, 4)
 				gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer2x2)
@@ -1201,9 +1041,6 @@ function mission_command:init(...)
 				gfx.setLineWidth(1)
 				gfx.drawRoundRect(156 + 55, 35, 39, 39, 4)
 			else
-				gfx.drawRoundRect(153 - 77, 32, 45, 45, 5)
-				gfx.drawRoundRect(153 - 22, 32, 45, 45, 5)
-				gfx.drawRoundRect(153 + 33, 32, 45, 45, 5)
 				gfx.fillRoundRect(156 - 77, 35, 39, 39, 4)
 				gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer2x2)
 				gfx.fillRoundRect(156 - 22, 35, 39, 39, 4)
@@ -1222,21 +1059,21 @@ function mission_command:init(...)
 				end
 			end
 
+			gfx.setColor(gfx.kColorWhite)
 			gfx.setDitherPattern(vars.anim_flash.value, gfx.image.kDitherTypeBayer4x4)
-			if self.show_no_color then
-				gfx.drawRoundRect(153 - 165 + (55 * self.rack1selection), 32, 45, 45, 7)
-			else
-				gfx.drawRoundRect(153 - 132 + (55 * self.rack1selection), 32, 45, 45, 7)
+			if self.rack2selection ~= 4 then
+				if self.show_no_color then
+					gfx.drawRoundRect(153 - 165 + (55 * self.rack1selection), 32, 45, 45, 7)
+				else
+					gfx.drawRoundRect(153 - 132 + (55 * self.rack1selection), 32, 45, 45, 7)
+				end
 			end
-			gfx.drawRoundRect(153 - 165 + (55 * self.rack2selection), 110, 45, 45, 7)
+			if not (self.show_no_color and self.rack1selection == 1) then
+				gfx.drawRoundRect(153 - 165 + (55 * self.rack2selection), 110, 45, 45, 7)
+			end
 			gfx.setColor(gfx.kColorBlack)
 		else
 			if self.show_no_color then
-				gfx.drawRoundRect(153 - 110, 72, 45, 45, 5)
-				gfx.drawRoundRect(153 - 55, 72, 45, 45, 5)
-				gfx.drawRoundRect(153, 72, 45, 45, 5)
-				gfx.drawRoundRect(153 + 55, 72, 45, 45, 5)
-
 				assets.x:draw(50, 78)
 				gfx.fillRoundRect(156 - 55, 75, 39, 39, 4)
 				gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer2x2)
@@ -1245,9 +1082,6 @@ function mission_command:init(...)
 				gfx.drawRoundRect(156 + 55, 75, 39, 39, 4)
 				gfx.setColor(gfx.kColorBlack)
 			else
-				gfx.drawRoundRect(153 - 77, 72, 45, 45, 5)
-				gfx.drawRoundRect(153 - 22, 72, 45, 45, 5)
-				gfx.drawRoundRect(153 + 33, 72, 45, 45, 5)
 				gfx.fillRoundRect(156 - 77, 75, 39, 39, 4)
 				gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer2x2)
 				gfx.fillRoundRect(156 - 22, 75, 39, 39, 4)
@@ -1257,7 +1091,7 @@ function mission_command:init(...)
 			end
 
 			gfx.setLineWidth(3)
-			gfx.setColor(gfx.kColorBlack)
+			gfx.setColor(gfx.kColorWhite)
 			gfx.setDitherPattern(vars.anim_flash.value, gfx.image.kDitherTypeBayer4x4)
 			if self.show_no_color then
 				gfx.drawRoundRect(153 - 165 + (55 * self.rack1selection), 72, 45, 45, 7)
@@ -1275,13 +1109,7 @@ function mission_command:init(...)
 		self:add()
 		self:setCenter(0, 0)
 		self.x_target = -355
-		self:moveTo(self.x_target, 38)
-	end
-	function classes.error:popup()
-		self.x_target = 5
-		pd.timer.performAfterDelay(5000, function()
-			self.x_target = -355
-		end)
+		self:moveTo(self.x_target, 5)
 	end
 	function classes.error:update()
 		self:moveBy((self.x_target - self.x) * 0.4, 0)
@@ -1432,6 +1260,197 @@ function shuffle(tbl)
   return tbl
 end
 
+function mission_command:check_validity()
+	if vars.mission_types[vars.mission_type] == 'logic' or vars.mission_types[vars.mission_type] == 'speedrun' then
+		local black_tiles = 0
+		local gray_tiles = 0
+		local white_tiles = 0
+		local wild_tiles = 0
+		local double_black_tiles = 0
+		local double_gray_tiles = 0
+		local double_white_tiles = 0
+		local bomb_black_tiles = 0
+		local bomb_gray_tiles = 0
+		local bomb_white_tiles = 0
+		for i = 1, 19 do
+			local tri = vars.tris[i]
+			if tri.color == 'black' then
+				black_tiles += 1
+			elseif tri.color == 'gray' then
+				gray_tiles += 1
+			elseif tri.color == 'white' then
+				white_tiles += 1
+			end
+			if tri.powerup == 'wild' then
+				wild_tiles += 1
+			elseif tri.powerup == 'double' then
+				if tri.color == 'black' then
+					double_black_tiles += 1
+				elseif tri.color == 'gray' then
+					double_gray_tiles += 1
+				elseif tri.color == 'white' then
+					double_white_tiles += 1
+				end
+			elseif tri.powerup == 'bomb' then
+				if tri.color == 'black' then
+					bomb_black_tiles += 1
+				elseif tri.color == 'gray' then
+					bomb_gray_tiles += 1
+				elseif tri.color == 'white' then
+					bomb_white_tiles += 1
+				end
+			end
+		end
+		if vars.clear_goals[vars.clear_goal] == 'black' then
+			local exportable = false
+			if black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
+				exportable = true
+			end
+			if bomb_black_tiles > 0 and ((black_tiles >= 6) or ((black_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_gray_tiles > 0 and ((gray_tiles >= 6) or ((gray_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_white_tiles > 0 and ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if black_tiles == 0 then
+				exportable = false
+			end
+			return exportable
+		elseif vars.clear_goals[vars.clear_goal] == 'gray' then
+			local exportable = false
+			if gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
+				exportable = true
+			end
+			if bomb_black_tiles > 0 and ((black_tiles >= 6) or ((black_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_gray_tiles > 0 and ((gray_tiles >= 6) or ((gray_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_white_tiles > 0 and ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if gray_tiles == 0 then
+				exportable = false
+			end
+			return exportable
+		elseif vars.clear_goals[vars.clear_goal] == 'white' then
+			local exportable = false
+			if white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
+				exportable = true
+			end
+			if bomb_black_tiles > 0 and ((black_tiles >= 6) or ((black_tiles + wild_tiles) % 6 == 0)) then
+				exportable = true
+			end
+			if bomb_gray_tiles > 0 and ((gray_tiles >= 6) or ((gray_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_white_tiles > 0 and ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if white_tiles == 0 then
+				exportable = false
+			end
+			return exportable
+		elseif vars.clear_goals[vars.clear_goal] == 'wild' then
+			local exportable = false
+			if wild_tiles > 0 and ((wild_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
+				exportable = true
+			end
+			if bomb_black_tiles > 0 and ((black_tiles >= 6) or ((black_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_gray_tiles > 0 and ((gray_tiles >= 6) or ((gray_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_white_tiles > 0 and ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if wild_tiles == 0 then
+				exportable = false
+			end
+			return exportable
+		elseif vars.clear_goals[vars.clear_goal] == '2x' then
+			local exportable = false
+			if double_black_tiles > 0 then
+				if ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
+					exportable = true
+				else
+					exportable = false
+				end
+			end
+			if double_gray_tiles > 0 then
+				if  ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
+					exportable = true
+				else
+					exportable = false
+				end
+			end
+			if double_white_tiles > 0 then
+				if ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
+					exportable = true
+				else
+					exportable = false
+				end
+			end
+			if bomb_black_tiles > 0 and ((black_tiles >= 6) or ((black_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_gray_tiles > 0 and ((gray_tiles >= 6) or ((gray_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_white_tiles > 0 and ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if double_black_tiles == 0 and double_gray_tiles == 0 and double_white_tiles == 0 then
+				exportable = false
+			end
+			return exportable
+		elseif vars.clear_goals[vars.clear_goal] == 'bomb' then
+			local exportable = false
+			if bomb_black_tiles > 0 and ((black_tiles >= 6) or ((black_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_gray_tiles > 0 and ((gray_tiles >= 6) or ((gray_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_white_tiles > 0 and ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_black_tiles == 0 and bomb_gray_tiles == 0 and bomb_white_tiles == 0 then
+				exportable = false
+			end
+			return exportable
+		elseif vars.clear_goals[vars.clear_goal] == 'board' then
+			local exportable = false
+			if black_tiles > 0 and ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
+				exportable = true
+			end
+			if gray_tiles > 0 and ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
+				exportable = true
+			end
+			if white_tiles > 0 and ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
+				exportable = true
+			end
+			if bomb_black_tiles > 0 and ((black_tiles >= 6) or ((black_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_gray_tiles > 0 and ((gray_tiles >= 6) or ((gray_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			if bomb_white_tiles > 0 and ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
+				exportable = true
+			end
+			return exportable
+		end
+	else
+		return true
+	end
+end
+
 function mission_command:update()
 	vars.scroll_x += (vars.scroll_x_target - vars.scroll_x) * 0.4
 	if (vars.scroll_x > vars.scroll_x_target - 0.05 and vars.scroll_x < vars.scroll_x_target + 0.05) and vars.scroll_x ~= vars.scroll_x_target then
@@ -1443,5 +1462,162 @@ function mission_command:update()
 	end
 	if pd.keyboard.isVisible() then
 		gfx.sprite.redrawBackground()
+	end
+	local ticks = pd.getCrankTicks(6)
+	if ticks ~= 0 and not scenemanager.transitioning then
+		if vars.mode == 'start' then
+			if save.sfx then assets.sfx_move:play() end
+			vars.start_selection += ticks
+			if vars.start_selection < 1 then
+				vars.start_selection = #vars.start_selections
+			elseif vars.start_selection > #vars.start_selections then
+				vars.start_selection = 1
+			end
+			gfx.sprite.redrawBackground()
+		elseif vars.mode == 'edit' then
+			if sprites.selector.opened then
+				if sprites.selector.rack == 1 then
+					if sprites.selector.rack2selection ~= 4 then
+						sprites.selector.rack1selection += ticks
+						local limit = 3
+						if sprites.selector.show_no_color then
+							limit = 4
+						end
+						if sprites.selector.rack1selection < 1 then
+							sprites.selector.rack1selection = 1
+							shakies()
+							if save.sfx then assets.sfx_bonk:play() end
+						elseif sprites.selector.rack1selection > limit then
+							sprites.selector.rack1selection = limit
+							shakies()
+							if save.sfx then assets.sfx_bonk:play() end
+						else
+							if save.sfx then assets.sfx_move:play() end
+						end
+					else
+						shakies()
+						if save.sfx then assets.sfx_bonk:play() end
+					end
+				else
+					if not (sprites.selector.show_no_color and sprites.selector.rack1selection == 1) then
+						sprites.selector.rack2selection += ticks
+						if sprites.selector.rack2selection < 1 then
+							sprites.selector.rack2selection = 1
+							shakies()
+							if save.sfx then assets.sfx_bonk:play() end
+						elseif sprites.selector.rack2selection > 4 then
+							sprites.selector.rack2selection = 4
+							shakies()
+							if save.sfx then assets.sfx_bonk:play() end
+						else
+							if save.sfx then assets.sfx_move:play() end
+						end
+					else
+						shakies()
+						if save.sfx then assets.sfx_bonk:play() end
+					end
+				end
+			elseif #pd.inputHandlers > 1 then
+				if vars.mission_types[vars.mission_type] ~= 'time' then
+					local powerup = false
+					local nocolor = true
+					if vars.mission_types[vars.mission_type] == 'picture' then
+						nocolor = false
+					else
+						powerup = true
+					end
+					if ticks > 0 then
+						if not pd.buttonIsPressed('b') then
+							if nocolor then
+								if vars.tris[vars.tri].color == 'none' then
+									vars.tris[vars.tri].color = 'white'
+								elseif vars.tris[vars.tri].color == 'white' then
+									vars.tris[vars.tri].color = 'gray'
+								elseif vars.tris[vars.tri].color == 'gray' then
+									vars.tris[vars.tri].color = 'black'
+								elseif vars.tris[vars.tri].color == 'black' then
+									vars.tris[vars.tri].color = 'none'
+									vars.tris[vars.tri].powerup = ''
+								end
+							else
+								if vars.tris[vars.tri].color == 'white' then
+									vars.tris[vars.tri].color = 'gray'
+								elseif vars.tris[vars.tri].color == 'gray' then
+									vars.tris[vars.tri].color = 'black'
+								elseif vars.tris[vars.tri].color == 'black' then
+									vars.tris[vars.tri].color = 'white'
+								end
+							end
+						elseif powerup then
+							if vars.tris[vars.tri].color == 'none' then
+								if save.sfx then assets.sfx_bonk:play() end
+							else
+								if vars.tris[vars.tri].powerup == '' then
+									vars.tris[vars.tri].powerup = 'double'
+								elseif vars.tris[vars.tri].powerup == 'double' then
+									vars.tris[vars.tri].powerup = 'bomb'
+								elseif vars.tris[vars.tri].powerup == 'bomb' then
+									vars.tris[vars.tri].powerup = 'wild'
+								elseif vars.tris[vars.tri].powerup == 'wild' then
+									vars.tris[vars.tri].powerup = ''
+								end
+							end
+						end
+					else
+						if not pd.buttonIsPressed('b') then
+							if nocolor then
+								if vars.tris[vars.tri].color == 'none' then
+									vars.tris[vars.tri].color = 'black'
+								elseif vars.tris[vars.tri].color == 'white' then
+									vars.tris[vars.tri].color = 'none'
+									vars.tris[vars.tri].powerup = ''
+								elseif vars.tris[vars.tri].color == 'gray' then
+									vars.tris[vars.tri].color = 'white'
+								elseif vars.tris[vars.tri].color == 'black' then
+									vars.tris[vars.tri].color = 'gray'
+								end
+							else
+								if vars.tris[vars.tri].color == 'white' then
+									vars.tris[vars.tri].color = 'black'
+								elseif vars.tris[vars.tri].color == 'gray' then
+									vars.tris[vars.tri].color = 'white'
+								elseif vars.tris[vars.tri].color == 'black' then
+									vars.tris[vars.tri].color = 'gray'
+								end
+							end
+						elseif powerup then
+							if vars.tris[vars.tri].color == 'none' then
+								if save.sfx then assets.sfx_bonk:play() end
+							else
+								if vars.tris[vars.tri].powerup == '' then
+									vars.tris[vars.tri].powerup = 'wild'
+								elseif vars.tris[vars.tri].powerup == 'double' then
+									vars.tris[vars.tri].powerup = ''
+								elseif vars.tris[vars.tri].powerup == 'bomb' then
+									vars.tris[vars.tri].powerup = 'double'
+								elseif vars.tris[vars.tri].powerup == 'wild' then
+									vars.tris[vars.tri].powerup = 'bomb'
+								end
+							end
+						end
+					end
+				end
+				if mission_command:check_validity() then
+					sprites.error.x_target = -355
+				elseif sprites.error.x_target ~= 5 then
+					sprites.error.x_target = 5
+					if save.sfx then assets.sfx_bonk:play() end
+				end
+			end
+		elseif vars.mode == 'save' and not vars.puzzle_exported then
+			if save.sfx then assets.sfx_move:play() end
+			vars.save_selection += ticks
+			if vars.save_selection < 1 then
+				vars.save_selection = #vars.save_selections
+			elseif vars.save_selection > #vars.save_selections then
+				vars.save_selection = 1
+			end
+			gfx.sprite.redrawBackground()
+		end
 	end
 end
