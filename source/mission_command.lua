@@ -1444,6 +1444,24 @@ function mission_command:check_validity()
 			if bomb_white_tiles > 0 and ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
 				exportable = true
 			end
+			if black_tiles > 0 and not ((black_tiles % 6 == 0) or ((black_tiles + wild_tiles) % 6 == 0)) then
+				exportable = false
+			end
+			if gray_tiles > 0 and not ((gray_tiles % 6 == 0) or ((gray_tiles + wild_tiles) % 6 == 0)) then
+				exportable = false
+			end
+			if white_tiles > 0 and not ((white_tiles % 6 == 0) or ((white_tiles + wild_tiles) % 6 == 0)) then
+				exportable = false
+			end
+			if bomb_black_tiles > 0 and not ((black_tiles >= 6) or ((black_tiles + wild_tiles) >= 6)) then
+				exportable = false
+			end
+			if bomb_gray_tiles > 0 and not ((gray_tiles >= 6) or ((gray_tiles + wild_tiles) >= 6)) then
+				exportable = false
+			end
+			if bomb_white_tiles > 0 and not ((white_tiles >= 6) or ((white_tiles + wild_tiles) >= 6)) then
+				exportable = false
+			end
 			return exportable
 		end
 	else

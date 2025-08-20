@@ -140,7 +140,7 @@ function missions:init(...)
 					shakies()
 				else
 					if save.sfx then assets.sfx_select:play() end
-					scenemanager:transitionscene(game, missions_list[column].type, column, missions_list[column].modifier or nil, missions_list[column].start, missions_list[column].goal, mission_list[column].name)
+					scenemanager:transitionscene(game, missions_list[column].type, column, missions_list[column].modifier or nil, missions_list[column].start, missions_list[column].goal, missions_list[column].name)
 					fademusic()
 				end
 			end
