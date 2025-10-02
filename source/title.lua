@@ -2,6 +2,7 @@ import 'game'
 import 'highscores'
 import 'missions'
 import 'howtoplay'
+import 'statistics'
 import 'options'
 import 'credits'
 import 'jukebox'
@@ -127,6 +128,8 @@ function title:init(...)
 				scenemanager:transitionscene(highscores, save.lbs_lastmode)
 			elseif vars.selections[vars.selection] == "missions" then
 				scenemanager:transitionscene(missions)
+			elseif vars.selections[vars.selection] == "statistics" then
+				scenemanager:transitionscene(statistics)
 			elseif vars.selections[vars.selection] == "howtoplay" then
 				scenemanager:transitionscene(howtoplay)
 			elseif vars.selections[vars.selection] == "options" then
@@ -155,9 +158,9 @@ function title:init(...)
 	end)
 
 	if catalog then
-		vars.selections = {'arcade', 'zen', 'dailyrun', 'missions', 'highscores', 'howtoplay', 'options', 'credits'}
+		vars.selections = {'arcade', 'zen', 'dailyrun', 'missions', 'highscores', 'statistics', 'howtoplay', 'options', 'credits'}
 	else
-		vars.selections = {'arcade', 'zen', 'dailyrun', 'missions', 'howtoplay', 'options', 'credits'}
+		vars.selections = {'arcade', 'zen', 'dailyrun', 'missions', 'statistics', 'howtoplay', 'options', 'credits'}
 	end
 
 	if vars.animate then
@@ -177,44 +180,46 @@ function title:init(...)
 		assets.stars_large:draw(vars.anim_stars_large_x.value, vars.anim_stars_large_y.value)
 		gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
 		if catalog then
+			gfx.fillRect(250 + vars.anim_title.value, 32, 200, 250)
+			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+			if pd.getGMTTime().hour < 23 then
+				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 265 + vars.anim_title.value, 90)
+			elseif pd.getGMTTime().minute < 59 then
+				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 265 + vars.anim_title.value, 90)
+			else
+				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 265 + vars.anim_title.value, 90)
+			end
+			assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 50, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('highscores'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('statistics'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
+			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 30 + (20 * vars.selection), kTextAlignment.right)
+		else
 			gfx.fillRect(250 + vars.anim_title.value, 52, 200, 250)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			if pd.getGMTTime().hour < 23 then
 				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 265 + vars.anim_title.value, 110)
-			elseif pd.getGMTTime().minute < 59 then
-				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 265 + vars.anim_title.value, 110)
 			else
-				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 265 + vars.anim_title.value, 110)
+				if pd.getGMTTime().minute < 59 then
+					assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 265 + vars.anim_title.value, 110)
+				else
+					assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 265 + vars.anim_title.value, 110)
+				end
 			end
 			assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
 			assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
 			assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
 			assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('highscores'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
+			assets.half_circle:drawTextAligned(text('statistics'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
 			assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
 			assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
 			assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
 			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 50 + (20 * vars.selection), kTextAlignment.right)
-		else
-			gfx.fillRect(250 + vars.anim_title.value, 72, 200, 160)
-			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-			if pd.getGMTTime().hour < 23 then
-				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 265 + vars.anim_title.value, 130)
-			else
-				if pd.getGMTTime().minute < 59 then
-					assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 265 + vars.anim_title.value, 130)
-				else
-					assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 265 + vars.anim_title.value, 130)
-				end
-			end
-			assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
-			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 70 + (20 * vars.selection), kTextAlignment.right)
 		end
 		if vars.selections[vars.selection] == "arcade" then
 			if save.hardmode then

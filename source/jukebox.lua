@@ -99,14 +99,18 @@ function jukebox:init(...)
 		gfx.fillRect(0, 0, 400, 240)
 		assets.ship[floor(vars.anim_ship.value)]:drawAnchored(vars.anim_ship_x.value, 120, 0.5, 0.5)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		assets.full_circle:drawText(text('music_' .. vars.tunes[vars.rand]), 10, 205 + vars.anim_text_y.value)
+		if save.music and vars.rand then
+			assets.full_circle:drawText(text('music_' .. vars.tunes[vars.rand]), 10, 205 + vars.anim_text_y.value)
+		end
 		assets.half_circle:drawText(text('back'), 10, 220 + vars.anim_text_y.value)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 	end)
 
 	pd.setAutoLockDisabled(true)
 	self:add()
-	self:shuffle()
+	if save.music then
+		self:shuffle()
+	end
 end
 
 function jukebox:shuffle()

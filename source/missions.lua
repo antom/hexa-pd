@@ -63,7 +63,7 @@ function missions:init(...)
 		leftButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
 			vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
-				if vars.custom then
+				if vars.custom and #vars.custom_files > 0 then
 					local _, _, column = assets.custom_grid:getSelection()
 					if column == 1 then
 						if save.sfx then assets.sfx_bonk:play() end
@@ -72,7 +72,7 @@ function missions:init(...)
 						if save.sfx then assets.sfx_move:play() end
 						assets.custom_grid:selectPreviousColumn(false)
 					end
-				else
+				elseif not vars.custom then
 					local _, _, column = assets.grid:getSelection()
 					if column == 1 then
 						if save.sfx then assets.sfx_bonk:play() end
@@ -92,7 +92,7 @@ function missions:init(...)
 		rightButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
 			vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
-				if vars.custom then
+				if vars.custom and #vars.custom_files > 0 then
 					local _, _, column = assets.custom_grid:getSelection()
 					if column == #vars.custom_files then
 						if save.sfx then assets.sfx_bonk:play() end
@@ -101,7 +101,7 @@ function missions:init(...)
 						if save.sfx then assets.sfx_move:play() end
 						assets.custom_grid:selectNextColumn(false)
 					end
-				else
+				elseif not vars.custom then
 					local _, _, column = assets.grid:getSelection()
 					if column == 50 then
 						if save.sfx then assets.sfx_bonk:play() end
@@ -140,7 +140,7 @@ function missions:init(...)
 					shakies()
 				else
 					if save.sfx then assets.sfx_select:play() end
-					scenemanager:transitionscene(game, missions_list[column].type, column, missions_list[column].modifier or nil, missions_list[column].start, missions_list[column].goal, missions_list[column].name)
+					scenemanager:transitionscene(game, missions_list[column].type, column, missions_list[column].modifier or nil, missions_list[column].start, missions_list[column].goal, nil, missions_list[column].name)
 					fademusic()
 				end
 			end
@@ -195,6 +195,11 @@ function missions:init(...)
 
 	if #vars.custom_files > 0 then
 		vars.custom_missions = {}
+		for i = 1, #vars.custom_files do
+			if not string.find(vars.custom_files[i], '.json') then
+				table.remove(vars.custom_files, i)
+			end
+		end
 		for i = 1, #vars.custom_files do
 			if save.mission_bests['mission' .. string.gsub(tostring(vars.custom_files[i]), ".json", "")] == nil then
 				save.mission_bests['mission' .. string.gsub(tostring(vars.custom_files[i]), ".json", "")] = 0

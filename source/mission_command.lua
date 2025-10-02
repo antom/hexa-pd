@@ -736,13 +736,13 @@ function mission_command:init(...)
 		gfx.setLineWidth(3)
 
 		if vars.mission_types[vars.mission_type] == 'picture' then
-			assets.full_circle:drawText(text('create_picture'), 410 + x, 10)
+			if sprites.error.x < -200 then assets.full_circle:drawText(text('create_picture'), 410 + x, 10) end
 			assets.half_circle:drawText(text('move') .. ' ' .. text('select') .. ' ' .. text('menu_save'), 410 + x, 220)
 		elseif vars.mission_types[vars.mission_type] == 'time' then
-			assets.full_circle:drawText(text('review_seed'), 410 + x, 10)
+			if sprites.error.x < -200 then assets.full_circle:drawText(text('review_seed'), 410 + x, 10) end
 			assets.half_circle:drawText(text('menu_save'), 410 + x, 220)
 		else
-			assets.full_circle:drawText(text('create_start'), 410 + x, 10)
+			if sprites.error.x < -200 then assets.full_circle:drawText(text('create_start'), 410 + x, 10) end
 			assets.half_circle:drawText(text('move') .. ' ' .. text('select') .. ' ' .. text('menu_save'), 410 + x, 220)
 		end
 
@@ -1109,23 +1109,23 @@ function mission_command:init(...)
 		self:add()
 		self:setCenter(0, 0)
 		self.x_target = -355
-		self:moveTo(self.x_target, 5)
+		self:moveTo(self.x_target, 0)
 	end
 	function classes.error:update()
 		self:moveBy((self.x_target - self.x) * 0.4, 0)
 	end
 	function classes.error:draw(x, y, width, height)
-		gfx.setLineWidth(2)
-		gfx.setColor(gfx.kColorWhite)
-		gfx.fillRoundRect(x, y + 2, width, height - 2, 7)
-		gfx.setColor(gfx.kColorBlack)
-		gfx.drawRoundRect(x + 1, y + 2, width - 2, height - 3, 7)
-		gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer2x2)
-		gfx.fillRoundRect(x, y + 2, width, height - 2, 7)
-		gfx.setColor(gfx.kColorBlack)
-		gfx.setLineWidth(3)
-		assets.error:draw(5, 0)
-		assets.full_circle_outline:drawText('Can\'t clear the mission in this state!', 36, 7)
+		--gfx.setLineWidth(2)
+		--gfx.setColor(gfx.kColorWhite)
+		--gfx.fillRoundRect(x, y + 2, width, height - 2, 7)
+		--gfx.setColor(gfx.kColorBlack)
+		--gfx.drawRoundRect(x + 1, y + 2, width - 2, height - 3, 7)
+		--gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer2x2)
+		--gfx.fillRoundRect(x, y + 2, width, height - 2, 7)
+		--gfx.setColor(gfx.kColorBlack)
+		--gfx.setLineWidth(3)
+		assets.error:draw(5, 3)
+		assets.full_circle_outline:drawText('Can\'t clear the mission in this state!', 36, 8)
 	end
 
 	sprites.selector = classes.selector()
@@ -1247,7 +1247,7 @@ function mission_command:save()
 	vars.puzzle_exported = true
 	pd.inputHandlers.pop()
 	pd.inputHandlers.push(vars.mission_command_doneHandlers)
-	if save.author_name == '' then save.author_name = vars.author_name end
+	save.author_name = vars.author_name
 	updatecheevos()
 end
 

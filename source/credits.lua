@@ -28,6 +28,8 @@ function credits:init(...)
 		half_circle = gfx.font.new('fonts/full-circle-halved'),
 		sfx_back = smp.new('audio/sfx/back'),
 		fg = gfx.image.new('images/fg_credits'),
+		sfx_move = smp.new('audio/sfx/swap'),
+		sfx_bonk = smp.new('audio/sfx/bonk'),
 	}
 
 	vars = {
@@ -35,8 +37,29 @@ function credits:init(...)
 		anim_stars_small_y = pd.timer.new(2750, 0, -239),
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
 		anim_stars_large_y = pd.timer.new(1250, 0, -239),
+		page = 1,
 	}
 	vars.creditsHandlers = {
+		leftButtonDown = function()
+			if vars.page > 1 then
+				vars.page -= 1
+				if save.sfx then assets.sfx_move:play() end
+			else
+				if save.sfx then assets.sfx_bonk:play() end
+				shakies()
+			end
+		end,
+
+		rightButtonDown = function()
+			if vars.page < 2 then
+				vars.page += 1
+				if save.sfx then assets.sfx_move:play() end
+			else
+				if save.sfx then assets.sfx_bonk:play() end
+				shakies()
+			end
+		end,
+
 		BButtonDown = function()
 			if save.sfx then assets.sfx_back:play() end
 			scenemanager:transitionscene(title, false, 'credits')
@@ -57,8 +80,10 @@ function credits:init(...)
 		gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
 		gfx.fillRect(0, 0, 400, 240)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		assets.full_circle:drawTextAligned(text('creditslist'), 200, 5, kTextAlignment.center)
+		assets.full_circle:drawTextAligned(text('credits' .. vars.page), 200, 5, kTextAlignment.center)
+		assets.half_circle:drawText(text('page'), 65, 205)
 		assets.half_circle:drawText(text('back'), 70, 220)
+		assets.half_circle:drawTextAligned(vars.page .. '/2', 330, 220, kTextAlignment.right)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 		assets.fg:draw(0, 0)
 	end)

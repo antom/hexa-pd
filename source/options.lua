@@ -99,14 +99,22 @@ function options:init(...)
 		AButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
 			if vars.selections[vars.selection] == "music" then
-				save.music = not save.music
-				if not save.music then
-					fademusic(1)
-				else
-					newmusic('audio/music/title', true)
+				save.music += 1
+				if save.music > 5 then
+					save.music = 0
+				end
+				if save.music > 0 then
+					if music ~= nil then
+						music:setVolume(save.music / 5)
+					else
+						newmusic('audio/music/title', true)
+					end
 				end
 			elseif vars.selections[vars.selection] == "sfx" then
-				save.sfx = not save.sfx
+				save.sfx += 1
+				if save.sfx > 5 then
+					save.sfx = 0
+				end
 			elseif vars.selections[vars.selection] == "flip" then
 				save.flip = not save.flip
 			elseif vars.selections[vars.selection] == "crank" then
@@ -131,6 +139,7 @@ function options:init(...)
 					if save.sfx then assets.sfx_boom:play() end
 					vars.resetprogress += 1
 					save.score = 0
+					save.hard_score = 0
 					save.swaps = 0
 					save.hexas = 0
 					save.mission_bests = {}

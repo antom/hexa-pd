@@ -254,8 +254,10 @@ function game:init(...)
 	vars.loseHandlers = {
 		AButtonDown = function()
 			if vars.mode == "dailyrun" then
-				fademusic()
-				scenemanager:transitionscene(highscores, vars.mode)
+				if catalog then
+					fademusic()
+					scenemanager:transitionscene(highscores, vars.mode)
+				end
 			else
 				fademusic()
 				scenemanager:transitionscene(game, vars.mode)
@@ -498,7 +500,7 @@ function game:init(...)
 		for i = 1, 19 do
 			game:tri(tris_x[i], tris_y[i], tris_flip[i], vars.tris[i].color, vars.tris[i].powerup)
 		end
-		local cursor = floor(vars.anim_cursor.value)
+		local cursor = floor(vars.anim_cursor.value) or 1
 		assets.cursor[cursor]:draw(vars.anim_cursor_x.value - (2 * (cursor - 1)), vars.anim_cursor_y.value - (3 * (cursor - 1)))
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		if vars.mode == "arcade" or vars.mode == "dailyrun" then
@@ -782,13 +784,23 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 			vars.combo += 1
 			shakies()
 			shakies_y()
+			if temp1.powerup == 'wild' or temp2.powerup == 'wild' or temp3.powerup == 'wild' or temp4.powerup == 'wild' or temp5.powerup == 'wild' or temp6.powerup == 'wild' then
+				save.wild_match += 1
+			end
 			if temp1.powerup == "double" or temp2.powerup == "double" or temp3.powerup == "double" or temp4.powerup == "double" or temp5.powerup == "double" or temp6.powerup == "double" then
+				save.double_match += 1
 				if (temp1.color == "white" and temp1.powerup ~= "wild") or (temp2.color == "white" and temp2.powerup ~= "wild") or (temp3.color == "white" and temp3.powerup ~= "wild") or (temp4.color == "white" and temp4.powerup ~= "wild") or (temp5.color == "white" and temp5.powerup ~= "wild") or (temp6.color == "white" and temp6.powerup ~= "wild") then
 					vars.score += 200 * vars.combo
+					save.total_score += 200 * vars.combo
+					save.white_match += 1
 				elseif (temp1.color == "gray" and temp1.powerup ~= "wild") or (temp2.color == "gray" and temp2.powerup ~= "wild") or (temp3.color == "gray" and temp3.powerup ~= "wild") or (temp4.color == "gray" and temp4.powerup ~= "wild") or (temp5.color == "gray" and temp5.powerup ~= "wild") or (temp6.color == "gray" and temp6.powerup ~= "wild") then
 					vars.score += 300 * vars.combo
+					save.total_score += 300 * vars.combo
+					save.gray_match += 1
 				elseif (temp1.color == "black" and temp1.powerup ~= "wild") or (temp2.color == "black" and temp2.powerup ~= "wild") or (temp3.color == "black" and temp3.powerup ~= "wild") or (temp4.color == "black" and temp4.powerup ~= "wild") or (temp5.color == "black" and temp5.powerup ~= "wild") or (temp6.color == "black" and temp6.powerup ~= "wild") then
 					vars.score += 400 * vars.combo
+					save.total_score += 400 * vars.combo
+					save.black_match += 1
 				end
 				if save.sfx then assets.sfx_select:play() end
 				assets.draw_label = assets.label_double
@@ -806,10 +818,16 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 			else
 				if (temp1.color == "white" and temp1.powerup ~= "wild") or (temp2.color == "white" and temp2.powerup ~= "wild") or (temp3.color == "white" and temp3.powerup ~= "wild") or (temp4.color == "white" and temp4.powerup ~= "wild") or (temp5.color == "white" and temp5.powerup ~= "wild") or (temp6.color == "white" and temp6.powerup ~= "wild") then
 					vars.score += 100 * vars.combo
+					save.total_score += 100 * vars.combo
+					save.white_match += 1
 				elseif (temp1.color == "gray" and temp1.powerup ~= "wild") or (temp2.color == "gray" and temp2.powerup ~= "wild") or (temp3.color == "gray" and temp3.powerup ~= "wild") or (temp4.color == "gray" and temp4.powerup ~= "wild") or (temp5.color == "gray" and temp5.powerup ~= "wild") or (temp6.color == "gray" and temp6.powerup ~= "wild") then
 					vars.score += 150 * vars.combo
+					save.total_score += 150 * vars.combo
+					save.gray_match += 1
 				elseif (temp1.color == "black" and temp1.powerup ~= "wild") or (temp2.color == "black" and temp2.powerup ~= "wild") or (temp3.color == "black" and temp3.powerup ~= "wild") or (temp4.color == "black" and temp4.powerup ~= "wild") or (temp5.color == "black" and temp5.powerup ~= "wild") or (temp6.color == "black" and temp6.powerup ~= "wild") then
 					vars.score += 200 * vars.combo
+					save.total_score += 200 * vars.combo
+					save.black_match += 1
 				end
 				if (vars.mode == "arcade" or vars.mode == "dailyrun") and vars.can_do_stuff then
 					if save.hardmode then
@@ -820,8 +838,10 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 				end
 			end
 			vars.score += 10 * vars.movesbonus
+			save.total_score += 10 * vars.movesbonus
 			vars.movesbonus = 5
 			if temp1.powerup == "bomb" or temp2.powerup == "bomb" or temp3.powerup == "bomb" or temp4.powerup == "bomb" or temp5.powerup == "bomb" or temp6.powerup == "bomb" then
+				save.bomb_match += 1
 				for i = 1, 19 do
 					newcolor, newpowerup = self:randomizetri()
 					vars.tris[i] = {index = i, color = newcolor, powerup = newpowerup}
@@ -840,7 +860,7 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 				temp5.color, temp5.powerup = self:randomizetri()
 				temp6.color, temp6.powerup = self:randomizetri()
 				if save.sfx then
-					local random = random(1, 1000)
+					local random = random(1, 10000)
 					if random == 1 then
 						assets.sfx_vine:play()
 					else
@@ -1101,7 +1121,11 @@ function game:ersi()
 				end
 				assets.full_circle:drawTextAligned(text(vars.mode .. '_message' .. messagerand), 190, 150, kTextAlignment.center)
 				if vars.mode == "dailyrun" then
-					assets.half_circle:drawText(text('showsdailyscores') .. ' ' .. text('back'), 40, 205)
+					if catalog then
+						assets.half_circle:drawText(text('showsdailyscores') .. ' ' .. text('back'), 40, 205)
+					else
+						assets.half_circle:drawText(text('back'), 40, 205)
+					end
 				else
 					assets.half_circle:drawText(text('newgame') .. ' ' .. text('back'), 40, 205)
 				end
@@ -1502,5 +1526,8 @@ function game:update()
 	end
 	if vars.mode == "speedrun" and vars.can_do_stuff then
 		vars.time += 1
+	end
+	if vars.can_do_stuff then
+		save.gametime += 1
 	end
 end

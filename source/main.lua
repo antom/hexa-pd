@@ -46,8 +46,30 @@ gfx.setLineWidth(3)
 function savecheck()
     save = pd.datastore.read()
     if save == nil then save = {} end
-    if save.music == nil then save.music = true end
-    if save.sfx == nil then save.sfx = true end
+
+    if save.music ~= nil then
+		if type(save.music) == 'boolean' then
+			if save.music then
+				save.music = 5
+			else
+				save.music = 0
+			end
+		end
+	else
+		save.music = 5
+	end
+	if save.sfx ~= nil then
+		if type(save.sfx) == 'boolean' then
+			if save.sfx then
+				save.sfx = 5
+			else
+				save.sfx = 0
+			end
+		end
+	else
+		save.sfx = 5
+	end
+
     if save.flip == nil then save.flip = false end
     if save.crank == nil then save.crank = true end
     save.sensitivity = save.sensitivity or 2
@@ -76,6 +98,15 @@ function savecheck()
     for i = 1, #save.mission_bests do
         save.mission_bests[i] = save.mission_bests[i] or 0
     end
+	save.playtime = save.playtime or 0
+	save.gametime = save.gametime or 0
+	save.total_score = save.total_score or 0
+	save.black_match = save.black_match or 0
+	save.gray_match = save.gray_match or 0
+	save.white_match = save.white_match or 0
+	save.double_match = save.double_match or 0
+	save.bomb_match = save.bomb_match or 0
+	save.wild_match = save.wild_match or 0
 end
 
 -- ... now we run that!
@@ -228,6 +259,7 @@ end
 function newmusic(file, loop, range)
     if save.music and music == nil then -- If a music file isn't actively playing...then go ahead and set a new one.
         music = fle.new(file)
+		music:setVolume(save.music / 5)
         if loop then -- If set to loop, then ... loop it!
             music:setLoopRange(range or 0)
             music:play(0)
@@ -324,6 +356,21 @@ function timecalc(num)
     return mins, secs, mils
 end
 
+function timecalchour(num)
+	local hours = math.floor((num/30) / 3600)
+	local mins = math.floor((num/30) / 60 - (hours * 60))
+	local secs = math.floor((num/30) - (hours * 3600) - (mins * 60))
+	return hours, mins, secs
+end
+
+function playsound(sound)
+	if save.sfx > 0 then
+		sound:stop()
+		sound:setVolume(save.sfx / 5)
+		sound:play()
+	end
+end
+
 -- This function shakes the screen. int is a number representing intensity. time is a number representing duration
 function shakies(time, int)
     if pd.getReduceFlashing() or perf then -- If reduce flashing is enabled, then don't shake.
@@ -358,4 +405,5 @@ function pd.update()
     gfx.sprite.update()
     pd.timer.updateTimers()
     -- pd.drawFPS(10, 10)
+	save.playtime += 1
 end
