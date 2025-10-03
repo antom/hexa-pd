@@ -30,7 +30,7 @@ function jukebox:init(...)
 				end
 			end)
 			menu:addMenuItem(text('goback'), function()
-				if save.sfx then assets.sfx_back:play() end
+				playsound(assets.sfx_back)
 				vars.anim_ship_x:resetnew(700, vars.anim_ship_x.value, 500, pd.easingFunctions.inBack)
 				pd.timer.performAfterDelay(400, function()
 					scenemanager:transitionscene(title, false, 'arcade')
@@ -68,7 +68,7 @@ function jukebox:init(...)
 	}
 	vars.jukeboxHandlers = {
 		BButtonDown = function()
-			if save.sfx then assets.sfx_back:play() end
+			playsound(assets.sfx_back)
 			vars.anim_ship_x:resetnew(700, vars.anim_ship_x.value, 500, pd.easingFunctions.inBack)
 			pd.timer.performAfterDelay(400, function()
 				scenemanager:transitionscene(title, false, 'arcade')

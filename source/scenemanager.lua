@@ -37,7 +37,7 @@ function scenemanager:transitionscene(scene, ...)
     self.newscene = scene
     self.sceneargs = {...}
     local transitiontimer = self:transition(-230, -10, 410, 202)
-    if save.sfx then sfx_transition:play() end
+    playsound(sfx_transition)
     transitiontimer.timerEndedCallback = function()
         self:loadnewscene()
         transitiontimer = self:transition(-10, -230, 202, 410)

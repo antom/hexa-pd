@@ -139,19 +139,19 @@ function game:init(...)
 					vars.slot = 1
 					vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 106, pd.easingFunctions.outBack)
 					vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 42, pd.easingFunctions.outBack)
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				elseif vars.slot == 5 then
 					vars.slot = 4
 					vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 137, pd.easingFunctions.outBack)
 					vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 92, pd.easingFunctions.outBack)
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				elseif vars.slot == 4 then
 					vars.slot = 3
 					vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 78, pd.easingFunctions.outBack)
 					vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 92, pd.easingFunctions.outBack)
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		end,
@@ -163,19 +163,19 @@ function game:init(...)
 					vars.slot = 2
 					vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 166, pd.easingFunctions.outBack)
 					vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 42, pd.easingFunctions.outBack)
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				elseif vars.slot == 3 then
 					vars.slot = 4
 					vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 137, pd.easingFunctions.outBack)
 					vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 92, pd.easingFunctions.outBack)
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				elseif vars.slot == 4 then
 					vars.slot = 5
 					vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 197, pd.easingFunctions.outBack)
 					vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 92, pd.easingFunctions.outBack)
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		end,
@@ -187,15 +187,15 @@ function game:init(...)
 						vars.slot = 2
 						vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 166, pd.easingFunctions.outBack)
 						vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 42, pd.easingFunctions.outBack)
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 					else
 						vars.slot = 1
 						vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 106, pd.easingFunctions.outBack)
 						vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 42, pd.easingFunctions.outBack)
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 					end
 				else
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		end,
@@ -206,14 +206,14 @@ function game:init(...)
 					vars.slot = 3
 					vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 78, pd.easingFunctions.outBack)
 					vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 92, pd.easingFunctions.outBack)
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				elseif vars.slot == 2 then
 					vars.slot = 5
 					vars.anim_cursor_x:resetnew(80, vars.anim_cursor_x.value, 197, pd.easingFunctions.outBack)
 					vars.anim_cursor_y:resetnew(80, vars.anim_cursor_y.value, 92, pd.easingFunctions.outBack)
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		end,
@@ -340,17 +340,17 @@ function game:init(...)
 			self:endround()
 		end
 		pd.timer.performAfterDelay(1000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_3
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
 		pd.timer.performAfterDelay(2000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_2
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
 		pd.timer.performAfterDelay(3000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_1
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
@@ -361,7 +361,7 @@ function game:init(...)
 			vars.anim_label.timerEndedCallback = function()
 				assets.draw_label = nil
 			end
-			if save.sfx then assets.sfx_start:play() end
+			playsound(assets.sfx_start)
 			newmusic('audio/music/arcade' .. math.random(1, 3), true)
 			vars.can_do_stuff = true
 			self:check()
@@ -377,17 +377,17 @@ function game:init(...)
 		vars.anim_cursor_y:resetnew(1, 420, 420)
 		assets.ui = gfx.image.new('images/ui_zen')
 		pd.timer.performAfterDelay(1000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_3
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
 		pd.timer.performAfterDelay(2000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_2
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
 		pd.timer.performAfterDelay(3000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_1
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
@@ -398,7 +398,7 @@ function game:init(...)
 			vars.anim_label.timerEndedCallback = function()
 				assets.draw_label = nil
 			end
-			if save.sfx then assets.sfx_start:play() end
+			playsound(assets.sfx_start)
 			vars.tris = deepcopy(vars.start)
 			newmusic('audio/music/zen' .. math.random(1, 2), true)
 			vars.can_do_stuff = true
@@ -413,17 +413,17 @@ function game:init(...)
 	elseif vars.mode == "speedrun" then
 		assets.ui = gfx.image.new('images/ui_zen')
 		pd.timer.performAfterDelay(1000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_3
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
 		pd.timer.performAfterDelay(2000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_2
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
 		pd.timer.performAfterDelay(3000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_1
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
@@ -434,7 +434,7 @@ function game:init(...)
 			vars.anim_label.timerEndedCallback = function()
 				assets.draw_label = nil
 			end
-			if save.sfx then assets.sfx_start:play() end
+			playsound(assets.sfx_start)
 			newmusic('audio/music/arcade' .. math.random(1, 3), true)
 			vars.can_do_stuff = true
 		end)
@@ -447,17 +447,17 @@ function game:init(...)
 			self:endround()
 		end
 		pd.timer.performAfterDelay(1000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_3
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
 		pd.timer.performAfterDelay(2000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_2
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
 		pd.timer.performAfterDelay(3000, function()
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 			assets.draw_label = assets.label_1
 			vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 		end)
@@ -468,7 +468,7 @@ function game:init(...)
 			vars.anim_label.timerEndedCallback = function()
 				assets.draw_label = nil
 			end
-			if save.sfx then assets.sfx_start:play() end
+			playsound(assets.sfx_start)
 			newmusic('audio/music/arcade' .. math.random(1, 3), true)
 			vars.can_do_stuff = true
 			self:check()
@@ -620,7 +620,7 @@ function game:swap(slot, dir)
 		vars.anim_cursor:resetnew(75, 2.99, 1)
 		vars.moves += 1
 		save.swaps += 1
-		if save.sfx then assets.sfx_swap:play() end
+		playsound(assets.sfx_swap)
 		local tochange
 		temp1, temp2, temp3, temp4, temp5, temp6 = self:findslot(slot)
 		if slot == 1 then
@@ -757,7 +757,7 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 	vars.tempcolor5 = temp5.color
 	vars.tempcolor6 = temp6.color
 	assets.sfx_hexaprep:setRate(1 + (0.1 * vars.combo))
-	if save.sfx then assets.sfx_hexaprep:play() end
+	playsound(assets.sfx_hexaprep)
 	self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, true)
 	pd.timer.performAfterDelay(100, function()
 		if not flash then
@@ -765,7 +765,7 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 		end
 	end)
 	pd.timer.performAfterDelay(200, function()
-		if save.sfx then assets.sfx_hexaprep:play() end
+		playsound(assets.sfx_hexaprep)
 		if flash then
 			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, false)
 		else
@@ -802,7 +802,7 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 					save.total_score += 400 * vars.combo
 					save.black_match += 1
 				end
-				if save.sfx then assets.sfx_select:play() end
+				playsound(assets.sfx_select)
 				assets.draw_label = assets.label_double
 				vars.anim_label:resetnew(1200, 400, -200, pd.easingFunctions.linear)
 				vars.anim_label.timerEndedCallback = function()
@@ -846,7 +846,7 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 					newcolor, newpowerup = self:randomizetri()
 					vars.tris[i] = {index = i, color = newcolor, powerup = newpowerup}
 				end
-				if save.sfx then assets.sfx_boom:play() end
+				playsound(assets.sfx_boom)
 				assets.draw_label = assets.label_bomb
 				vars.anim_label:resetnew(1200, 400, -200, pd.easingFunctions.linear)
 				vars.anim_label.timerEndedCallback = function()
@@ -939,7 +939,7 @@ function game:boom(boomed)
 				newcolor, newpowerup = self:randomizetri()
 				vars.tris[i] = {index = i, color = newcolor, powerup = newpowerup}
 			end
-			if save.sfx then assets.sfx_boom:play() end
+			playsound(assets.sfx_boom)
 			assets.draw_label = assets.label_bomb
 			vars.anim_label:resetnew(1200, 400, -100, pd.easingFunctions.linear)
 		end
@@ -1056,17 +1056,17 @@ function game:restart()
 		self:endround()
 	end
 	pd.timer.performAfterDelay(1000, function()
-		if save.sfx then assets.sfx_count:play() end
+		playsound(assets.sfx_count)
 		assets.draw_label = assets.label_3
 		vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 	end)
 	pd.timer.performAfterDelay(2000, function()
-		if save.sfx then assets.sfx_count:play() end
+		playsound(assets.sfx_count)
 		assets.draw_label = assets.label_2
 		vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 	end)
 	pd.timer.performAfterDelay(3000, function()
-		if save.sfx then assets.sfx_count:play() end
+		playsound(assets.sfx_count)
 		assets.draw_label = assets.label_1
 		vars.anim_label:resetnew(1000, 350, -200, pd.easingFunctions.linear)
 	end)
@@ -1077,7 +1077,7 @@ function game:restart()
 		vars.anim_label.timerEndedCallback = function()
 			assets.draw_label = nil
 		end
-		if save.sfx then assets.sfx_start:play() end
+		playsound(assets.sfx_start)
 		newmusic('audio/music/arcade' .. math.random(1, 3), true)
 		vars.can_do_stuff = true
 		self:check()
@@ -1139,7 +1139,7 @@ function game:endround()
 	if vars.mode == "arcade" or vars.mode == "dailyrun" then
 		if not vars.ended then
 			vars.timer:pause()
-			if save.sfx then assets.sfx_end:play() end
+			playsound(assets.sfx_end)
 		end
 		pd.timer.performAfterDelay(2000, function()
 			if vars.active_hexa then
@@ -1250,7 +1250,7 @@ function game:endround()
 		end)
 	elseif vars.mode == "zen" then
 		if not vars.ended then
-			if save.sfx then assets.sfx_start:play() end
+			playsound(assets.sfx_start)
 		end
 		pd.timer.performAfterDelay(1000, function()
 			if vars.active_hexa then
@@ -1324,7 +1324,7 @@ function game:endround()
 		end)
 	elseif vars.mode == "picture" then
 		if not vars.ended then
-			if save.sfx then assets.sfx_start:play() end
+			playsound(assets.sfx_start)
 			if vars.mission == save.highest_mission then
 				save.highest_mission += 1
 			end
@@ -1333,7 +1333,7 @@ function game:endround()
 			end
 		end
 		pd.timer.performAfterDelay(1500, function()
-			if save.sfx then assets.sfx_mission:play() end
+			playsound(assets.sfx_mission)
 			vars.missioncomplete = true
 			updatecheevos()
 			pd.datastore.write(save)
@@ -1347,7 +1347,7 @@ function game:endround()
 		end)
 	elseif vars.mode == "time" then
 		if not vars.ended then
-			if save.sfx then assets.sfx_end:play() end
+			playsound(assets.sfx_end)
 			if vars.mission == save.highest_mission then
 				save.highest_mission += 1
 			end
@@ -1360,7 +1360,7 @@ function game:endround()
 				self:endround()
 				return
 			end
-			if save.sfx then assets.sfx_mission:play() end
+			playsound(assets.sfx_mission)
 			vars.missioncomplete = true
 			updatecheevos()
 			pd.datastore.write(save)
@@ -1374,7 +1374,7 @@ function game:endround()
 		end)
 	elseif vars.mode == "logic" then
 		if not vars.ended then
-			if save.sfx then assets.sfx_end:play() end
+			playsound(assets.sfx_end)
 			if vars.mission == save.highest_mission then
 				save.highest_mission += 1
 			end
@@ -1387,7 +1387,7 @@ function game:endround()
 				self:endround()
 				return
 			end
-			if save.sfx then assets.sfx_mission:play() end
+			playsound(assets.sfx_mission)
 			vars.missioncomplete = true
 			updatecheevos()
 			pd.datastore.write(save)
@@ -1401,7 +1401,7 @@ function game:endround()
 		end)
 	elseif vars.mode == "speedrun" then
 		if not vars.ended then
-			if save.sfx then assets.sfx_end:play() end
+			playsound(assets.sfx_end)
 			if vars.mission == save.highest_mission then
 				save.highest_mission += 1
 			end
@@ -1414,7 +1414,7 @@ function game:endround()
 				self:endround()
 				return
 			end
-			if save.sfx then assets.sfx_mission:play() end
+			playsound(assets.sfx_mission)
 			vars.missioncomplete = true
 			updatecheevos()
 			pd.datastore.write(save)
@@ -1475,52 +1475,52 @@ function game:update()
 		if vars.old_timer_value > 10000 and vars.timer.value <= 10000 then
 			shakies(500, 1)
 			shakies_y(750, 1)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 9000 and vars.timer.value <= 9000 then
 			shakies(500, 2)
 			shakies_y(750, 2)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 8000 and vars.timer.value <= 8000 then
 			shakies(500, 3)
 			shakies_y(750, 3)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 7000 and vars.timer.value <= 7000 then
 			shakies(500, 4)
 			shakies_y(750, 4)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 6000 and vars.timer.value <= 6000 then
 			shakies(500, 5)
 			shakies_y(750, 5)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 5000 and vars.timer.value <= 5000 then
 			shakies(500, 6)
 			shakies_y(750, 6)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 4000 and vars.timer.value <= 4000 then
 			shakies(500, 7)
 			shakies_y(750, 7)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 3000 and vars.timer.value <= 3000 then
 			shakies(500, 8)
 			shakies_y(750, 8)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 2000 and vars.timer.value <= 2000 then
 			shakies(500, 9)
 			shakies_y(750, 9)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		if vars.old_timer_value > 1000 and vars.timer.value <= 1000 then
 			shakies(500, 10)
 			shakies_y(750, 10)
-			if save.sfx then assets.sfx_count:play() end
+			playsound(assets.sfx_count)
 		end
 		vars.old_timer_value = vars.timer.value
 	end

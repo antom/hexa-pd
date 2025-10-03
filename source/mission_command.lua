@@ -9,6 +9,7 @@ local tris_x <const> = {140, 170, 200, 230, 260, 110, 140, 170, 200, 230, 260, 2
 local tris_y <const> = {70, 70, 70, 70, 70, 120, 120, 120, 120, 120, 120, 120, 170, 170, 170, 170, 170, 170, 170}
 local tris_flip <const> = {true, false, true, false, true, true, false, true, false, true, false, true, false, true, false, true, false, true, false}
 local floor <const> = math.floor
+local flash <const> = pd.getReduceFlashing()
 local random <const> = math.random
 
 class('mission_command').extends(gfx.sprite) -- Create the scene's class
@@ -115,14 +116,14 @@ function mission_command:init(...)
 		upButtonDown = function()
 			vars.start_selection -= 1
 			if vars.start_selection < 1 then vars.start_selection = #vars.start_selections end
-			if save.sfx then assets.sfx_move:play() end
+			playsound(assets.sfx_move)
 			gfx.sprite.redrawBackground()
 		end,
 
 		downButtonDown = function()
 			vars.start_selection += 1
 			if vars.start_selection > #vars.start_selections then vars.start_selection = 1 end
-			if save.sfx then assets.sfx_move:play() end
+			playsound(assets.sfx_move)
 			gfx.sprite.redrawBackground()
 		end,
 
@@ -130,24 +131,24 @@ function mission_command:init(...)
 			if vars.start_selections[vars.start_selection] == 'type' then
 				vars.mission_type -= 1
 				if vars.mission_type < 1 then vars.mission_type = #vars.mission_types end
-				if save.sfx then assets.sfx_move:play() end
+				playsound(assets.sfx_move)
 			elseif vars.start_selections[vars.start_selection] == 'timelimit' then
 				if vars.mission_types[vars.mission_type] == 'time' then
 					vars.time_limit -= 1
 					if vars.time_limit < 1 then vars.time_limit = #vars.time_limits end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			elseif vars.start_selections[vars.start_selection] == 'cleargoal' then
 				if vars.mission_types[vars.mission_type] == 'speedrun' or vars.mission_types[vars.mission_type] == 'logic' then
 					vars.clear_goal -= 1
 					if vars.clear_goal < 1 then vars.clear_goal = #vars.clear_goals end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 			gfx.sprite.redrawBackground()
@@ -157,24 +158,24 @@ function mission_command:init(...)
 			if vars.start_selections[vars.start_selection] == 'type' then
 				vars.mission_type += 1
 				if vars.mission_type > #vars.mission_types then vars.mission_type = 1 end
-				if save.sfx then assets.sfx_move:play() end
+				playsound(assets.sfx_move)
 			elseif vars.start_selections[vars.start_selection] == 'timelimit' then
 				if vars.mission_types[vars.mission_type] == 'time' then
 					vars.time_limit += 1
 					if vars.time_limit > #vars.time_limits then vars.time_limit = 1 end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			elseif vars.start_selections[vars.start_selection] == 'cleargoal' then
 				if vars.mission_types[vars.mission_type] == 'speedrun' or vars.mission_types[vars.mission_type] == 'logic' then
 					vars.clear_goal += 1
 					if vars.clear_goal > #vars.clear_goals then vars.clear_goal = 1 end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 			gfx.sprite.redrawBackground()
@@ -184,33 +185,33 @@ function mission_command:init(...)
 			if vars.start_selections[vars.start_selection] == 'type' then
 				vars.mission_type += 1
 				if vars.mission_type > #vars.mission_types then vars.mission_type = 1 end
-				if save.sfx then assets.sfx_move:play() end
+				playsound(assets.sfx_move)
 			elseif vars.start_selections[vars.start_selection] == 'timelimit' then
 				if vars.mission_types[vars.mission_type] == 'time' then
 					vars.time_limit += 1
 					if vars.time_limit > #vars.time_limits then vars.time_limit = 1 end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			elseif vars.start_selections[vars.start_selection] == 'cleargoal' then
 				if vars.mission_types[vars.mission_type] == 'speedrun' or vars.mission_types[vars.mission_type] == 'logic' then
 					vars.clear_goal += 1
 					if vars.clear_goal > #vars.clear_goals then vars.clear_goal = 1 end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			elseif vars.start_selections[vars.start_selection] == 'seed' then
 				if vars.mission_types[vars.mission_type] == 'time' then
 					pd.keyboard.show(vars.seed_string)
 					vars.keyboard = 'seed'
-					if save.sfx then assets.sfx_select:play() end
+					playsound(assets.sfx_select)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			elseif vars.start_selections[vars.start_selection] == 'start' then
 				vars.tris = {}
@@ -233,19 +234,19 @@ function mission_command:init(...)
 				pd.inputHandlers.push(vars.mission_command_editHandlers)
 				vars.scroll_x_target = 800
 				gfx.sprite.setAlwaysRedraw(true)
-				if save.sfx then assets.sfx_select:play() end
+				playsound(assets.sfx_select)
 				if mission_command:check_validity() then
 					sprites.error.x_target = -355
 				elseif sprites.error.x_target ~= 5 then
 					sprites.error.x_target = 5
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 			gfx.sprite.redrawBackground()
 		end,
 
 		BButtonDown = function()
-			if save.sfx then assets.sfx_back:play() end
+			playsound(assets.sfx_back)
 			scenemanager:transitionscene(missions, vars.custom)
 			fademusic()
 		end,
@@ -255,61 +256,61 @@ function mission_command:init(...)
 			if vars.mission_types[vars.mission_type] ~= 'time' then
 				if vars.tri == 1 then
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				elseif vars.tri == 2 then
 					vars.tri = 1
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 3 then
 					vars.tri = 2
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 4 then
 					vars.tri = 3
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 5 then
 					vars.tri = 4
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 6 then
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				elseif vars.tri == 7 then
 					vars.tri = 6
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 8 then
 					vars.tri = 7
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 9 then
 					vars.tri = 8
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 10 then
 					vars.tri = 9
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 11 then
 					vars.tri = 10
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 12 then
 					vars.tri = 11
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 13 then
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				elseif vars.tri == 14 then
 					vars.tri = 13
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 15 then
 					vars.tri = 14
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 16 then
 					vars.tri = 15
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 17 then
 					vars.tri = 16
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 18 then
 					vars.tri = 17
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 19 then
 					vars.tri = 18
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				end
 			end
 		end,
@@ -318,61 +319,61 @@ function mission_command:init(...)
 			if vars.mission_types[vars.mission_type] ~= 'time' then
 				if vars.tri == 1 then
 					vars.tri = 2
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 2 then
 					vars.tri = 3
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 3 then
 					vars.tri = 4
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 4 then
 					vars.tri = 5
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 5 then
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				elseif vars.tri == 6 then
 					vars.tri = 7
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 7 then
 					vars.tri = 8
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 8 then
 					vars.tri = 9
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 9 then
 					vars.tri = 10
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 10 then
 					vars.tri = 11
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 11 then
 					vars.tri = 12
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 12 then
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				elseif vars.tri == 13 then
 					vars.tri = 14
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 14 then
 					vars.tri = 15
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 15 then
 					vars.tri = 16
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 16 then
 					vars.tri = 17
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 17 then
 					vars.tri = 18
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 18 then
 					vars.tri = 19
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 19 then
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		end,
@@ -381,49 +382,49 @@ function mission_command:init(...)
 			if vars.mission_types[vars.mission_type] ~= 'time' then
 				if vars.tri <= 5 then
 					shakies_y()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				elseif vars.tri == 6 then
 					vars.tri = 1
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 7 then
 					vars.tri = 1
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 8 then
 					vars.tri = 2
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 9 then
 					vars.tri = 3
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 10 then
 					vars.tri = 4
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 11 then
 					vars.tri = 5
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 12 then
 					vars.tri = 5
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 13 then
 					vars.tri = 6
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 14 then
 					vars.tri = 7
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 15 then
 					vars.tri = 8
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 16 then
 					vars.tri = 9
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 17 then
 					vars.tri = 10
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 18 then
 					vars.tri = 11
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 19 then
 					vars.tri = 12
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				end
 			end
 		end,
@@ -432,43 +433,43 @@ function mission_command:init(...)
 			if vars.mission_types[vars.mission_type] ~= 'time' then
 				if vars.tri == 1 then
 					vars.tri = 7
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 2 then
 					vars.tri = 8
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 3 then
 					vars.tri = 9
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 4 then
 					vars.tri = 10
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 5 then
 					vars.tri = 11
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 6 then
 					vars.tri = 13
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 7 then
 					vars.tri = 14
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 8 then
 					vars.tri = 15
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 9 then
 					vars.tri = 16
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 10 then
 					vars.tri = 17
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 11 then
 					vars.tri = 18
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri == 12 then
 					vars.tri = 19
-					if save.sfx then assets.sfx_move2:play() end
+					playsound(assets.sfx_move2)
 				elseif vars.tri >= 13 then
 					shakies_y()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		end,
@@ -483,7 +484,7 @@ function mission_command:init(...)
 					powerup = true
 				end
 				sprites.selector:open(vars.tris[vars.tri], powerup, nocolor)
-				if save.sfx then assets.sfx_select:play() end
+				playsound(assets.sfx_select)
 			end
 		end,
 	}
@@ -491,14 +492,14 @@ function mission_command:init(...)
 		upButtonDown = function()
 			vars.save_selection -= 1
 			if vars.save_selection < 1 then vars.save_selection = #vars.save_selections end
-			if save.sfx then assets.sfx_move:play() end
+			playsound(assets.sfx_move)
 			gfx.sprite.redrawBackground()
 		end,
 
 		downButtonDown = function()
 			vars.save_selection += 1
 			if vars.save_selection > #vars.save_selections then vars.save_selection = 1 end
-			if save.sfx then assets.sfx_move:play() end
+			playsound(assets.sfx_move)
 			gfx.sprite.redrawBackground()
 		end,
 
@@ -507,18 +508,18 @@ function mission_command:init(...)
 				if vars.mission_types[vars.mission_type] == 'picture' then
 					pd.keyboard.show(vars.picture_name)
 					vars.keyboard = 'picture'
-					if save.sfx then assets.sfx_select:play() end
+					playsound(assets.sfx_select)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			elseif vars.save_selections[vars.save_selection] == 'author_name' then
 				pd.keyboard.show(vars.author_name)
 				vars.keyboard = 'author'
-				if save.sfx then assets.sfx_select:play() end
+				playsound(assets.sfx_select)
 			elseif vars.save_selections[vars.save_selection] == 'save' then
 				mission_command:save()
-				if save.sfx then assets.sfx_select:play() end
+				playsound(assets.sfx_select)
 			end
 			gfx.sprite.redrawBackground()
 		end,
@@ -529,7 +530,7 @@ function mission_command:init(...)
 			pd.inputHandlers.push(vars.mission_command_editHandlers)
 			vars.scroll_x_target = 800
 			gfx.sprite.setAlwaysRedraw(true)
-			if save.sfx then assets.sfx_back:play() end
+			playsound(assets.sfx_back)
 		end,
 	}
 	vars.mission_command_selectorHandlers = {
@@ -540,13 +541,13 @@ function mission_command:init(...)
 					if sprites.selector.rack1selection < 1 then
 						sprites.selector.rack1selection = 1
 						shakies()
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 					else
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 					end
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			else
 				if not (sprites.selector.show_no_color and sprites.selector.rack1selection == 1) then
@@ -554,13 +555,13 @@ function mission_command:init(...)
 					if sprites.selector.rack2selection < 1 then
 						sprites.selector.rack2selection = 1
 						shakies()
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 					else
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 					end
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		end,
@@ -576,13 +577,13 @@ function mission_command:init(...)
 					if sprites.selector.rack1selection > limit then
 						sprites.selector.rack1selection = limit
 						shakies()
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 					else
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 					end
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			else
 				if not (sprites.selector.show_no_color and sprites.selector.rack1selection == 1) then
@@ -590,13 +591,13 @@ function mission_command:init(...)
 					if sprites.selector.rack2selection > 4 then
 						sprites.selector.rack2selection = 4
 						shakies()
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 					else
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 					end
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		end,
@@ -604,42 +605,42 @@ function mission_command:init(...)
 		upButtonDown = function()
 			if sprites.selector.rack ~= 1 then
 				sprites.selector.rack = 1
-				if save.sfx then assets.sfx_move:play() end
+				playsound(assets.sfx_move)
 			else
 				shakies_y()
-				if save.sfx then assets.sfx_bonk:play() end
+				playsound(assets.sfx_bonk)
 			end
 		end,
 
 		downButtonDown = function()
 			if sprites.selector.show_powerup and sprites.selector.rack == 1 then
 				sprites.selector.rack = 2
-				if save.sfx then assets.sfx_move:play() end
+				playsound(assets.sfx_move)
 			else
 				shakies_y()
-				if save.sfx then assets.sfx_bonk:play() end
+				playsound(assets.sfx_bonk)
 			end
 		end,
 
 		AButtonDown = function()
 			sprites.selector:close(true)
-			if save.sfx then assets.sfx_select:play() end
+			playsound(assets.sfx_select)
 			if mission_command:check_validity() then
 				sprites.error.x_target = -355
 			elseif sprites.error.x_target ~= 5 then
 				sprites.error.x_target = 5
-				if save.sfx then assets.sfx_bonk:play() end
+				playsound(assets.sfx_bonk)
 			end
 		end,
 
 		BButtonDown = function()
 			sprites.selector:close(false)
-			if save.sfx then assets.sfx_back:play() end
+			playsound(assets.sfx_back)
 			if mission_command:check_validity() then
 				sprites.error.x_target = -355
 			elseif sprites.error.x_target ~= 5 then
 				sprites.error.x_target = 5
-				if save.sfx then assets.sfx_bonk:play() end
+				playsound(assets.sfx_bonk)
 			end
 		end,
 	}
@@ -813,8 +814,8 @@ function mission_command:init(...)
 		if vars.puzzle_exported then
 			assets.export_complete:draw(800 + x, 0)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-			assets.full_circle:drawTextAligned(text('savedto') .. '\n' .. text('missionspath1') .. pd.metadata.bundleID .. text('missionspath2') .. tostring(vars.export.mission) .. text('missionspath3'), 1000 + x, 130, kTextAlignment.center)
-			assets.half_circle:drawTextAligned(text('shareit') .. '\n' .. text('nocustommissions_4'), 1000 + x, 170, kTextAlignment.center)
+			assets.full_circle:drawTextAligned(text('savedto') .. '\n' .. text('missionspath1') .. pd.metadata.bundleID .. text('missionspath2') .. tostring(vars.export.mission) .. text('missionspath3'), 1000 + x, 128, kTextAlignment.center)
+			assets.half_circle:drawTextAligned(text('shareit') .. text('nocustommissions_4'), 1000 + x, 187, kTextAlignment.center)
 			gfx.setImageDrawMode(gfx.kDrawModeCopy)
 			assets.half_circle:drawText(text('back'), 810 + x, 220)
 		end
@@ -1025,7 +1026,9 @@ function mission_command:init(...)
 			if flash then
 				if assets['powerup_double_up'] ~= nil then assets['powerup_double_up'][1]:draw(91, 104) end
 				if assets['powerup_bomb_up'] ~= nil then assets['powerup_bomb_up'][1]:draw(148, 102) end
+				gfx.setClipRect(155 + 55, 112, 41, 41)
 				if assets['powerup_wild_up'] ~= nil then assets['powerup_wild_up'][1]:draw(203, 104) end
+				gfx.clearClipRect()
 			else
 				if assets['powerup_double_up'] ~= nil then assets['powerup_double_up'][floor(vars.anim_powerup.value)]:draw(91, 104) end
 				if assets['powerup_bomb_up'] ~= nil then assets['powerup_bomb_up'][floor(vars.anim_powerup.value)]:draw(148, 102) end
@@ -1052,15 +1055,15 @@ function mission_command:init(...)
 			gfx.setColor(gfx.kColorBlack)
 			gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
 			if self.rack2selection == 4 then
-				gfx.fillRect(30, 11, 240, 70)
+				gfx.fillRect(30, 31, 240, 50)
 			else
 				if self.show_no_color and self.rack1selection == 1 then
-					gfx.fillRect(30, 90, 240, 70)
+					gfx.fillRect(30, 110, 240, 50)
 				end
 			end
 
 			gfx.setColor(gfx.kColorWhite)
-			gfx.setDitherPattern(vars.anim_flash.value, gfx.image.kDitherTypeBayer4x4)
+			gfx.setDitherPattern(vars.anim_flash.value, gfx.image.kDitherTypeBayer2x2)
 			if self.rack2selection ~= 4 then
 				if self.show_no_color then
 					gfx.drawRoundRect(153 - 165 + (55 * self.rack1selection), 32, 45, 45, 7)
@@ -1092,7 +1095,7 @@ function mission_command:init(...)
 
 			gfx.setLineWidth(3)
 			gfx.setColor(gfx.kColorWhite)
-			gfx.setDitherPattern(vars.anim_flash.value, gfx.image.kDitherTypeBayer4x4)
+			gfx.setDitherPattern(vars.anim_flash.value, gfx.image.kDitherTypeBayer2x2)
 			if self.show_no_color then
 				gfx.drawRoundRect(153 - 165 + (55 * self.rack1selection), 72, 45, 45, 7)
 			else
@@ -1484,7 +1487,7 @@ function mission_command:update()
 	local ticks = pd.getCrankTicks(6)
 	if ticks ~= 0 and not scenemanager.transitioning then
 		if vars.mode == 'start' then
-			if save.sfx then assets.sfx_move:play() end
+			playsound(assets.sfx_move)
 			vars.start_selection += ticks
 			if vars.start_selection < 1 then
 				vars.start_selection = #vars.start_selections
@@ -1504,17 +1507,17 @@ function mission_command:update()
 						if sprites.selector.rack1selection < 1 then
 							sprites.selector.rack1selection = 1
 							shakies()
-							if save.sfx then assets.sfx_bonk:play() end
+							playsound(assets.sfx_bonk)
 						elseif sprites.selector.rack1selection > limit then
 							sprites.selector.rack1selection = limit
 							shakies()
-							if save.sfx then assets.sfx_bonk:play() end
+							playsound(assets.sfx_bonk)
 						else
-							if save.sfx then assets.sfx_move:play() end
+							playsound(assets.sfx_move)
 						end
 					else
 						shakies()
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 					end
 				else
 					if not (sprites.selector.show_no_color and sprites.selector.rack1selection == 1) then
@@ -1522,17 +1525,17 @@ function mission_command:update()
 						if sprites.selector.rack2selection < 1 then
 							sprites.selector.rack2selection = 1
 							shakies()
-							if save.sfx then assets.sfx_bonk:play() end
+							playsound(assets.sfx_bonk)
 						elseif sprites.selector.rack2selection > 4 then
 							sprites.selector.rack2selection = 4
 							shakies()
-							if save.sfx then assets.sfx_bonk:play() end
+							playsound(assets.sfx_bonk)
 						else
-							if save.sfx then assets.sfx_move:play() end
+							playsound(assets.sfx_move)
 						end
 					else
 						shakies()
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 					end
 				end
 			elseif #pd.inputHandlers > 1 then
@@ -1568,7 +1571,7 @@ function mission_command:update()
 							end
 						elseif powerup then
 							if vars.tris[vars.tri].color == 'none' then
-								if save.sfx then assets.sfx_bonk:play() end
+								playsound(assets.sfx_bonk)
 							else
 								if vars.tris[vars.tri].powerup == '' then
 									vars.tris[vars.tri].powerup = 'double'
@@ -1605,7 +1608,7 @@ function mission_command:update()
 							end
 						elseif powerup then
 							if vars.tris[vars.tri].color == 'none' then
-								if save.sfx then assets.sfx_bonk:play() end
+								playsound(assets.sfx_bonk)
 							else
 								if vars.tris[vars.tri].powerup == '' then
 									vars.tris[vars.tri].powerup = 'wild'
@@ -1624,11 +1627,11 @@ function mission_command:update()
 					sprites.error.x_target = -355
 				elseif sprites.error.x_target ~= 5 then
 					sprites.error.x_target = 5
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			end
 		elseif vars.mode == 'save' and not vars.puzzle_exported then
-			if save.sfx then assets.sfx_move:play() end
+			playsound(assets.sfx_move)
 			vars.save_selection += ticks
 			if vars.save_selection < 1 then
 				vars.save_selection = #vars.save_selections

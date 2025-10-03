@@ -56,7 +56,7 @@ function options:init(...)
 					else
 						vars.selection = #vars.selections
 					end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 					if vars.resetprogress < 4 then
 						vars.resetprogress = 1
 					end
@@ -77,7 +77,7 @@ function options:init(...)
 					else
 						vars.selection = 1
 					end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 					if vars.resetprogress < 4 then
 						vars.resetprogress = 1
 					end
@@ -91,7 +91,7 @@ function options:init(...)
 
 		BButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
-			if save.sfx then assets.sfx_back:play() end
+			playsound(assets.sfx_back)
 			scenemanager:transitionscene(title, false, 'options')
 			vars.selection = 0
 		end,
@@ -109,6 +109,8 @@ function options:init(...)
 					else
 						newmusic('audio/music/title', true)
 					end
+				else
+					fademusic(1)
 				end
 			elseif vars.selections[vars.selection] == "sfx" then
 				save.sfx += 1
@@ -136,7 +138,7 @@ function options:init(...)
 				if vars.resetprogress < 3 then
 					vars.resetprogress += 1
 				elseif vars.resetprogress == 3 then
-					if save.sfx then assets.sfx_boom:play() end
+					playsound(assets.sfx_boom)
 					vars.resetprogress += 1
 					save.score = 0
 					save.hard_score = 0
@@ -157,7 +159,7 @@ function options:init(...)
 					updatecheevos()
 				end
 			end
-			if save.sfx then assets.sfx_select:play() end
+			playsound(assets.sfx_select)
 		end,
 	}
 	pd.timer.performAfterDelay(scenemanager.transitiontime, function()
@@ -178,19 +180,34 @@ function options:init(...)
 		gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
 		gfx.fillRect(0, 0, 400, 240)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		assets.half_circle:drawTextAligned(text('swaps') .. text('divvy') .. commalize(save.swaps) .. text('dash') .. text('hexas') .. text('divvy') .. commalize(save.hexas), 200, 5, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_music') .. text(tostring(save.music)), 200, 50, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_sfx') .. text(tostring(save.sfx)), 200, 70, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_flip') .. text(tostring(save.flip)), 200, 90, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 110, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_skipfanfare') .. text(tostring(save.skipfanfare)), 200, 130, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_hardmode') .. text(tostring(save.hardmode)), 200, 150, kTextAlignment.center)
-		assets.half_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 170, kTextAlignment.center)
+		if vars.selections[vars.selection] ~= "music" then
+			assets.half_circle:drawTextAligned(text('options_music') .. tostring(save.music), 200, 50, kTextAlignment.center)
+		end
+		if vars.selections[vars.selection] ~= "sfx" then
+			assets.half_circle:drawTextAligned(text('options_sfx') .. tostring(save.sfx), 200, 70, kTextAlignment.center)
+		end
+		if vars.selections[vars.selection] ~= "flip" then
+			assets.half_circle:drawTextAligned(text('options_flip') .. text(tostring(save.flip)), 200, 90, kTextAlignment.center)
+		end
+		if vars.selections[vars.selection] ~= "crank" then
+			assets.half_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 110, kTextAlignment.center)
+		end
+		if vars.selections[vars.selection] ~= "skipfanfare" then
+			assets.half_circle:drawTextAligned(text('options_skipfanfare') .. text(tostring(save.skipfanfare)), 200, 130, kTextAlignment.center)
+		end
+		if vars.selections[vars.selection] ~= "hardmode" then
+			assets.half_circle:drawTextAligned(text('options_hardmode') .. text(tostring(save.hardmode)), 200, 150, kTextAlignment.center)
+		end
+		if vars.selections[vars.selection] ~= "reset" then
+			assets.half_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 170, kTextAlignment.center)
+		end
 		if vars.selections[vars.selection] == 'reset' then
 			assets.full_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 30 + (20 * vars.selection), kTextAlignment.center)
 		else
 			if vars.selections[vars.selection] == "crank" then
 				assets.full_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 30 + (20 * vars.selection), kTextAlignment.center)
+			elseif vars.selections[vars.selection] == "music" or vars.selections[vars.selection] == "sfx" then
+				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. tostring(save[vars.selections[vars.selection]])) or (' '), 200, 30 + (20 * vars.selection), kTextAlignment.center)
 			else
 				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. text(tostring(save[vars.selections[vars.selection]]))) or (' '), 200, 30 + (20 * vars.selection), kTextAlignment.center)
 			end
@@ -212,7 +229,7 @@ function options:update()
 		if vars.resetprogress > 1 then
 			vars.resetprogress = 1
 		end
-		if save.sfx then assets.sfx_move:play() end
+		playsound(assets.sfx_move)
 		vars.selection += ticks
 		if vars.selection < 1 then
 			vars.selection = #vars.selections

@@ -66,19 +66,19 @@ function missions:init(...)
 				if vars.custom and #vars.custom_files > 0 then
 					local _, _, column = assets.custom_grid:getSelection()
 					if column == 1 then
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 						shakies()
 					else
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 						assets.custom_grid:selectPreviousColumn(false)
 					end
 				elseif not vars.custom then
 					local _, _, column = assets.grid:getSelection()
 					if column == 1 then
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 						shakies()
 					else
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 						assets.grid:selectPreviousColumn(false)
 					end
 				end
@@ -95,19 +95,19 @@ function missions:init(...)
 				if vars.custom and #vars.custom_files > 0 then
 					local _, _, column = assets.custom_grid:getSelection()
 					if column == #vars.custom_files then
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 						shakies()
 					else
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 						assets.custom_grid:selectNextColumn(false)
 					end
 				elseif not vars.custom then
 					local _, _, column = assets.grid:getSelection()
 					if column == 50 then
-						if save.sfx then assets.sfx_bonk:play() end
+						playsound(assets.sfx_bonk)
 						shakies()
 					else
-						if save.sfx then assets.sfx_move:play() end
+						playsound(assets.sfx_move)
 						assets.grid:selectNextColumn(false)
 					end
 				end
@@ -120,7 +120,7 @@ function missions:init(...)
 
 		BButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
-			if save.sfx then assets.sfx_back:play() end
+			playsound(assets.sfx_back)
 			scenemanager:transitionscene(title, false, 'missions')
 		end,
 
@@ -128,7 +128,7 @@ function missions:init(...)
 			if vars.custom then
 				local _, _, column = assets.custom_grid:getSelection()
 				if vars.keytimer ~= nil then vars.keytimer:remove() end
-				if save.sfx then assets.sfx_select:play() end
+				playsound(assets.sfx_select)
 				scenemanager:transitionscene(game, vars.custom_missions[column].type, vars.custom_missions[column].mission, vars.custom_missions[column].modifier or nil, vars.custom_missions[column].start or nil, vars.custom_missions[column].goal or nil, vars.custom_missions[column].seed or nil, vars.custom_missions[column].name or nil)
 				fademusic()
 			else
@@ -136,10 +136,10 @@ function missions:init(...)
 				if vars.keytimer ~= nil then vars.keytimer:remove() end
 				local _, _, column = assets.grid:getSelection()
 				if column > save.highest_mission then
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 					shakies()
 				else
-					if save.sfx then assets.sfx_select:play() end
+					playsound(assets.sfx_select)
 					scenemanager:transitionscene(game, missions_list[column].type, column, missions_list[column].modifier or nil, missions_list[column].start, missions_list[column].goal, nil, missions_list[column].name)
 					fademusic()
 				end
@@ -305,18 +305,18 @@ function missions:update()
 			local _, _, column = assets.custom_grid:getSelection()
 			if ticks > 0 then
 				if column == #vars.custom_files then
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 					shakies()
 				else
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 					assets.custom_grid:selectNextColumn(false)
 				end
 			elseif ticks < 0 then
 				if column == 1 then
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 					shakies()
 				else
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 					assets.custom_grid:selectPreviousColumn(false)
 				end
 			end
@@ -324,18 +324,18 @@ function missions:update()
 			local _, _, column = assets.grid:getSelection()
 			if ticks > 0 then
 				if column == 50 then
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 					shakies()
 				else
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 					assets.grid:selectNextColumn(false)
 				end
 			elseif ticks < 0 then
 				if column == 1 then
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 					shakies()
 				else
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 					assets.grid:selectPreviousColumn(false)
 				end
 			end

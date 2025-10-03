@@ -74,7 +74,7 @@ function title:init(...)
 					else
 						vars.selection = #vars.selections
 					end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				end)
 			end
 		end,
@@ -92,7 +92,7 @@ function title:init(...)
 					else
 						vars.selection = 1
 					end
-					if save.sfx then assets.sfx_move:play() end
+					playsound(assets.sfx_move)
 				end)
 			end
 		end,
@@ -122,7 +122,7 @@ function title:init(...)
 					end)
 				else
 					shakies()
-					if save.sfx then assets.sfx_bonk:play() end
+					playsound(assets.sfx_bonk)
 				end
 			elseif vars.selections[vars.selection] == "highscores" then
 				scenemanager:transitionscene(highscores, save.lbs_lastmode)
@@ -138,7 +138,7 @@ function title:init(...)
 				scenemanager:transitionscene(credits)
 			end
 			if scenemanager.transitioning then
-				if save.sfx then assets.sfx_select:play() end
+				playsound(assets.sfx_select)
 				vars.selection = 0
 			end
 		end,
@@ -189,15 +189,33 @@ function title:init(...)
 			else
 				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 265 + vars.anim_title.value, 90)
 			end
-			assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 50, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('highscores'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('statistics'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
+			if vars.selections[vars.selection] ~= "arcade" then
+				assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 50, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "zen" then
+				assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "dailyrun" then
+				assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "missions" then
+				assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "highscores" then
+				assets.half_circle:drawTextAligned(text('highscores'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "statistics" then
+				assets.half_circle:drawTextAligned(text('statistics'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "howtoplay" then
+				assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "options" then
+				assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "credits" then
+				assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
+			end
 			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 30 + (20 * vars.selection), kTextAlignment.right)
 		else
 			gfx.fillRect(250 + vars.anim_title.value, 52, 200, 250)
@@ -211,14 +229,30 @@ function title:init(...)
 					assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 265 + vars.anim_title.value, 110)
 				end
 			end
-			assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('statistics'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
-			assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
+			if vars.selections[vars.selection] ~= "arcade" then
+				assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "zen" then
+				assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "dailyrun" then
+				assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "missions" then
+				assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "statistics" then
+				assets.half_circle:drawTextAligned(text('statistics'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "howtoplay" then
+				assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "options" then
+				assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
+			end
+			if vars.selections[vars.selection] ~= "credits" then
+				assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
+			end
 			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 50 + (20 * vars.selection), kTextAlignment.right)
 		end
 		if vars.selections[vars.selection] == "arcade" then
@@ -257,7 +291,7 @@ function title:update()
 	end
 	local ticks = pd.getCrankTicks(8)
 	if ticks ~= 0 and vars.selection > 0 then
-		if save.sfx then assets.sfx_move:play() end
+		playsound(assets.sfx_move)
 		vars.selection += ticks
 		if vars.selection < 1 then
 			vars.selection = #vars.selections

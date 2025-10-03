@@ -56,7 +56,7 @@ function highscores:init(...)
 		end,
 
 		BButtonDown = function()
-			if save.sfx then assets.sfx_back:play() end
+			playsound(assets.sfx_back)
 			scenemanager:transitionscene(title, false, 'highscores')
 		end
 	}

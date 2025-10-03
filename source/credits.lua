@@ -43,9 +43,9 @@ function credits:init(...)
 		leftButtonDown = function()
 			if vars.page > 1 then
 				vars.page -= 1
-				if save.sfx then assets.sfx_move:play() end
+				playsound(assets.sfx_move)
 			else
-				if save.sfx then assets.sfx_bonk:play() end
+				playsound(assets.sfx_bonk)
 				shakies()
 			end
 		end,
@@ -53,15 +53,15 @@ function credits:init(...)
 		rightButtonDown = function()
 			if vars.page < 2 then
 				vars.page += 1
-				if save.sfx then assets.sfx_move:play() end
+				playsound(assets.sfx_move)
 			else
-				if save.sfx then assets.sfx_bonk:play() end
+				playsound(assets.sfx_bonk)
 				shakies()
 			end
 		end,
 
 		BButtonDown = function()
-			if save.sfx then assets.sfx_back:play() end
+			playsound(assets.sfx_back)
 			scenemanager:transitionscene(title, false, 'credits')
 		end
 	}
