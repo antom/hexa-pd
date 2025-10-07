@@ -1,5 +1,15 @@
 classes = {}
 
+function getLocalizedText(key)
+	local data
+	if save.lang == 'en' then
+		data = en
+	elseif save.lang == 'fr' then
+		data = fr
+	end
+	return data and data[key] or key
+end
+
 -- Importing things
 import 'gridview'
 import 'CoreLibs/math'
@@ -10,6 +20,7 @@ import 'CoreLibs/sprites'
 import 'CoreLibs/keyboard'
 import 'CoreLibs/graphics'
 import 'CoreLibs/animation'
+import 'langs'
 import 'achievements'
 import 'scenemanager'
 import 'cheevos'
@@ -21,7 +32,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local smp <const> = pd.sound.sampleplayer
 local fle <const> = pd.sound.fileplayer
-local text <const> = gfx.getLocalizedText
+local text <const> = getLocalizedText
 local mask_arcade_true <const> = gfx.image.new('images/mask_arcade_true')
 local mask_arcade_false <const> = gfx.image.new('images/mask_arcade_false')
 local mask_zen <const> = gfx.image.new('images/mask_zen')
@@ -70,6 +81,7 @@ function savecheck()
 		save.sfx = 5
 	end
 
+	if save.lang == nil then save.lang = 'en' end
     if save.flip == nil then save.flip = false end
     if save.crank == nil then save.crank = true end
     save.sensitivity = save.sensitivity or 2
@@ -301,13 +313,13 @@ function ordinal(num)
     local m10 = num % 10 -- This is the number, modulo'd by 10.
     local m100 = num % 100 -- This is the number, modulo'd by 100.
     if m10 == 1 and m100 ~= 11 then -- If the number ends in 1 but NOT 11...
-        return tostring(num) .. gfx.getLocalizedText("st") -- add "st" on.
+        return tostring(num) .. getLocalizedText("st") -- add "st" on.
     elseif m10 == 2 and m100 ~= 12 then -- If the number ends in 2 but NOT 12...
-        return tostring(num) .. gfx.getLocalizedText("nd") -- add "nd" on,
+        return tostring(num) .. getLocalizedText("nd") -- add "nd" on,
     elseif m10 == 3 and m100 ~= 13 then -- and if the number ends in 3 but NOT 13...
-        return tostring(num) .. gfx.getLocalizedText("rd") -- add "rd" on.
+        return tostring(num) .. getLocalizedText("rd") -- add "rd" on.
     else -- If all those checks passed us by,
-        return tostring(num) .. gfx.getLocalizedText("th") -- then it ends in "th".
+        return tostring(num) .. getLocalizedText("th") -- then it ends in "th".
     end
 end
 

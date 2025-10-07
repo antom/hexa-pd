@@ -2,7 +2,7 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local smp <const> = pd.sound.sampleplayer
-local text <const> = gfx.getLocalizedText
+local text <const> = getLocalizedText
 
 class('options').extends(gfx.sprite) -- Create the scene's class
 function options:init(...)
@@ -42,7 +42,7 @@ function options:init(...)
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
 		anim_stars_large_y = pd.timer.new(1250, 0, -239),
 		anim_fg_hexa = pd.timer.new(3000, 0, 7, pd.easingFunctions.inOutSine),
-		selections = {'music', 'sfx', 'flip', 'crank', 'skipfanfare', 'hardmode', 'reset'},
+		selections = {'music', 'sfx', 'lang', 'flip', 'crank', 'skipfanfare', 'hardmode', 'reset'},
 		selection = 0,
 		resetprogress = 1,
 	}
@@ -117,6 +117,12 @@ function options:init(...)
 				if save.sfx > 5 then
 					save.sfx = 0
 				end
+			elseif vars.selections[vars.selection] == "lang" then
+				if save.lang == "en" then
+					save.lang = "fr"
+				elseif save.lang == "fr" then
+					save.lang = "en"
+				end
 			elseif vars.selections[vars.selection] == "flip" then
 				save.flip = not save.flip
 			elseif vars.selections[vars.selection] == "crank" then
@@ -181,10 +187,13 @@ function options:init(...)
 		gfx.fillRect(0, 0, 400, 240)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		if vars.selections[vars.selection] ~= "music" then
-			assets.half_circle:drawTextAligned(text('options_music') .. tostring(save.music), 200, 50, kTextAlignment.center)
+			assets.half_circle:drawTextAligned(text('options_music') .. tostring(save.music), 200, 30, kTextAlignment.center)
 		end
 		if vars.selections[vars.selection] ~= "sfx" then
-			assets.half_circle:drawTextAligned(text('options_sfx') .. tostring(save.sfx), 200, 70, kTextAlignment.center)
+			assets.half_circle:drawTextAligned(text('options_sfx') .. tostring(save.sfx), 200, 50, kTextAlignment.center)
+		end
+		if vars.selections[vars.selection] ~= "lang" then
+			assets.half_circle:drawTextAligned(text('options_lang') .. text(save.lang), 200, 70, kTextAlignment.center)
 		end
 		if vars.selections[vars.selection] ~= "flip" then
 			assets.half_circle:drawTextAligned(text('options_flip') .. text(tostring(save.flip)), 200, 90, kTextAlignment.center)
@@ -202,14 +211,14 @@ function options:init(...)
 			assets.half_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 170, kTextAlignment.center)
 		end
 		if vars.selections[vars.selection] == 'reset' then
-			assets.full_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 30 + (20 * vars.selection), kTextAlignment.center)
+			assets.full_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 10 + (20 * vars.selection), kTextAlignment.center)
 		else
 			if vars.selections[vars.selection] == "crank" then
-				assets.full_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 30 + (20 * vars.selection), kTextAlignment.center)
+				assets.full_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 10 + (20 * vars.selection), kTextAlignment.center)
 			elseif vars.selections[vars.selection] == "music" or vars.selections[vars.selection] == "sfx" then
-				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. tostring(save[vars.selections[vars.selection]])) or (' '), 200, 30 + (20 * vars.selection), kTextAlignment.center)
+				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. tostring(save[vars.selections[vars.selection]])) or (' '), 200, 10 + (20 * vars.selection), kTextAlignment.center)
 			else
-				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. text(tostring(save[vars.selections[vars.selection]]))) or (' '), 200, 30 + (20 * vars.selection), kTextAlignment.center)
+				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. text(tostring(save[vars.selections[vars.selection]]))) or (' '), 200, 10 + (20 * vars.selection), kTextAlignment.center)
 			end
 		end
 		assets.half_circle:drawText('v' .. pd.metadata.version, 65, 205)

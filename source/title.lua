@@ -11,7 +11,7 @@ import 'jukebox'
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local smp <const> = pd.sound.sampleplayer
-local text <const> = gfx.getLocalizedText
+local text <const> = getLocalizedText
 
 class('title').extends(gfx.sprite) -- Create the scene's class
 function title:init(...)

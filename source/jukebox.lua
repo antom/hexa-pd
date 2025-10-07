@@ -2,7 +2,7 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local smp <const> = pd.sound.sampleplayer
-local text <const> = gfx.getLocalizedText
+local text <const> = getLocalizedText
 local floor <const> = math.floor
 local random <const> = math.random
 
