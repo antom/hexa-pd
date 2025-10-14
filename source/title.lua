@@ -52,6 +52,7 @@ function title:init(...)
 		sfx_move = smp.new('audio/sfx/swap'),
 		sfx_bonk = smp.new('audio/sfx/bonk'),
 		sfx_select = smp.new('audio/sfx/select'),
+		timer = gfx.image.new('images/timer'),
 	}
 
 	vars = {
@@ -179,16 +180,10 @@ function title:init(...)
 		assets.stars_small:draw(vars.anim_stars_small_x.value, vars.anim_stars_small_y.value)
 		assets.stars_large:draw(vars.anim_stars_large_x.value, vars.anim_stars_large_y.value)
 		gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
+		gfx.fillRect(250 + vars.anim_title.value, 12 + (catalog and 20 or 40), 200, 250)
+		assets.logo:draw(0, 0)
 		if catalog then
-			gfx.fillRect(250 + vars.anim_title.value, 32, 200, 250)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-			if pd.getGMTTime().hour < 23 then
-				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 265 + vars.anim_title.value, 90)
-			elseif pd.getGMTTime().minute < 59 then
-				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 265 + vars.anim_title.value, 90)
-			else
-				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 265 + vars.anim_title.value, 90)
-			end
 			if vars.selections[vars.selection] ~= "arcade" then
 				assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 50, kTextAlignment.right)
 			end
@@ -216,19 +211,21 @@ function title:init(...)
 			if vars.selections[vars.selection] ~= "credits" then
 				assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
 			end
-			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 30 + (20 * vars.selection), kTextAlignment.right)
-		else
-			gfx.fillRect(250 + vars.anim_title.value, 52, 200, 250)
-			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-			if pd.getGMTTime().hour < 23 then
-				assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 265 + vars.anim_title.value, 110)
-			else
-				if pd.getGMTTime().minute < 59 then
-					assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 265 + vars.anim_title.value, 110)
+			if vars.selections[vars.selection] == "dailyrun" then
+				gfx.setImageDrawMode(gfx.kDrawModeCopy)
+				assets.timer:draw(206 + vars.anim_title.value, 82)
+				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+				if pd.getGMTTime().hour < 23 then
+					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 238 + vars.anim_title.value, 90, kTextAlignment.center)
+				elseif pd.getGMTTime().minute < 59 then
+					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 238 + vars.anim_title.value, 90, kTextAlignment.center)
 				else
-					assets.half_circle:drawText(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 265 + vars.anim_title.value, 110)
+					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 238 + vars.anim_title.value, 90, kTextAlignment.center)
 				end
 			end
+			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 30 + (20 * vars.selection), kTextAlignment.right)
+		else
+			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			if vars.selections[vars.selection] ~= "arcade" then
 				assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
 			end
@@ -253,6 +250,18 @@ function title:init(...)
 			if vars.selections[vars.selection] ~= "credits" then
 				assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
 			end
+			if vars.selections[vars.selection] == "dailyrun" then
+				gfx.setImageDrawMode(gfx.kDrawModeCopy)
+				assets.timer:draw(206 + vars.anim_title.value, 82)
+				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+				if pd.getGMTTime().hour < 23 then
+					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 238 + vars.anim_title.value, 110, kTextAlignment.center)
+				elseif pd.getGMTTime().minute < 59 then
+					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 238 + vars.anim_title.value, 110, kTextAlignment.center)
+				else
+					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 238 + vars.anim_title.value, 110, kTextAlignment.center)
+				end
+			end
 			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 50 + (20 * vars.selection), kTextAlignment.right)
 		end
 		if vars.selections[vars.selection] == "arcade" then
@@ -276,7 +285,6 @@ function title:init(...)
 		end
 		assets.half_circle:drawText(text('move') .. ' ' .. text('select'), 10 - vars.anim_title.value, 220)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
-		assets.logo:draw(0, 0)
 	end)
 
 	self:add()

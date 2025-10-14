@@ -89,6 +89,114 @@ function options:init(...)
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
 		end,
 
+		leftButtonDown = function()
+			if vars.keytimer ~= nil then vars.keytimer:remove() end
+			if vars.selections[vars.selection] == "music" then
+				save.music -= 1
+				if save.music < 0 then
+					save.music = 5
+				end
+				if save.music > 0 then
+					if music ~= nil then
+						music:setVolume(save.music / 5)
+					else
+						newmusic('audio/music/title', true)
+					end
+				else
+					fademusic(1)
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "sfx" then
+				save.sfx -= 1
+				if save.sfx < 0 then
+					save.sfx = 5
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "lang" then
+				if save.lang == "en" then
+					save.lang = "fr"
+				elseif save.lang == "fr" then
+					save.lang = "en"
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "flip" then
+				save.flip = not save.flip
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "crank" then
+				if save.sensitivity == 2 then
+					save.sensitivity = 0
+					save.crank = false
+				elseif save.sensitivity == 1 then
+					save.sensitivity = 2
+					save.crank = true
+				elseif save.sensitivity == 0 then
+					save.sensitivity = 1
+					save.crank = true
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "skipfanfare" then
+				save.skipfanfare = not save.skipfanfare
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "hardmode" then
+				save.hardmode = not save.hardmode
+				playsound(assets.sfx_select)
+			end
+		end,
+
+		rightButtonDown = function()
+			if vars.keytimer ~= nil then vars.keytimer:remove() end
+			if vars.selections[vars.selection] == "music" then
+				save.music += 1
+				if save.music > 5 then
+					save.music = 0
+				end
+				if save.music > 0 then
+					if music ~= nil then
+						music:setVolume(save.music / 5)
+					else
+						newmusic('audio/music/title', true)
+					end
+				else
+					fademusic(1)
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "sfx" then
+				save.sfx += 1
+				if save.sfx > 5 then
+					save.sfx = 0
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "lang" then
+				if save.lang == "en" then
+					save.lang = "fr"
+				elseif save.lang == "fr" then
+					save.lang = "en"
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "flip" then
+				save.flip = not save.flip
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "crank" then
+				if save.sensitivity == 2 then
+					save.sensitivity = 1
+					save.crank = true
+				elseif save.sensitivity == 1 then
+					save.sensitivity = 0
+					save.crank = false
+				elseif save.sensitivity == 0 then
+					save.sensitivity = 2
+					save.crank = true
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "skipfanfare" then
+				save.skipfanfare = not save.skipfanfare
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "hardmode" then
+				save.hardmode = not save.hardmode
+				playsound(assets.sfx_select)
+			end
+		end,
+
 		BButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
 			playsound(assets.sfx_back)

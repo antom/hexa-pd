@@ -84,15 +84,15 @@ function game:init(...)
 		label_3 = gfx.image.new('images/label_3'),
 		label_2 = gfx.image.new('images/label_2'),
 		label_1 = gfx.image.new('images/label_1'),
-		label_go = gfx.image.new('images/label_go'),
-		label_double = gfx.image.new('images/label_double'),
-		label_bomb = gfx.image.new('images/label_bomb'),
+		label_go = gfx.image.new('images/label_go_' .. tostring(save.lang)),
+		label_double = gfx.image.new('images/label_double_' .. tostring(save.lang)),
+		label_bomb = gfx.image.new('images/label_bomb_' .. tostring(save.lang)),
 		label_wild = gfx.image.new('images/label_wild'),
 		modal = gfx.image.new('images/modal'),
 		bg_tile = gfx.image.new('images/bg_tile'),
 		stars = gfx.image.new('images/stars_large'),
 		half = gfx.image.new('images/half'),
-		mission_complete = gfx.image.new('images/mission_complete'),
+		mission_complete = gfx.image.new('images/mission_complete_' .. tostring(save.lang)),
 	}
 
 	vars = {
@@ -759,12 +759,12 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 	assets.sfx_hexaprep:setRate(1 + (0.1 * vars.combo))
 	playsound(assets.sfx_hexaprep)
 	self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, true)
-	pd.timer.performAfterDelay(100, function()
+	pd.timer.performAfterDelay(70, function()
 		if not flash then
 			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, false)
 		end
 	end)
-	pd.timer.performAfterDelay(200, function()
+	pd.timer.performAfterDelay(140, function()
 		playsound(assets.sfx_hexaprep)
 		if flash then
 			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, false)
@@ -772,12 +772,12 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, true)
 		end
 	end)
-	pd.timer.performAfterDelay(300, function()
+	pd.timer.performAfterDelay(210, function()
 		if not flash then
 			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, false)
 		end
 	end)
-	pd.timer.performAfterDelay(400, function()
+	pd.timer.performAfterDelay(280, function()
 		if vars.can_do_stuff or (not vars.can_do_stuff and vars.ended) then
 			vars.hexas += 1
 			save.hexas += 1

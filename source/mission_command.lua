@@ -72,7 +72,7 @@ function mission_command:init(...)
 		ui = gfx.image.new('images/ui_create'),
 		modal = gfx.image.new('images/modal_small'),
 		x = gfx.image.new('images/x'),
-		export_complete = gfx.image.new('images/export_complete'),
+		export_complete = gfx.image.new('images/export_complete_' .. tostring(save.lang)),
 		powerup_double_up = gfx.imagetable.new('images/powerup_double_up'),
 		powerup_double_down = gfx.imagetable.new('images/powerup_double_down'),
 		powerup_bomb_up = gfx.imagetable.new('images/powerup_bomb_up'),

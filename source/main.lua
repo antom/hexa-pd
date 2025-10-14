@@ -33,16 +33,6 @@ local gfx <const> = pd.graphics
 local smp <const> = pd.sound.sampleplayer
 local fle <const> = pd.sound.fileplayer
 local text <const> = getLocalizedText
-local mask_arcade_true <const> = gfx.image.new('images/mask_arcade_true')
-local mask_arcade_false <const> = gfx.image.new('images/mask_arcade_false')
-local mask_zen <const> = gfx.image.new('images/mask_zen')
-local pause <const> = gfx.image.new('images/pause')
-local pause_luci <const> = gfx.image.new('images/pause_luci')
-local full_circle <const> = gfx.font.new('fonts/full-circle')
-local manual_qr <const> = gfx.image.new('images/manual_qr')
-local tris_x <const> = {140, 170, 200, 230, 260, 110, 140, 170, 200, 230, 260, 290, 110, 140, 170, 200, 230, 260, 290}
-local tris_y <const> = {70, 70, 70, 70, 70, 120, 120, 120, 120, 120, 120, 120, 170, 170, 170, 170, 170, 170, 170}
-local tris_flip <const> = {true, false, true, false, true, true, false, true, false, true, false, true, false, true, false, true, false, true, false}
 
 catalog = false
 if pd.metadata.bundleID == "wtf.rae.hexa" then
@@ -148,6 +138,17 @@ end
 
 updatecheevos()
 
+local mask_arcade_true = gfx.image.new('images/mask_arcade_true_' .. tostring(save.lang))
+local mask_arcade_false = gfx.image.new('images/mask_arcade_false_' .. tostring(save.lang))
+local mask_zen <const> = gfx.image.new('images/mask_zen')
+local pause <const> = gfx.image.new('images/pause')
+local pause_luci <const> = gfx.image.new('images/pause_luci')
+local full_circle <const> = gfx.font.new('fonts/full-circle')
+local manual_qr <const> = gfx.image.new('images/manual_qr')
+local tris_x <const> = {140, 170, 200, 230, 260, 110, 140, 170, 200, 230, 260, 290, 110, 140, 170, 200, 230, 260, 290}
+local tris_y <const> = {70, 70, 70, 70, 70, 120, 120, 120, 120, 120, 120, 120, 170, 170, 170, 170, 170, 170, 170}
+local tris_flip <const> = {true, false, true, false, true, true, false, true, false, true, false, true, false, true, false, true, false, true, false}
+
 -- Create custom missions folder.
 if not pd.file.isdir('missions') then
 	pd.file.mkdir('missions')
@@ -159,6 +160,8 @@ function pd.gameWillTerminate()
 end
 
 function pauseimage(mode)
+	mask_arcade_true = gfx.image.new('images/mask_arcade_true_' .. tostring(save.lang))
+	mask_arcade_false = gfx.image.new('images/mask_arcade_false_' .. tostring(save.lang))
     if mode == nil or not vars.can_do_stuff then
 		if vars.mode ~= nil and (vars.mode == 'edit' or vars.mode == 'save') then
 			local pauseimg = pause:copy()
