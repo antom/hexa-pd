@@ -932,16 +932,17 @@ function game:boom(boomed)
 		if ((boomed and not vars.boomed) or (not boomed)) and vars.can_do_stuff then
 			shakies()
 			shakies_y()
-			if boomed then
-				vars.boomed = true
-			end
 			for i = 1, 19 do
 				newcolor, newpowerup = self:randomizetri()
 				vars.tris[i] = {index = i, color = newcolor, powerup = newpowerup}
 			end
 			playsound(assets.sfx_boom)
 			assets.draw_label = assets.label_bomb
-			vars.anim_label:resetnew(1200, 400, -100, pd.easingFunctions.linear)
+			vars.anim_label:resetnew(1200, 400, -200, pd.easingFunctions.linear)
+			if boomed then
+				vars.boomed = true
+				self:check()
+			end
 		end
 	end
 end
