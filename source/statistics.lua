@@ -16,7 +16,7 @@ function statistics:init(...)
 		menu:removeAllMenuItems()
 		if not scenemanager.transitioning then
 			menu:addMenuItem(text('goback'), function()
-				scenemanager:transitionscene(title, false, 'credits')
+				scenemanager:transitionscene(title, false, 'statistics')
 			end)
 		end
 	end
@@ -39,7 +39,7 @@ function statistics:init(...)
 	vars.statisticsHandlers = {
 		BButtonDown = function()
 			playsound(assets.sfx_back)
-			scenemanager:transitionscene(title, false, 'credits')
+			scenemanager:transitionscene(title, false, 'statistics')
 		end
 	}
 	pd.timer.performAfterDelay(scenemanager.transitiontime, function()

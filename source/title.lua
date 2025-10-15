@@ -30,7 +30,7 @@ function title:init(...)
 				fademusic()
 			end)
 			if catalog then
-				menu:addMenuItem(text('highscores'), function()
+				menu:addMenuItem(text('rankings'), function()
 					scenemanager:transitionscene(highscores)
 					vars.selection = 0
 				end)
