@@ -9,7 +9,7 @@ local tris_x <const> = {140, 170, 200, 230, 260, 110, 140, 170, 200, 230, 260, 2
 local tris_y <const> = {70, 70, 70, 70, 70, 120, 120, 120, 120, 120, 120, 120, 170, 170, 170, 170, 170, 170, 170}
 local tris_flip <const> = {true, false, true, false, true, true, false, true, false, true, false, true, false, true, false, true, false, true, false}
 local floor <const> = math.floor
-local flash <const> = pd.getReduceFlashing()
+local flash_opts <const> = {pd.getReduceFlashing(), false, true}
 local random <const> = math.random
 
 class('mission_command').extends(gfx.sprite) -- Create the scene's class
@@ -111,6 +111,7 @@ function mission_command:init(...)
 		author_name = save.author_name ~= '' and save.author_name or 'HEXA MASTR',
 		export = {},
 		puzzle_exported = false,
+		flash = flash_opts[save.flashing],
 	}
 	vars.mission_command_startHandlers = {
 		upButtonDown = function()
@@ -1023,7 +1024,7 @@ function mission_command:init(...)
 		gfx.setLineWidth(2)
 		if self.show_powerup then
 			assets.x:draw(50, 116)
-			if flash then
+			if vars.flash then
 				if assets['powerup_double_up'] ~= nil then assets['powerup_double_up'][1]:draw(91, 104) end
 				if assets['powerup_bomb_up'] ~= nil then assets['powerup_bomb_up'][1]:draw(148, 102) end
 				gfx.setClipRect(155 + 55, 112, 41, 41)
@@ -1173,7 +1174,7 @@ function mission_command:tri(x, y, up, color, powerup)
 	end
 	gfx.setColor(gfx.kColorBlack)
 	if powerup ~= "" then
-		if flash then
+		if vars.flash then
 			if up then
 				if assets['powerup_' .. powerup .. '_up'] ~= nil then assets['powerup_' .. powerup .. '_up'][1]:draw(x - 28, y - 23) end
 			else

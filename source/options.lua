@@ -42,9 +42,11 @@ function options:init(...)
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
 		anim_stars_large_y = pd.timer.new(1250, 0, -239),
 		anim_fg_hexa = pd.timer.new(3000, 0, 7, pd.easingFunctions.inOutSine),
-		selections = {'music', 'sfx', 'lang', 'flip', 'crank', 'skipfanfare', 'hardmode', 'reset'},
+		selections = {'lang', 'music', 'sfx', 'flip', 'crank', 'skipfanfare', 'hardmode', 'flashing', 'olddelay', 'reset'},
 		selection = 0,
 		resetprogress = 1,
+		flashing_text = {text('flashing_auto'), text(true), text(false)},
+		olddelay_text = {text(false), text(true)},
 	}
 	vars.optionsHandlers = {
 		upButtonDown = function()
@@ -140,6 +142,18 @@ function options:init(...)
 			elseif vars.selections[vars.selection] == "hardmode" then
 				save.hardmode = not save.hardmode
 				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "flashing" then
+				save.flashing -= 1
+				if save.flashing < 1 then
+					save.flashing = 3
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "olddelay" then
+				save.flash_int -= 1
+				if save.flash_int < 1 then
+					save.flash_int = 2
+				end
+				playsound(assets.sfx_select)
 			end
 		end,
 
@@ -193,6 +207,18 @@ function options:init(...)
 				playsound(assets.sfx_select)
 			elseif vars.selections[vars.selection] == "hardmode" then
 				save.hardmode = not save.hardmode
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "flashing" then
+				save.flashing += 1
+				if save.flashing > 3 then
+					save.flashing = 1
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "olddelay" then
+				save.flash_int += 1
+				if save.flash_int > 2 then
+					save.flash_int = 1
+				end
 				playsound(assets.sfx_select)
 			end
 		end,
@@ -272,6 +298,18 @@ function options:init(...)
 					save.exported_mission = false
 					updatecheevos()
 				end
+			elseif vars.selections[vars.selection] == "flashing" then
+				save.flashing += 1
+				if save.flashing > 3 then
+					save.flashing = 1
+				end
+				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "olddelay" then
+				save.flash_int += 1
+				if save.flash_int > 2 then
+					save.flash_int = 1
+				end
+				playsound(assets.sfx_select)
 			end
 			playsound(assets.sfx_select)
 		end,
@@ -294,41 +332,22 @@ function options:init(...)
 		gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
 		gfx.fillRect(0, 0, 400, 240)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		if vars.selections[vars.selection] ~= "music" then
-			assets.half_circle:drawTextAligned(text('options_music') .. tostring(save.music), 200, 30, kTextAlignment.center)
-		end
-		if vars.selections[vars.selection] ~= "sfx" then
-			assets.half_circle:drawTextAligned(text('options_sfx') .. tostring(save.sfx), 200, 50, kTextAlignment.center)
-		end
-		if vars.selections[vars.selection] ~= "lang" then
-			assets.half_circle:drawTextAligned(text('options_lang') .. text(save.lang), 200, 70, kTextAlignment.center)
-		end
-		if vars.selections[vars.selection] ~= "flip" then
-			assets.half_circle:drawTextAligned(text('options_flip') .. text(tostring(save.flip)), 200, 90, kTextAlignment.center)
-		end
-		if vars.selections[vars.selection] ~= "crank" then
-			assets.half_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 110, kTextAlignment.center)
-		end
-		if vars.selections[vars.selection] ~= "skipfanfare" then
-			assets.half_circle:drawTextAligned(text('options_skipfanfare') .. text(tostring(save.skipfanfare)), 200, 130, kTextAlignment.center)
-		end
-		if vars.selections[vars.selection] ~= "hardmode" then
-			assets.half_circle:drawTextAligned(text('options_hardmode') .. text(tostring(save.hardmode)), 200, 150, kTextAlignment.center)
-		end
-		if vars.selections[vars.selection] ~= "reset" then
-			assets.half_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 170, kTextAlignment.center)
-		end
-		if vars.selections[vars.selection] == 'reset' then
-			assets.full_circle:drawTextAligned(text('options_reset_' .. vars.resetprogress), 200, 10 + (20 * vars.selection), kTextAlignment.center)
-		else
-			if vars.selections[vars.selection] == "crank" then
-				assets.full_circle:drawTextAligned(text('options_crank') .. text(tostring(save.sensitivity)), 200, 10 + (20 * vars.selection), kTextAlignment.center)
-			elseif vars.selections[vars.selection] == "music" or vars.selections[vars.selection] == "sfx" then
-				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. tostring(save[vars.selections[vars.selection]])) or (' '), 200, 10 + (20 * vars.selection), kTextAlignment.center)
+
+		for i = 1, #vars.selections do
+			if i == vars.selection then
+				font_style = 'full_circle'
 			else
-				assets.full_circle:drawTextAligned((vars.selection > 0 and text('options_' .. vars.selections[vars.selection]) .. text(tostring(save[vars.selections[vars.selection]]))) or (' '), 200, 10 + (20 * vars.selection), kTextAlignment.center)
+				font_style = 'half_circle'
 			end
+
+			assets[font_style]:drawTextAligned(
+				options:selectionText(vars.selections[i]),
+				190,
+				10 + ((i - 1) * 20),
+				kTextAlignment.center
+			)
 		end
+
 		assets.half_circle:drawText('v' .. pd.metadata.version, 65, 205)
 		assets.half_circle:drawText(text('move') .. ' ' .. text('toggle'), 70, 220)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
@@ -338,6 +357,30 @@ function options:init(...)
 	end)
 
 	self:add()
+end
+
+function options:selectionText(selection)
+	if selection == 'lang' then
+		return text('options_lang') .. text(save.lang)
+	elseif selection == 'music' then
+		return text('options_music') .. tostring(save.music)
+	elseif selection == 'sfx' then
+		return text('options_sfx') .. tostring(save.sfx)
+	elseif selection == "flip" then
+		return text('options_flip') .. text(tostring(save.flip))
+	elseif selection == "crank" then
+		return text('options_crank') .. text(tostring(save.sensitivity))
+	elseif selection == "skipfanfare" then
+		return text('options_skipfanfare') .. text(tostring(save.skipfanfare))
+	elseif selection == "hardmode" then
+		return text('options_hardmode') .. text(tostring(save.hardmode))
+	elseif selection == "flashing" then
+		return text('options_flashing') .. text(tostring(vars.flashing_text[save.flashing]))
+	elseif selection == "olddelay" then
+		return text('options_olddelay') .. text(tostring(vars.olddelay_text[save.flash_int]))
+	elseif selection == "reset" then
+		return text('options_reset_' .. vars.resetprogress)
+	end
 end
 
 function options:update()

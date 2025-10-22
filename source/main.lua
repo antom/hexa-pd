@@ -109,6 +109,8 @@ function savecheck()
 	save.double_match = save.double_match or 0
 	save.bomb_match = save.bomb_match or 0
 	save.wild_match = save.wild_match or 0
+	save.flashing = save.flashing or 1
+	save.flash_int = save.flash_int or 1
 end
 
 -- ... now we run that!

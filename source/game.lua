@@ -13,8 +13,9 @@ local tris_flip <const> = {true, false, true, false, true, true, false, true, fa
 local text <const> = getLocalizedText
 local min <const> = math.min
 local exp <const> = math.exp
-local flash <const> = pd.getReduceFlashing()
 local messagerand <const> = random(1, 10)
+local flash_opts <const> = {pd.getReduceFlashing(), false, true}
+local flash_int_opts <const> = {70, 100}
 
 class('game').extends(gfx.sprite) -- Create the scene's class
 function game:init(...)
@@ -62,7 +63,7 @@ function game:init(...)
 		full_circle = gfx.font.new('fonts/full-circle'),
 		half_circle = gfx.font.new('fonts/full-circle-halved'),
 		clock = gfx.font.new('fonts/clock'),
-		hexa = gfx.imagetable.new('images/hexa_' .. tostring(flash)),
+		hexa = gfx.imagetable.new('images/hexa_' .. tostring(flash_opts[save.flashing])),
 		sfx_move = smp.new('audio/sfx/move'),
 		sfx_bonk = smp.new('audio/sfx/bonk'),
 		sfx_swap = smp.new('audio/sfx/swap'),
@@ -130,6 +131,8 @@ function game:init(...)
 		crank_deadzone = 0,
 		crank_change = 0,
 		crank_degrees = 0,
+		flash = flash_opts[save.flashing],
+		flash_int = flash_int_opts[save.flash_int]
 	}
 	vars.gameHandlers = {
 		leftButtonDown = function()
@@ -292,7 +295,7 @@ function game:init(...)
 	end
 
 	if vars.mode ~= "dailyrun" then
-		if flash then
+		if vars.flash then
 			vars.anim_bg_tile_x = pd.timer.new(1, 0, 0)
 			vars.anim_bg_tile_y = pd.timer.new(1, 0, 0)
 		else
@@ -597,7 +600,7 @@ function game:tri(x, y, up, color, powerup)
 	end
 	gfx.setColor(gfx.kColorBlack)
 	if powerup ~= "" then
-		if flash then
+		if vars.flash then
 			if up then
 				if assets['powerup_' .. powerup .. '_up'] ~= nil then assets['powerup_' .. powerup .. '_up'][1]:draw(x - 28, y - 23) end
 			else
@@ -759,25 +762,21 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 	assets.sfx_hexaprep:setRate(1 + (0.1 * vars.combo))
 	playsound(assets.sfx_hexaprep)
 	self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, true)
-	pd.timer.performAfterDelay(70, function()
-		if not flash then
+	pd.timer.performAfterDelay(vars.flash_int, function()
+		if not vars.flash then
 			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, false)
 		end
 	end)
-	pd.timer.performAfterDelay(140, function()
+	pd.timer.performAfterDelay(vars.flash_int * 2, function()
 		playsound(assets.sfx_hexaprep)
-		if flash then
-			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, false)
-		else
-			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, true)
-		end
+		self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, not vars.flash)
 	end)
-	pd.timer.performAfterDelay(210, function()
-		if not flash then
+	pd.timer.performAfterDelay(vars.flash_int * 3, function()
+		if not vars.flash then
 			self:colorflip(temp1, temp2, temp3, temp4, temp5, temp6, false)
 		end
 	end)
-	pd.timer.performAfterDelay(280, function()
+	pd.timer.performAfterDelay(vars.flash_int * 4, function()
 		if vars.can_do_stuff or (not vars.can_do_stuff and vars.ended) then
 			vars.hexas += 1
 			save.hexas += 1
