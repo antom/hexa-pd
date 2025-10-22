@@ -333,6 +333,8 @@ function options:init(...)
 		gfx.fillRect(0, 0, 400, 240)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 
+		local offsetY = math.floor((12 - #vars.selections) / 2)
+
 		for i = 1, #vars.selections do
 			if i == vars.selection then
 				font_style = 'full_circle'
@@ -343,7 +345,7 @@ function options:init(...)
 			assets[font_style]:drawTextAligned(
 				options:selectionText(vars.selections[i]),
 				190,
-				10 + ((i - 1) * 20),
+				((offsetY + (i - 1)) * 20) - 10,
 				kTextAlignment.center
 			)
 		end
