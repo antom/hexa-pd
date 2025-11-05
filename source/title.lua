@@ -102,6 +102,62 @@ function title:init(...)
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
 		end,
 
+		leftButtonDown = function()
+			local canToggle = (vars.selections[vars.selection] == "arcade" or vars.selections[vars.selection] == "dailyrun")
+
+			if not canToggle then return end
+
+			if vars.keytimer ~= nil then vars.keytimer:remove() end
+
+			if vars.selections[vars.selection] == "dailyrun" and not vars.dailyrunnable then
+				canToggle = false
+			end
+
+			if canToggle then
+				vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
+					save.hardmode = not save.hardmode
+					playsound(assets.sfx_move)
+				end)
+			else
+				shakies()
+				playsound(assets.sfx_bonk)
+			end
+		end,
+
+		leftButtonUp = function()
+			if vars.selections[vars.selection] == "arcade" or (vars.selections[vars.selection] == "dailyrun" and vars.dailyrunnable) then
+				if vars.keytimer ~= nil then vars.keytimer:remove() end
+			end
+		end,
+
+		rightButtonDown = function()
+			local canToggle = (vars.selections[vars.selection] == "arcade" or vars.selections[vars.selection] == "dailyrun")
+
+			if not canToggle then return end
+
+			if vars.keytimer ~= nil then vars.keytimer:remove() end
+
+			if vars.selections[vars.selection] == "dailyrun" and not vars.dailyrunnable then
+				canToggle = false
+			end
+
+			if canToggle then
+				vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
+					save.hardmode = not save.hardmode
+					playsound(assets.sfx_move)
+				end)
+			else
+				shakies()
+				playsound(assets.sfx_bonk)
+			end
+		end,
+
+		rightButtonUp = function()
+			if vars.selections[vars.selection] == "arcade" or (vars.selections[vars.selection] == "dailyrun" and vars.dailyrunnable) then
+				if vars.keytimer ~= nil then vars.keytimer:remove() end
+			end
+		end,
+
 		AButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
 			if vars.selections[vars.selection] == "arcade" then
@@ -264,19 +320,36 @@ function title:init(...)
 			end
 			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 50 + (20 * vars.selection), kTextAlignment.right)
 		end
+
+		local score_text = ""
+
 		if vars.selections[vars.selection] == "arcade" then
 			if save.hardmode then
-				if save.hard_score ~= 0 then
-					assets.full_circle:drawText(text('high') .. text('divvy') .. commalize(save.hard_score), 10 - vars.anim_title.value, 205)
+				if save.hard_score == 0 then
+					score_text = text("hard")
+				else
+					score_text = text('high') .. text('divvy') .. commalize(save.hard_score) .. " " .. text("hard")
 				end
-			else
-				if save.score ~= 0 then
-					assets.full_circle:drawText(text('high') .. text('divvy') .. commalize(save.score), 10 - vars.anim_title.value, 205)
-				end
+			elseif save.score ~= 0 then
+				score_text = text('high') .. text('divvy') .. commalize(save.score)
+			end
+
+			if score_text ~= "" then
+				assets.full_circle:drawText(score_text, 10 - vars.anim_title.value, 205)
 			end
 		elseif vars.selections[vars.selection] == "dailyrun" then
 			if save.lastdaily.score ~= 0 then
-				assets.full_circle:drawText(text('todaysscore') .. text('divvy') .. commalize(save.lastdaily.score), 10 - vars.anim_title.value, 205)
+				score_text = text('todaysscore') .. text('divvy') .. commalize(save.lastdaily.score)
+
+				if save.lastdaily.mode == "harddailyrun" then
+					score_text = score_text .. " " .. text("hard")
+				end
+			elseif save.hardmode then
+				score_text = text("hard")
+			end
+
+			if score_text ~= "" then
+				assets.full_circle:drawText(score_text, 10 - vars.anim_title.value, 205)
 			end
 		elseif vars.selections[vars.selection] == "missions" then
 			if save.highest_mission > 1 then

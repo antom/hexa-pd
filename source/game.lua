@@ -1168,9 +1168,10 @@ function game:endround()
 			end
 			if vars.mode == "dailyrun" then
 				if save.lastdaily.year == pd.getGMTTime().year and save.lastdaily.month == pd.getGMTTime().month and save.lastdaily.day == pd.getGMTTime().day then
+					save.lastdaily.mode = (save.hardmode and 'hard' .. vars.mode) or (vars.mode)
 					save.lastdaily.score = vars.score
 					if catalog then
-						pd.scoreboards.addScore((save.hardmode and 'hard' .. vars.mode) or (vars.mode), vars.score, function(status, result)
+						pd.scoreboards.addScore(save.lastdaily.mode, vars.score, function(status, result)
 							if status.code == "OK" then
 								save.lastdaily.sent = true
 							else

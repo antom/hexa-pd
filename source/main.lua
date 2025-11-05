@@ -82,6 +82,7 @@ function savecheck()
     save.lastdaily.day = save.lastdaily.day or 0
     save.lastdaily.score = save.lastdaily.score or 0
     if save.lastdaily.sent == nil then save.lastdaily.sent = false end
+    if save.lastdaily.mode == nil then save.lastdaily.mode = false end
     save.score = save.score or 0
 	save.hard_score = save.hard_score or 0
     save.swaps = save.swaps or 0
