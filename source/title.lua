@@ -238,124 +238,76 @@ function title:init(...)
 		gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
 		gfx.fillRect(250 + vars.anim_title.value, 12 + (catalog and 20 or 40), 200, 250)
 		assets.logo:draw(0, 0)
-		if catalog then
-			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-			if vars.selections[vars.selection] ~= "arcade" then
-				assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 50, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "zen" then
-				assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "dailyrun" then
-				assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "missions" then
-				assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "highscores" then
-				assets.half_circle:drawTextAligned(text('highscores'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "statistics" then
-				assets.half_circle:drawTextAligned(text('statistics'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "howtoplay" then
-				assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "options" then
-				assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "credits" then
-				assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] == "dailyrun" then
-				gfx.setImageDrawMode(gfx.kDrawModeCopy)
-				assets.timer:draw(206 + vars.anim_title.value, 82)
-				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-				if pd.getGMTTime().hour < 23 then
-					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 238 + vars.anim_title.value, 90, kTextAlignment.center)
-				elseif pd.getGMTTime().minute < 59 then
-					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 238 + vars.anim_title.value, 90, kTextAlignment.center)
-				else
-					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 238 + vars.anim_title.value, 90, kTextAlignment.center)
+		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+
+		local offsetY = 230 - ((#vars.selections + 1) * 20)
+
+		for i = 1, #vars.selections do
+			if i == vars.selection then
+				font_style = 'full_circle'
+
+				if vars.selections[vars.selection] == 'dailyrun' then
+					gfx.setImageDrawMode(gfx.kDrawModeCopy)
+					assets.timer:draw(206 + vars.anim_title.value, offsetY + (i * 20) - 8)
+					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+
+					local dailyrunicon = (vars.dailyrunnable and '⏰') or '🔒'
+					local dailyruntext
+
+					if pd.getGMTTime().hour < 23 then
+						dailyruntext = (24 - pd.getGMTTime().hour) .. text('hrs')
+					elseif pd.getGMTTime().minute < 59 then
+						dailyruntext = (60 - pd.getGMTTime().minute) .. text('mins')
+					else
+						dailyruntext = (60 - pd.getGMTTime().second) .. text('secs')
+					end
+
+					assets.half_circle:drawTextAligned(
+						dailyrunicon .. ' ' .. dailyruntext,
+						238 + vars.anim_title.value,
+						offsetY + (i * 20),
+						kTextAlignment.center
+					)
 				end
+			else
+				font_style = 'half_circle'
 			end
-			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 30 + (20 * vars.selection), kTextAlignment.right)
-		else
-			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-			if vars.selections[vars.selection] ~= "arcade" then
-				assets.half_circle:drawTextAligned(text('arcade'), 385 + vars.anim_title.value, 70, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "zen" then
-				assets.half_circle:drawTextAligned(text('zen'), 385 + vars.anim_title.value, 90, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "dailyrun" then
-				assets.half_circle:drawTextAligned(text('dailyrun'), 385 + vars.anim_title.value, 110, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "missions" then
-				assets.half_circle:drawTextAligned(text('missions'), 385 + vars.anim_title.value, 130, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "statistics" then
-				assets.half_circle:drawTextAligned(text('statistics'), 385 + vars.anim_title.value, 150, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "howtoplay" then
-				assets.half_circle:drawTextAligned(text('howtoplay'), 385 + vars.anim_title.value, 170, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "options" then
-				assets.half_circle:drawTextAligned(text('options'), 385 + vars.anim_title.value, 190, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] ~= "credits" then
-				assets.half_circle:drawTextAligned(text('credits'), 385 + vars.anim_title.value, 210, kTextAlignment.right)
-			end
-			if vars.selections[vars.selection] == "dailyrun" then
-				gfx.setImageDrawMode(gfx.kDrawModeCopy)
-				assets.timer:draw(206 + vars.anim_title.value, 82)
-				gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-				if pd.getGMTTime().hour < 23 then
-					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (24 - pd.getGMTTime().hour) .. text('hrs'), 238 + vars.anim_title.value, 110, kTextAlignment.center)
-				elseif pd.getGMTTime().minute < 59 then
-					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().minute) .. text('mins'), 238 + vars.anim_title.value, 110, kTextAlignment.center)
-				else
-					assets.half_circle:drawTextAligned(((vars.dailyrunnable and '⏰ ') or '🔒 ') .. (60 - pd.getGMTTime().second) .. text('secs'), 238 + vars.anim_title.value, 110, kTextAlignment.center)
-				end
-			end
-			assets.full_circle:drawTextAligned((vars.selection > 0 and text(vars.selections[vars.selection])) or (' '), 385 + vars.anim_title.value, 50 + (20 * vars.selection), kTextAlignment.right)
+
+			assets[font_style]:drawTextAligned(text(vars.selections[i]), 385 + vars.anim_title.value, offsetY + (i * 20), kTextAlignment.right)
 		end
 
-		local score_text = ""
+		local subtitle_text = ''
 
-		if vars.selections[vars.selection] == "arcade" then
+		if vars.selections[vars.selection] == 'arcade' then
 			if save.hardmode then
 				if save.hard_score == 0 then
-					score_text = text("hard")
+					subtitle_text = text('hard')
 				else
-					score_text = text('high') .. text('divvy') .. commalize(save.hard_score) .. " " .. text("hard")
+					subtitle_text = text('high') .. text('divvy') .. commalize(save.hard_score) .. ' ' .. text('hard')
 				end
 			elseif save.score ~= 0 then
-				score_text = text('high') .. text('divvy') .. commalize(save.score)
+				subtitle_text = text('high') .. text('divvy') .. commalize(save.score)
 			end
-
-			if score_text ~= "" then
-				assets.full_circle:drawText(score_text, 10 - vars.anim_title.value, 205)
-			end
-		elseif vars.selections[vars.selection] == "dailyrun" then
+		elseif vars.selections[vars.selection] == 'dailyrun' then
 			if save.lastdaily.score ~= 0 then
-				score_text = text('todaysscore') .. text('divvy') .. commalize(save.lastdaily.score)
+				subtitle_text = text('todaysscore') .. text('divvy') .. commalize(save.lastdaily.score)
 
-				if save.lastdaily.mode == "harddailyrun" then
-					score_text = score_text .. " " .. text("hard")
+				if save.lastdaily.mode == 'harddailyrun' then
+					subtitle_text = subtitle_text .. ' ' .. text('hard')
 				end
 			elseif save.hardmode then
-				score_text = text("hard")
+				subtitle_text = text('hard')
 			end
-
-			if score_text ~= "" then
-				assets.full_circle:drawText(score_text, 10 - vars.anim_title.value, 205)
-			end
-		elseif vars.selections[vars.selection] == "missions" then
+		elseif vars.selections[vars.selection] == 'missions' then
 			if save.highest_mission > 1 then
-				assets.full_circle:drawText(text('missions_completed') .. text('divvy') .. commalize(save.highest_mission - 1), 10 - vars.anim_title.value, 205)
+				subtitle_text = text('missions_completed') .. text('divvy') .. commalize(save.highest_mission - 1)
 			end
 		end
+
+		if subtitle_text ~= '' then
+			assets.full_circle:drawText(subtitle_text, 10 - vars.anim_title.value, 205)
+		end
+
 		assets.half_circle:drawText(text('move') .. ' ' .. text('select'), 10 - vars.anim_title.value, 220)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 	end)
