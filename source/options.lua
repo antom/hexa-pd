@@ -294,6 +294,15 @@ function options:init(...)
 							save.mission_bests['mission' .. i] = 0
 						end
 					end
+					--save.playtime = 0
+					--save.gametime = 0
+					save.total_score = 0
+					save.black_match = 0
+					save.gray_match = 0
+					save.white_match = 0
+					save.double_match = 0
+					save.bomb_match = 0
+					save.wild_match = 0
 					save.author_name = ''
 					save.exported_mission = false
 					updatecheevos()
