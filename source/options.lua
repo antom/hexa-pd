@@ -42,7 +42,7 @@ function options:init(...)
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
 		anim_stars_large_y = pd.timer.new(1250, 0, -239),
 		anim_fg_hexa = pd.timer.new(3000, 0, 7, pd.easingFunctions.inOutSine),
-		selections = {'lang', 'music', 'sfx', 'flip', 'crank', 'skipfanfare', 'hardmode', 'flashing', 'olddelay', 'reset'},
+		selections = {'lang', 'music', 'sfx', 'flip', 'crank', 'skipfanfare', 'flashing', 'olddelay', 'reset'},
 		selection = 0,
 		resetprogress = 1,
 		flashing_text = {text('flashing_auto'), text(true), text(false)},
@@ -139,9 +139,6 @@ function options:init(...)
 			elseif vars.selections[vars.selection] == "skipfanfare" then
 				save.skipfanfare = not save.skipfanfare
 				playsound(assets.sfx_select)
-			elseif vars.selections[vars.selection] == "hardmode" then
-				save.hardmode = not save.hardmode
-				playsound(assets.sfx_select)
 			elseif vars.selections[vars.selection] == "flashing" then
 				save.flashing -= 1
 				if save.flashing < 1 then
@@ -204,9 +201,6 @@ function options:init(...)
 				playsound(assets.sfx_select)
 			elseif vars.selections[vars.selection] == "skipfanfare" then
 				save.skipfanfare = not save.skipfanfare
-				playsound(assets.sfx_select)
-			elseif vars.selections[vars.selection] == "hardmode" then
-				save.hardmode = not save.hardmode
 				playsound(assets.sfx_select)
 			elseif vars.selections[vars.selection] == "flashing" then
 				save.flashing += 1
@@ -272,8 +266,6 @@ function options:init(...)
 				end
 			elseif vars.selections[vars.selection] == "skipfanfare" then
 				save.skipfanfare = not save.skipfanfare
-			elseif vars.selections[vars.selection] == "hardmode" then
-				save.hardmode = not save.hardmode
 			elseif vars.selections[vars.selection] == "reset" then
 				if vars.resetprogress < 3 then
 					vars.resetprogress += 1
@@ -342,7 +334,7 @@ function options:init(...)
 		gfx.fillRect(0, 0, 400, 240)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 
-		local offsetY = math.floor((12 - #vars.selections) / 2)
+		local offsetY = math.ceil((12 - #vars.selections) / 2)
 
 		for i = 1, #vars.selections do
 			if i == vars.selection then
@@ -383,8 +375,6 @@ function options:selectionText(selection)
 		return text('options_crank') .. text(tostring(save.sensitivity))
 	elseif selection == "skipfanfare" then
 		return text('options_skipfanfare') .. text(tostring(save.skipfanfare))
-	elseif selection == "hardmode" then
-		return text('options_hardmode') .. text(tostring(save.hardmode))
 	elseif selection == "flashing" then
 		return text('options_flashing') .. text(tostring(vars.flashing_text[save.flashing]))
 	elseif selection == "olddelay" then
