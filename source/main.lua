@@ -388,6 +388,14 @@ function playsound(sound)
 	end
 end
 
+function ratiotext(x, y)
+	if x > 0 and y > 0 then
+		return commalize(string.gsub(string.format("%.2f", x / y), ".00", "")) .. ':1'
+	else
+		return false
+	end
+end
+
 -- This function shakes the screen. int is a number representing intensity. time is a number representing duration
 function shakies(time, int)
     if pd.getReduceFlashing() or perf then -- If reduce flashing is enabled, then don't shake.

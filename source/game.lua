@@ -1087,20 +1087,30 @@ end
 function game:ersi()
 	vars.skippedfanfare = true
 	pd.inputHandlers.push(vars.loseHandlers, true)
+
+	local ratio = ratiotext(vars.moves, vars.hexas)
+
 	if vars.mode == "zen" then
 		gfx.pushContext(assets.modal)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 				assets.full_circle:drawTextAligned(text('zen1'), 240, 50, kTextAlignment.center)
 				if vars.moves == 1 then
-					assets.full_circle:drawTextAligned(text('stats1') .. commalize(vars.moves) .. text('stats2b'), 240, 90, kTextAlignment.center)
+					assets.full_circle:drawTextAligned(text('stats1') .. commalize(vars.moves) .. text('stats2b'), 240, 75, kTextAlignment.center)
 				else
-					assets.full_circle:drawTextAligned(text('stats1') .. commalize(vars.moves) .. text('stats2a'), 240, 90, kTextAlignment.center)
+					assets.full_circle:drawTextAligned(text('stats1') .. commalize(vars.moves) .. text('stats2a'), 240, 75, kTextAlignment.center)
 				end
 				if vars.hexas == 1 then
-					assets.full_circle:drawTextAligned(text('stats3') .. commalize(vars.hexas) .. text('stats4b'), 240, 105, kTextAlignment.center)
+					assets.full_circle:drawTextAligned(text('stats3') .. commalize(vars.hexas) .. text('stats4b'), 240, 90, kTextAlignment.center)
 				else
-					assets.full_circle:drawTextAligned(text('stats3') .. commalize(vars.hexas) .. text('stats4a'), 240, 105, kTextAlignment.center)
+					assets.full_circle:drawTextAligned(text('stats3') .. commalize(vars.hexas) .. text('stats4a'), 240, 90, kTextAlignment.center)
 				end
+
+				if ratio then
+					assets.full_circle:drawTextAligned(text('stats5a') .. ratio .. '.', 240, 120, kTextAlignment.center)
+				else
+					assets.full_circle:drawTextAligned(text('stats5b'), 240, 120, kTextAlignment.center)
+				end
+
 				assets.full_circle:drawTextAligned(text(vars.mode .. '_message' .. messagerand), 190, 150, kTextAlignment.center)
 				assets.half_circle:drawText(text('newgame') .. ' ' .. text('back'), 40, 205)
 			gfx.setImageDrawMode(gfx.kDrawModeCopy)
@@ -1110,15 +1120,22 @@ function game:ersi()
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 				assets.full_circle:drawTextAligned(text('score1') .. commalize(vars.score) .. text('score2'), 240, 50, kTextAlignment.center)
 				if vars.moves == 1 then
-					assets.full_circle:drawTextAligned(text('stats1') .. commalize(vars.moves) .. text('stats2b'), 240, 90, kTextAlignment.center)
+					assets.full_circle:drawTextAligned(text('stats1') .. commalize(vars.moves) .. text('stats2b'), 240, 75, kTextAlignment.center)
 				else
-					assets.full_circle:drawTextAligned(text('stats1') .. commalize(vars.moves) .. text('stats2a'), 240, 90, kTextAlignment.center)
+					assets.full_circle:drawTextAligned(text('stats1') .. commalize(vars.moves) .. text('stats2a'), 240, 75, kTextAlignment.center)
 				end
 				if vars.hexas == 1 then
-					assets.full_circle:drawTextAligned(text('stats3') .. commalize(vars.hexas) .. text('stats4b'), 240, 105, kTextAlignment.center)
+					assets.full_circle:drawTextAligned(text('stats3') .. commalize(vars.hexas) .. text('stats4b'), 240, 90, kTextAlignment.center)
 				else
-					assets.full_circle:drawTextAligned(text('stats3') .. commalize(vars.hexas) .. text('stats4a'), 240, 105, kTextAlignment.center)
+					assets.full_circle:drawTextAligned(text('stats3') .. commalize(vars.hexas) .. text('stats4a'), 240, 90, kTextAlignment.center)
 				end
+
+				if ratio then
+					assets.full_circle:drawTextAligned(text('stats5a') .. ratio .. '.', 240, 120, kTextAlignment.center)
+				else
+					assets.full_circle:drawTextAligned(text('stats5b'), 240, 120, kTextAlignment.center)
+				end
+
 				assets.full_circle:drawTextAligned(text(vars.mode .. '_message' .. messagerand), 190, 150, kTextAlignment.center)
 				if vars.mode == "dailyrun" then
 					if catalog then

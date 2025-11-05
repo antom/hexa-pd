@@ -51,6 +51,12 @@ function statistics:init(...)
 	vars.anim_stars_large_x.repeats = true
 	vars.anim_stars_large_y.repeats = true
 
+	local ratio = ratiotext(save.swaps, save.hexas)
+
+	if not ratio then
+		ratio = text('unavailable')
+	end
+
 	gfx.sprite.setBackgroundDrawingCallback(function(x, y, width, height)
 		assets.stars_small:draw(vars.anim_stars_small_x.value, vars.anim_stars_small_y.value)
 		assets.stars_large:draw(vars.anim_stars_large_x.value, vars.anim_stars_large_y.value)
@@ -74,7 +80,7 @@ function statistics:init(...)
 
 		assets.full_circle:drawText(commalize(save.swaps), 250, 5)
 		assets.full_circle:drawText(commalize(save.hexas), 250, 20)
-		assets.full_circle:drawText(string.format("%.2f", save.swaps / save.hexas) .. ':1', 250, 35)
+		assets.full_circle:drawText(ratio, 250, 35)
 		assets.full_circle:drawText(commalize(save.score), 250, 50)
 		assets.full_circle:drawText(commalize(save.hard_score), 250, 65)
 		local playhours, playmins, playsecs = timecalchour(save.playtime)
