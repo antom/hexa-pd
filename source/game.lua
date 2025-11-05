@@ -1490,56 +1490,16 @@ function game:update()
 	end
 
 	if vars.mode == "arcade" or vars.mode == "dailyrun" or vars.mode == "time" then
-		if vars.old_timer_value > 10000 and vars.timer.value <= 10000 then
-			shakies(500, 1)
-			shakies_y(750, 1)
-			playsound(assets.sfx_count)
+		if vars.timer.value < 10001 then
+			local otv = math.floor(vars.old_timer_value / 1000)
+
+			if otv > math.floor(vars.timer.value / 1000) then
+				shakies(500, 11 - otv)
+				shakies_y(750, 11 - otv)
+				playsound(assets.sfx_count)
+			end
 		end
-		if vars.old_timer_value > 9000 and vars.timer.value <= 9000 then
-			shakies(500, 2)
-			shakies_y(750, 2)
-			playsound(assets.sfx_count)
-		end
-		if vars.old_timer_value > 8000 and vars.timer.value <= 8000 then
-			shakies(500, 3)
-			shakies_y(750, 3)
-			playsound(assets.sfx_count)
-		end
-		if vars.old_timer_value > 7000 and vars.timer.value <= 7000 then
-			shakies(500, 4)
-			shakies_y(750, 4)
-			playsound(assets.sfx_count)
-		end
-		if vars.old_timer_value > 6000 and vars.timer.value <= 6000 then
-			shakies(500, 5)
-			shakies_y(750, 5)
-			playsound(assets.sfx_count)
-		end
-		if vars.old_timer_value > 5000 and vars.timer.value <= 5000 then
-			shakies(500, 6)
-			shakies_y(750, 6)
-			playsound(assets.sfx_count)
-		end
-		if vars.old_timer_value > 4000 and vars.timer.value <= 4000 then
-			shakies(500, 7)
-			shakies_y(750, 7)
-			playsound(assets.sfx_count)
-		end
-		if vars.old_timer_value > 3000 and vars.timer.value <= 3000 then
-			shakies(500, 8)
-			shakies_y(750, 8)
-			playsound(assets.sfx_count)
-		end
-		if vars.old_timer_value > 2000 and vars.timer.value <= 2000 then
-			shakies(500, 9)
-			shakies_y(750, 9)
-			playsound(assets.sfx_count)
-		end
-		if vars.old_timer_value > 1000 and vars.timer.value <= 1000 then
-			shakies(500, 10)
-			shakies_y(750, 10)
-			playsound(assets.sfx_count)
-		end
+
 		vars.old_timer_value = vars.timer.value
 	end
 	if vars.mode == "speedrun" and vars.can_do_stuff then
