@@ -28,30 +28,35 @@ function game:init(...)
 		pauseimage(vars.mode, vars.mission or nil)
 		menu:removeAllMenuItems()
 		if not scenemanager.transitioning then
-			if vars.can_do_stuff and (vars.mode == "logic" or vars.mode == "time" or vars.mode == "picture" or vars.mode == "speedrun") then
-				menu:addMenuItem(text('exitmission'), function()
-					if vars.timer ~= nil then
-						vars.timer:pause()
-					end
-					vars.can_do_stuff = false
-					if vars.mission ~= nil and vars.mission > 50 then
-						scenemanager:transitionscene(missions, true)
-					else
-						scenemanager:transitionscene(missions)
-					end
-					fademusic()
-				end)
-			end
-			if vars.can_do_stuff and (vars.mode == "zen" or vars.mode == "arcade" or vars.mode == "dailyrun") then
-				menu:addMenuItem(text((vars.mode == "zen" and 'imdone') or 'endgame'), function()
-					self:endround()
-				end)
+			if vars.can_do_stuff then
+				if (vars.mode == "logic" or vars.mode == "time" or vars.mode == "picture" or vars.mode == "speedrun") then
+					menu:addMenuItem(text('exitmission'), function()
+						if vars.timer ~= nil then
+							vars.timer:pause()
+						end
+						vars.can_do_stuff = false
+						if vars.mission ~= nil and vars.mission > 50 then
+							scenemanager:transitionscene(missions, true)
+						else
+							scenemanager:transitionscene(missions)
+						end
+						fademusic()
+					end)
+				end
+
+				if (vars.mode == "zen" or vars.mode == "arcade" or vars.mode == "dailyrun") then
+					menu:addMenuItem(text((vars.mode == "zen" and 'imdone') or 'endgame'), function()
+						self:endround()
+					end)
+				end
+
 				if vars.mode == "arcade" then
 					menu:addMenuItem(text('restart'), function()
 						self:restart()
 					end)
 				end
 			end
+
 			menu:addCheckmarkMenuItem(text('flip'), save.flip, function(value)
 				save.flip = value
 			end)
