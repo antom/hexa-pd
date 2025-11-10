@@ -102,7 +102,7 @@ function options:init(...)
 					if music ~= nil then
 						music:setVolume(save.music / 5)
 					else
-						newmusic('audio/music/title', true)
+						newmusic('title', true)
 					end
 				else
 					fademusic(1)
@@ -165,7 +165,7 @@ function options:init(...)
 					if music ~= nil then
 						music:setVolume(save.music / 5)
 					else
-						newmusic('audio/music/title', true)
+						newmusic('title', true)
 					end
 				else
 					fademusic(1)
@@ -235,7 +235,7 @@ function options:init(...)
 					if music ~= nil then
 						music:setVolume(save.music / 5)
 					else
-						newmusic('audio/music/title', true)
+						newmusic('title', true)
 					end
 				else
 					fademusic(1)

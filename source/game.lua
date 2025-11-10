@@ -370,14 +370,14 @@ function game:init(...)
 				assets.draw_label = nil
 			end
 			playsound(assets.sfx_start)
-			newmusic('audio/music/arcade' .. math.random(1, 3), true)
+			newmusic('arcade' .. math.random(1, 3), true)
 			vars.can_do_stuff = true
 			self:check()
 		end)
 	elseif vars.mode == "zen" then
 		assets.ui = gfx.image.new('images/ui_zen')
 		pd.timer.performAfterDelay(1000, function()
-			newmusic('audio/music/zen' .. math.random(1, 2), true)
+			newmusic('zen' .. math.random(1, 2), true)
 			vars.can_do_stuff = true
 			self:check()
 		end)
@@ -408,13 +408,13 @@ function game:init(...)
 			end
 			playsound(assets.sfx_start)
 			vars.tris = deepcopy(vars.start)
-			newmusic('audio/music/zen' .. math.random(1, 2), true)
+			newmusic('zen' .. math.random(1, 2), true)
 			vars.can_do_stuff = true
 		end)
 	elseif vars.mode == "logic" then
 		assets.ui = gfx.image.new('images/ui_zen')
 		pd.timer.performAfterDelay(1000, function()
-			newmusic('audio/music/zen' .. math.random(1, 2), true)
+			newmusic('zen' .. math.random(1, 2), true)
 			vars.can_do_stuff = true
 			self:check()
 		end)
@@ -443,7 +443,7 @@ function game:init(...)
 				assets.draw_label = nil
 			end
 			playsound(assets.sfx_start)
-			newmusic('audio/music/arcade' .. math.random(1, 3), true)
+			newmusic('arcade' .. math.random(1, 3), true)
 			vars.can_do_stuff = true
 		end)
 	elseif vars.mode == "time" then
@@ -477,7 +477,7 @@ function game:init(...)
 				assets.draw_label = nil
 			end
 			playsound(assets.sfx_start)
-			newmusic('audio/music/arcade' .. math.random(1, 3), true)
+			newmusic('arcade' .. math.random(1, 3), true)
 			vars.can_do_stuff = true
 			self:check()
 		end)
@@ -1083,7 +1083,7 @@ function game:restart()
 			assets.draw_label = nil
 		end
 		playsound(assets.sfx_start)
-		newmusic('audio/music/arcade' .. math.random(1, 3), true)
+		newmusic('arcade' .. math.random(1, 3), true)
 		vars.can_do_stuff = true
 		self:check()
 	end)
@@ -1206,7 +1206,7 @@ function game:endround()
 			end
 			updatecheevos()
 			pd.datastore.write(save)
-			newmusic('audio/music/lose')
+			newmusic('lose')
 			vars.anim_modal:resetnew(500, 240, 0, pd.easingFunctions.outBack)
 			if save.skipfanfare then
 				self:ersi()
@@ -1284,7 +1284,7 @@ function game:endround()
 				pd.inputHandlers.push(vars.losingHandlers, true)
 			end
 			pd.datastore.write(save)
-			newmusic('audio/music/zen_end')
+			newmusic('zen_end')
 			vars.anim_modal:resetnew(500, 240, 0, pd.easingFunctions.outBack)
 			if save.skipfanfare then
 				self:ersi()

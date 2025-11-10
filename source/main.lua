@@ -43,6 +43,18 @@ pd.display.setRefreshRate(30)
 gfx.setBackgroundColor(gfx.kColorBlack)
 gfx.setLineWidth(3)
 
+-- Scan the music folder & build a list of available tunes
+tunes = {}
+
+for i, file in ipairs(pd.file.listFiles('audio/music')) do
+	if string.sub(file, -4) == '.pda' then
+		tunes[i] = string.sub(file, 1, -5)
+	end
+end
+
+-- Load any custom tune titles
+tune_titles = pd.datastore.read('tunes') or {}
+
 -- Save check
 function savecheck()
     save = pd.datastore.read()
@@ -276,7 +288,7 @@ end
 -- New music track. This should be called in a scene's init, only if there's no track leading into it. File is a path to an audio file in the PDX. Loop, if true, will loop the audio file. Range will set the loop's starting range.
 function newmusic(file, loop, range)
     if save.music and music == nil then -- If a music file isn't actively playing...then go ahead and set a new one.
-        music = fle.new(file)
+        music = fle.new('audio/music/' .. file)
 		music:setVolume(save.music / 5)
         if loop then -- If set to loop, then ... loop it!
             music:setLoopRange(range or 0)

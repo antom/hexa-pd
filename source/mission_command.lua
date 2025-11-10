@@ -1135,7 +1135,7 @@ function mission_command:init(...)
 	sprites.selector = classes.selector()
 	sprites.error = classes.error()
 
-	newmusic('audio/music/zen' .. math.random(1, 2), true)
+	newmusic('zen' .. math.random(1, 2), true)
 	self:add()
 end
 

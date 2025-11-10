@@ -212,12 +212,13 @@ en = {
 	["move"] = "The D-pad moves.",
 	["page"] = "The D-pad turns the page.",
 	["scrolls"] = "A scrolls.",
-	["music_title"] = "🎵 dear Dragon - MUSMUS",
-	["music_arcade1"] = "🎵 Edge of the galaxy - MusMus",
-	["music_arcade2"] = "🎵 The entrance of Queen of fate - MusMus",
-	["music_arcade3"] = "🎵 PsychoChemical - MusMus",
-	["music_zen1"] = "🎵 Sweet vermouth - MusMus",
-	["music_zen2"] = "🎵 Solid based scandal - MusMus"
+	["unknown_artist"] = "Unknown Artist",
+	["music_title"] = "dear Dragon - MusMus",
+	["music_arcade1"] = "Edge of the galaxy - MusMus",
+	["music_arcade2"] = "The entrance of Queen of fate - MusMus",
+	["music_arcade3"] = "PsychoChemical - MusMus",
+	["music_zen1"] = "Sweet vermouth - MusMus",
+	["music_zen2"] = "Solid based scandal - MusMus"
 }
 
 fr = {
@@ -434,10 +435,11 @@ fr = {
 	["move"] = "Croix : déplacer.",
 	["page"] = "Croix : tourner la page.",
 	["scrolls"] = "A : défiler.",
-	["music_title"] = "🎵 dear Dragon - MUSMUS",
-	["music_arcade1"] = "🎵 Edge of the galaxy - MusMus",
-	["music_arcade2"] = "🎵 The entrance of Queen of fate - MusMus",
-	["music_arcade3"] = "🎵 PsychoChemical - MusMus",
-	["music_zen1"] = "🎵 Sweet vermouth - MusMus",
-	["music_zen2"] = "🎵 Solid based scandal - MusMus"
+	["unknown_artist"] = "Artiste inconnu",
+	["music_title"] = "dear Dragon - MusMus",
+	["music_arcade1"] = "Edge of the galaxy - MusMus",
+	["music_arcade2"] = "The entrance of Queen of fate - MusMus",
+	["music_arcade3"] = "PsychoChemical - MusMus",
+	["music_zen1"] = "Sweet vermouth - MusMus",
+	["music_zen2"] = "Solid based scandal - MusMus"
 }

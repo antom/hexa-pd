@@ -139,7 +139,7 @@ function highscores:init(...)
 	end)
 
 	self:add()
-	newmusic('audio/music/title', true)
+	newmusic('title', true)
 	pd.datastore.write(save)
 end
 

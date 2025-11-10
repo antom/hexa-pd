@@ -60,13 +60,18 @@ function jukebox:init(...)
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
 		anim_ship_x = pd.timer.new(1700, -100, 200, pd.easingFunctions.outCubic),
 		anim_ship = pd.timer.new(400, 1, 4.99),
-		tunes = {'arcade1', 'arcade2', 'arcade3', 'title', 'zen1', 'zen2'},
 		num = 6,
 		showtext = true,
 		autolock = false,
 		anim_text_y = pd.timer.new(1, 0, 0)
 	}
 	vars.jukeboxHandlers = {
+		AButtonHeld = function()
+			if save.music then
+				fademusic()
+			end
+		end,
+
 		BButtonDown = function()
 			playsound(assets.sfx_back)
 			vars.anim_ship_x:resetnew(700, vars.anim_ship_x.value, 500, pd.easingFunctions.inBack)
@@ -80,8 +85,17 @@ function jukebox:init(...)
 			end
 			fademusic()
 			pd.setAutoLockDisabled(false)
-		end
+		end,
 	}
+
+	vars.playlist = {}
+
+	for i = 1, #tunes do
+		if tunes[i] == 'title' or string.match(tunes[i], '^arcade%d+$') or string.match(tunes[i], '^zen%d$') then
+			table.insert(vars.playlist, tunes[i])
+		end
+	end
+
 	pd.timer.performAfterDelay(scenemanager.transitiontime, function()
 		pd.inputHandlers.push(vars.jukeboxHandlers)
 	end)
@@ -99,8 +113,15 @@ function jukebox:init(...)
 		gfx.fillRect(0, 0, 400, 240)
 		assets.ship[floor(vars.anim_ship.value)]:drawAnchored(vars.anim_ship_x.value, 120, 0.5, 0.5)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+
+		local tune_title = tune_titles[vars.playlist[vars.rand]] or text('music_' .. vars.playlist[vars.rand])
+
+		if string.match(tune_title, '^music_') then
+			tune_title = string.sub(tune_title, 7) .. ' - ' .. text('unknown_artist')
+		end
+
 		if save.music and vars.rand then
-			assets.full_circle:drawText(text('music_' .. vars.tunes[vars.rand]), 10, 205 + vars.anim_text_y.value)
+			assets.full_circle:drawText('🎵 ' .. tune_title, 10, 205 + vars.anim_text_y.value)
 		end
 		assets.half_circle:drawText(text('back'), 10, 220 + vars.anim_text_y.value)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
@@ -115,7 +136,7 @@ end
 
 function jukebox:shuffle()
 	vars.rand = random(1, vars.num)
-	newmusic('audio/music/' .. vars.tunes[vars.rand])
+	newmusic(vars.playlist[vars.rand])
 	if music ~= nil then
 		music:setFinishCallback(function()
 			music = nil

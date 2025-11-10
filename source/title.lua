@@ -313,7 +313,7 @@ function title:init(...)
 	end)
 
 	self:add()
-	newmusic('audio/music/title', true)
+	newmusic('title', true)
 end
 
 function title:update()
