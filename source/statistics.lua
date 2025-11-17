@@ -35,6 +35,22 @@ function statistics:init(...)
 		anim_stars_small_y = pd.timer.new(2750, 0, -239),
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
 		anim_stars_large_y = pd.timer.new(1250, 0, -239),
+		values = {
+			{text('totalswaps'), commalize(save.swaps)},
+			{text('totalhexas'), commalize(save.hexas)},
+			{text('swapshexas'), ratiotext(save.swaps, save.hexas) or text('unavailable')},
+			{text('highscore'), commalize(save.score)},
+			{text('highscorehardmode'), commalize(save.hard_score)},
+			{text('playtime'), self:get_playtime()},
+			{text('gametime'), self:get_gametime()},
+			{text('totalscore'), commalize(save.total_score)},
+			{text('hexablack'), commalize(save.black_match)},
+			{text('hexagray'), commalize(save.gray_match)},
+			{text('hexawhite'), commalize(save.white_match)},
+			{text('hexadouble'), commalize(save.double_match)},
+			{text('kerplosion'), commalize(save.bomb_match)},
+			{text('hexawild'), commalize(save.wild_match)},
+		}
 	}
 	vars.statisticsHandlers = {
 		BButtonDown = function()
@@ -51,53 +67,37 @@ function statistics:init(...)
 	vars.anim_stars_large_x.repeats = true
 	vars.anim_stars_large_y.repeats = true
 
-	local ratio = ratiotext(save.swaps, save.hexas)
-
-	if not ratio then
-		ratio = text('unavailable')
-	end
-
 	gfx.sprite.setBackgroundDrawingCallback(function(x, y, width, height)
 		assets.stars_small:draw(vars.anim_stars_small_x.value, vars.anim_stars_small_y.value)
 		assets.stars_large:draw(vars.anim_stars_large_x.value, vars.anim_stars_large_y.value)
 		gfx.setDitherPattern(0.25, gfx.image.kDitherTypeBayer2x2)
 		gfx.fillRect(0, 0, 400, 240)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		assets.half_circle:drawTextAligned(text('totalswaps'), 240, 5, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('totalhexas'), 240, 20, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('swapshexas'), 240, 35, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('highscore'), 240, 50, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('highscorehardmode'), 240, 65, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('playtime'), 240, 80, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('gametime'), 240, 95, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('totalscore'), 240, 110, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('hexablack'), 240, 125, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('hexagray'), 240, 140, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('hexawhite'), 240, 155, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('hexadouble'), 240, 170, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('kerplosion'), 240, 185, kTextAlignment.right)
-		assets.half_circle:drawTextAligned(text('hexawild'), 240, 200, kTextAlignment.right)
 
-		assets.full_circle:drawText(commalize(save.swaps), 250, 5)
-		assets.full_circle:drawText(commalize(save.hexas), 250, 20)
-		assets.full_circle:drawText(ratio, 250, 35)
-		assets.full_circle:drawText(commalize(save.score), 250, 50)
-		assets.full_circle:drawText(commalize(save.hard_score), 250, 65)
-		local playhours, playmins, playsecs = timecalchour(save.playtime)
-		assets.full_circle:drawText(playhours .. 'h ' .. playmins .. 'm ' .. playsecs .. 's', 250, 80)
-		local gamehours, gamemins, gamesecs = timecalchour(save.gametime)
-		assets.full_circle:drawText(gamehours .. 'h ' .. gamemins .. 'm ' .. gamesecs .. 's', 250, 95)
-		assets.full_circle:drawText(commalize(save.total_score), 250, 110)
-		assets.full_circle:drawText(commalize(save.black_match), 250, 125)
-		assets.full_circle:drawText(commalize(save.gray_match), 250, 140)
-		assets.full_circle:drawText(commalize(save.white_match), 250, 155)
-		assets.full_circle:drawText(commalize(save.double_match), 250, 170)
-		assets.full_circle:drawText(commalize(save.bomb_match), 250, 185)
-		assets.full_circle:drawText(commalize(save.wild_match), 250, 200)
+		vars.values[6][2] = self:get_playtime()
+
+		local offset_y = 5
+
+		for i = 1, #vars.values do
+			assets.half_circle:drawTextAligned(vars.values[i][1] .. text('divvy'), 240, offset_y, kTextAlignment.right)
+			assets.full_circle:drawText(vars.values[i][2], 250, offset_y)
+			offset_y += 15
+		end
+
 		assets.half_circle:drawText(text('back'), 70, 220)
 		gfx.setImageDrawMode(gfx.kDrawModeCopy)
 		assets.fg:draw(0, 0)
 	end)
 
 	self:add()
+end
+
+function statistics:get_playtime()
+	local playhours, playmins, playsecs = timecalchour(save.playtime)
+	return playhours .. 'h ' .. playmins .. 'm ' .. playsecs .. 's'
+end
+
+function statistics:get_gametime()
+	local gamehours, gamemins, gamesecs = timecalchour(save.gametime)
+	return gamehours .. 'h ' .. gamemins .. 'm ' .. gamesecs .. 's'
 end
