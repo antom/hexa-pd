@@ -604,20 +604,8 @@ function game:tri(x, y, up, color, powerup)
 		end
 	end
 	gfx.setColor(gfx.kColorBlack)
-	if powerup ~= "" then
-		if vars.flash then
-			if up then
-				if assets['powerup_' .. powerup .. '_up'] ~= nil then assets['powerup_' .. powerup .. '_up'][1]:draw(x - 28, y - 23) end
-			else
-				if assets['powerup_' .. powerup .. '_down'] ~= nil then assets['powerup_' .. powerup .. '_down'][1]:draw(x - 28, y - 23) end
-			end
-		else
-			if up then
-				if assets['powerup_' .. powerup .. '_up'] ~= nil then assets['powerup_' .. powerup .. '_up'][floor(vars.anim_powerup.value)]:draw(x - 28, y - 23) end
-			else
-				if assets['powerup_' .. powerup .. '_down'] ~= nil then assets['powerup_' .. powerup .. '_down'][floor(vars.anim_powerup.value)]:draw(x - 28, y - 23) end
-			end
-		end
+	if powerup ~= '' then
+		assets['powerup_' .. powerup .. (up and '_up' or '_down')][math.max(1, math.min(vars.flash and 1 or floor(vars.anim_powerup.value), 4))]:draw(x - 28, y - 23)
 	end
 end
 
