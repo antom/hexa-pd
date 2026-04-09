@@ -64,18 +64,16 @@ function title:init(...)
 		anim_stars_large_y = pd.timer.new(1250, 0, -239),
 		dailyrunnable = false,
 		selection = 0,
+		game_mode_index = 0,
+		game_mode_variation = 0,
 	}
+
 	vars.titleHandlers = {
 		upButtonDown = function()
 			if vars.selection ~= 0 then
 				if vars.keytimer ~= nil then vars.keytimer:remove() end
 				vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
-					if vars.selection > 1 then
-						vars.selection -= 1
-					else
-						vars.selection = #vars.selections
-					end
-					playsound(assets.sfx_move)
+					self:change_selection(-1)
 				end)
 			end
 		end,
@@ -88,12 +86,7 @@ function title:init(...)
 			if vars.selection ~= 0 then
 				if vars.keytimer ~= nil then vars.keytimer:remove() end
 				vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
-					if vars.selection < #vars.selections then
-						vars.selection += 1
-					else
-						vars.selection = 1
-					end
-					playsound(assets.sfx_move)
+					self:change_selection(1)
 				end)
 			end
 		end,
@@ -103,88 +96,57 @@ function title:init(...)
 		end,
 
 		leftButtonDown = function()
-			local canToggle = (vars.selections[vars.selection] == "arcade" or vars.selections[vars.selection] == "dailyrun")
-
-			if not canToggle then return end
-
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
-
-			if vars.selections[vars.selection] == "dailyrun" and not vars.dailyrunnable then
-				canToggle = false
-			end
-
-			if canToggle then
-				vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
-					save.hardmode = not save.hardmode
-					playsound(assets.sfx_move)
-				end)
-			else
-				shakies()
-				playsound(assets.sfx_bonk)
-			end
+			self:toggle_mode_variation(-1)
 		end,
 
 		leftButtonUp = function()
-			if vars.selections[vars.selection] == "arcade" or (vars.selections[vars.selection] == "dailyrun" and vars.dailyrunnable) then
-				if vars.keytimer ~= nil then vars.keytimer:remove() end
-			end
+			if vars.keytimer ~= nil then vars.keytimer:remove() end
 		end,
 
 		rightButtonDown = function()
-			local canToggle = (vars.selections[vars.selection] == "arcade" or vars.selections[vars.selection] == "dailyrun")
-
-			if not canToggle then return end
-
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
-
-			if vars.selections[vars.selection] == "dailyrun" and not vars.dailyrunnable then
-				canToggle = false
-			end
-
-			if canToggle then
-				vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
-					save.hardmode = not save.hardmode
-					playsound(assets.sfx_move)
-				end)
-			else
-				shakies()
-				playsound(assets.sfx_bonk)
-			end
+			self:toggle_mode_variation(1)
 		end,
 
 		rightButtonUp = function()
-			if vars.selections[vars.selection] == "arcade" or (vars.selections[vars.selection] == "dailyrun" and vars.dailyrunnable) then
-				if vars.keytimer ~= nil then vars.keytimer:remove() end
-			end
+			if vars.keytimer ~= nil then vars.keytimer:remove() end
 		end,
 
 		AButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
-			if vars.selections[vars.selection] == "arcade" then
-				scenemanager:transitionscene(game, "arcade")
-				fademusic()
-			elseif vars.selections[vars.selection] == "zen" then
-				scenemanager:transitionscene(game, "zen")
-				fademusic()
-			elseif vars.selections[vars.selection] == "dailyrun" then
-				if vars.dailyrunnable then
-					scenemanager:transitionscene(game, "dailyrun")
-					save.lastdaily.score = 0
-					fademusic()
-					pd.timer.performAfterDelay(500, function()
-						save.lastdaily = pd.getGMTTime()
+
+			if vars.game_mode_index > 0 then
+				local selected_game_mode = game_mode_presets[vars.game_mode_index]
+				local selected_game_mode_variation = (selected_game_mode.variations and selected_game_mode.variations[vars.game_mode_variation]) or {}
+				local can_play = true
+
+				if type(selected_game_mode.missions) == 'table' then
+					scenemanager:transitionscene(missions, selected_game_mode)
+					return
+				elseif selected_game_mode.is_daily then
+					can_play = vars.dailyrunnable
+
+					if can_play then
 						save.lastdaily.score = 0
-						save.lastdaily.sent = false
-						pd.datastore.write(save)
-					end)
+						pd.timer.performAfterDelay(500, function()
+							save.lastdaily = pd.getGMTTime()
+							save.lastdaily.score = 0
+							save.lastdaily.sent = false
+							pd.datastore.write(save)
+						end)
+					end
+				end
+
+				if can_play then
+					scenemanager:transitionscene(game, vars.selections[vars.selection], selected_game_mode_variation.name or nil)
+					fademusic()
 				else
 					shakies()
 					playsound(assets.sfx_bonk)
 				end
 			elseif vars.selections[vars.selection] == "highscores" then
 				scenemanager:transitionscene(highscores, save.lbs_lastmode)
-			elseif vars.selections[vars.selection] == "missions" then
-				scenemanager:transitionscene(missions)
 			elseif vars.selections[vars.selection] == "statistics" then
 				scenemanager:transitionscene(statistics)
 			elseif vars.selections[vars.selection] == "howtoplay" then
@@ -206,18 +168,33 @@ function title:init(...)
 			for i = 1, #vars.selections do
 				if vars.selections[i] == vars.default then
 					vars.selection = i
+					self:change_selection()
 				end
 			end
 		end
 		if vars.selection == 0 then
-			vars.selection = 1
+			self:change_selection(1)
 		end
 	end)
 
+	vars.selections = {'statistics', 'howtoplay', 'options', 'credits'}
+	vars.text = {text('statistics'), text('howtoplay'), text('options'), text('credits')}
+
 	if catalog then
-		vars.selections = {'arcade', 'zen', 'dailyrun', 'missions', 'highscores', 'statistics', 'howtoplay', 'options', 'credits'}
-	else
-		vars.selections = {'arcade', 'zen', 'dailyrun', 'missions', 'statistics', 'howtoplay', 'options', 'credits'}
+		table.insert(vars.selections, 1, 'highscores')
+		table.insert(vars.text, 1, text('highscores'))
+	end
+
+	vars.game_modes = table.column(game_mode_presets, 'name')
+
+	for i = #vars.game_modes, 1, -1 do
+		table.insert(vars.selections, 1, vars.game_modes[i])
+
+		if game_mode_presets[i] ~= nil and game_mode_presets[i].lang ~= nil and game_mode_presets[i].lang[save.lang] ~= nil and game_mode_presets[i].lang[save.lang].title ~= nil then
+			table.insert(vars.text, 1, game_mode_presets[i].lang[save.lang].title)
+		else
+			table.insert(vars.text, 1, vars.game_modes[i] == 'custom' and text('custom_mode') or text(vars.game_modes[i]))
+		end
 	end
 
 	if vars.animate then
@@ -241,12 +218,15 @@ function title:init(...)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 
 		local offsetY = 230 - ((#vars.selections + 1) * 20)
+		local font_style
 
 		for i = 1, #vars.selections do
+			local selected = vars.selections[vars.selection]
+
 			if i == vars.selection then
 				font_style = 'full_circle'
 
-				if vars.selections[vars.selection] == 'dailyrun' then
+				if selected == 'dailyrun' then
 					gfx.setImageDrawMode(gfx.kDrawModeCopy)
 					assets.timer:draw(206 + vars.anim_title.value, offsetY + (i * 20) - 8)
 					gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
@@ -273,39 +253,50 @@ function title:init(...)
 				font_style = 'half_circle'
 			end
 
-			assets[font_style]:drawTextAligned(text(vars.selections[i]), 385 + vars.anim_title.value, offsetY + (i * 20), kTextAlignment.right)
+			assets[font_style]:drawTextAligned(vars.text[i], 385 + vars.anim_title.value, offsetY + (i * 20), kTextAlignment.right)
 		end
 
-		local subtitle_text = ''
+		if vars.game_mode_index > 0 then
+			local subtitle_text = ''
+			local selected_game_mode = game_mode_presets[vars.game_mode_index]
 
-		if vars.selections[vars.selection] == 'arcade' then
-			if save.hardmode then
-				if save.hard_score == 0 then
-					subtitle_text = text('hard')
+			if type(selected_game_mode.missions) == 'table' and (save[selected_game_mode.save_progress_to] or 1) > 1 then
+				subtitle_text = text('missions_completed') .. text('divvy') .. commalize(save[selected_game_mode.save_progress_to] - 1)
+			elseif selected_game_mode.variations ~= nil then
+				local selected_variation = selected_game_mode.variations[vars.game_mode_variation] or {}
+				local selected_variation_name = selected_variation.name or ''
+				local selected_variation_title = selected_game_mode.lang ~= nil and selected_game_mode.lang[save.lang] ~= nil and selected_game_mode.lang[save.lang]['title_variation_' .. selected_variation_name] or text(selected_variation.name)
+
+				if selected_game_mode.is_daily then
+					if save.lbs_lastmode == selected_game_mode.name and save.lastdaily.score ~= 0 then
+						subtitle_text = text('todaysscore') .. text('divvy') .. commalize(save.lastdaily.score)
+
+						if save.lastdaily.mode == 'harddailyrun' then
+							subtitle_text = subtitle_text .. ' ' .. text('hard')
+						end
+					else
+						if selected_variation_name ~= 'default' then
+							subtitle_text = subtitle_text .. ((subtitle_text ~= '' and ' ') or '') .. '(' .. selected_variation_title .. ')'
+						end
+					end
 				else
-					subtitle_text = text('high') .. text('divvy') .. commalize(save.hard_score) .. ' ' .. text('hard')
-				end
-			elseif save.score ~= 0 then
-				subtitle_text = text('high') .. text('divvy') .. commalize(save.score)
-			end
-		elseif vars.selections[vars.selection] == 'dailyrun' then
-			if save.lastdaily.score ~= 0 then
-				subtitle_text = text('todaysscore') .. text('divvy') .. commalize(save.lastdaily.score)
+					if selected_variation.save_score_to ~= nil then
+						local highscore = save[selected_variation.save_score_to] or 0
 
-				if save.lastdaily.mode == 'harddailyrun' then
-					subtitle_text = subtitle_text .. ' ' .. text('hard')
-				end
-			elseif save.hardmode then
-				subtitle_text = text('hard')
-			end
-		elseif vars.selections[vars.selection] == 'missions' then
-			if save.highest_mission > 1 then
-				subtitle_text = text('missions_completed') .. text('divvy') .. commalize(save.highest_mission - 1)
-			end
-		end
+						if highscore > 0 then
+							subtitle_text = text('high') .. text('divvy') .. commalize(highscore)
+						end
+					end
 
-		if subtitle_text ~= '' then
-			assets.full_circle:drawText(subtitle_text, 10 - vars.anim_title.value, 205)
+					if selected_variation_name ~= 'default' then
+						subtitle_text = subtitle_text .. ((subtitle_text ~= '' and ' ') or '') .. '(' .. selected_variation_title .. ')'
+					end
+				end
+			end
+
+			if subtitle_text ~= '' then
+				assets.full_circle:drawText(subtitle_text, 10 - vars.anim_title.value, 205)
+			end
 		end
 
 		assets.half_circle:drawText(text('move') .. ' ' .. text('select'), 10 - vars.anim_title.value, 220)
@@ -316,6 +307,58 @@ function title:init(...)
 	newmusic('title', true)
 end
 
+function title:change_selection(direction)
+	if direction ~= nil and (direction < 0 or direction > 0) then
+		vars.selection += direction
+
+		if vars.selection < 1 then
+			vars.selection = #vars.selections
+		elseif vars.selection > #vars.selections then
+			vars.selection = 1
+		end
+
+		playsound(assets.sfx_move)
+	end
+
+	vars.game_mode_index = 0
+	vars.game_mode_variation = 0
+
+	for i = 1, #game_mode_presets do
+		if game_mode_presets[i].name == vars.selections[vars.selection] then
+			vars.game_mode_index = i
+			vars.game_mode_variation = (game_mode_presets[i].variations and type(game_mode_presets[i].missions) ~= 'table' and 1) or 0
+		end
+	end
+end
+
+function title:toggle_mode_variation(direction)
+	local selection = vars.selections[vars.selection] or ''
+	local selected_game_mode = game_mode_presets[vars.game_mode_index] or nil
+
+	if selected_game_mode == nil then return end
+
+	local can_toggle = true
+
+	if (selected_game_mode.is_daily and not vars.dailyrunnable) or selected_game_mode.variations == nil or type(selected_game_mode.missions) == 'table' then
+		shakies()
+		playsound(assets.sfx_bonk)
+	else
+		vars.keytimer = pd.timer.keyRepeatTimerWithDelay(150, 75, function()
+			playsound(assets.sfx_move)
+
+			vars.game_mode_variation += direction
+
+			if vars.game_mode_variation < 1 then
+				vars.game_mode_variation = #selected_game_mode.variations
+			elseif vars.game_mode_variation > #selected_game_mode.variations then
+				vars.game_mode_variation = 1
+			end
+
+			save.hardmode = (selected_game_mode.variations[vars.game_mode_variation] and selected_game_mode.variations[vars.game_mode_variation].name == 'hard') or nil
+		end)
+	end
+end
+
 function title:update()
 	if save.lastdaily.year == pd.getGMTTime().year and save.lastdaily.month == pd.getGMTTime().month and save.lastdaily.day == pd.getGMTTime().day then
 		vars.dailyrunnable = false
@@ -324,12 +367,6 @@ function title:update()
 	end
 	local ticks = pd.getCrankTicks(8)
 	if ticks ~= 0 and vars.selection > 0 then
-		playsound(assets.sfx_move)
-		vars.selection += ticks
-		if vars.selection < 1 then
-			vars.selection = #vars.selections
-		elseif vars.selection > #vars.selections then
-			vars.selection = 1
-		end
+		self:change_selection(ticks)
 	end
 end

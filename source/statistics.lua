@@ -39,8 +39,8 @@ function statistics:init(...)
 			{text('totalswaps'), commalize(save.swaps)},
 			{text('totalhexas'), commalize(save.hexas)},
 			{text('swapshexas'), ratiotext(save.swaps, save.hexas) or text('unavailable')},
-			{text('highscore'), commalize(save.score)},
-			{text('highscorehardmode'), commalize(save.hard_score)},
+			--{text('highscore'), commalize(save.score)},
+			--{text('highscorehardmode'), commalize(save.hard_score)},
 			{text('playtime'), self:get_playtime()},
 			{text('gametime'), self:get_gametime()},
 			{text('totalscore'), commalize(save.total_score)},
@@ -76,7 +76,7 @@ function statistics:init(...)
 
 		vars.values[6][2] = self:get_playtime()
 
-		local offset_y = 5
+		local offset_y = 5 + (math.ceil((14 - #vars.values) / 2) * 15)
 
 		for i = 1, #vars.values do
 			assets.half_circle:drawTextAligned(vars.values[i][1] .. text('divvy'), 240, offset_y, kTextAlignment.right)

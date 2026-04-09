@@ -1,16 +1,7 @@
 classes = {}
 
-function getLocalizedText(key)
-	local data
-	if save.lang == 'en' then
-		data = en
-	elseif save.lang == 'fr' then
-		data = fr
-	end
-	return data and data[key] or key
-end
-
 -- Importing things
+import 'utility'
 import 'gridview'
 import 'CoreLibs/math'
 import 'CoreLibs/timer'
@@ -21,6 +12,7 @@ import 'CoreLibs/keyboard'
 import 'CoreLibs/graphics'
 import 'CoreLibs/animation'
 import 'langs'
+import 'game_modes'
 import 'achievements'
 import 'scenemanager'
 import 'cheevos'
@@ -153,9 +145,6 @@ end
 
 updatecheevos()
 
-local mask_arcade_true = gfx.image.new('images/mask_arcade_true_' .. tostring(save.lang))
-local mask_arcade_false = gfx.image.new('images/mask_arcade_false_' .. tostring(save.lang))
-local mask_zen <const> = gfx.image.new('images/mask_zen')
 local pause <const> = gfx.image.new('images/pause')
 local pause_luci <const> = gfx.image.new('images/pause_luci')
 local full_circle <const> = gfx.font.new('fonts/full-circle')
@@ -174,21 +163,21 @@ function pd.gameWillTerminate()
     pd.datastore.write(save)
 end
 
-function pauseimage(mode)
-	mask_arcade_true = gfx.image.new('images/mask_arcade_true_' .. tostring(save.lang))
-	mask_arcade_false = gfx.image.new('images/mask_arcade_false_' .. tostring(save.lang))
-    if mode == nil or not vars.can_do_stuff then
+function pauseimage()
+    if vars.game == nil or not vars.can_do_stuff then
 		if vars.mode ~= nil and (vars.mode == 'edit' or vars.mode == 'save') then
 			local pauseimg = pause:copy()
 			gfx.pushContext(pauseimg)
 			gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 			full_circle:drawText(text('mission_type'), 10, 70)
 			full_circle:drawTextAligned(text('command_' .. vars.mission_types[vars.mission_type]), 190, 85, kTextAlignment.right)
+
 			if vars.mission_types[vars.mission_type] ~= 'picture' then
 				gfx.setColor(gfx.kColorWhite)
 				gfx.drawLine(20, 104, 170, 104)
 				gfx.setColor(gfx.kColorBlack)
 			end
+
 			if vars.mission_types[vars.mission_type] == 'time' then
 				full_circle:drawText(text('time_limit'), 10, 111)
 				full_circle:drawTextAligned(vars.time_limits[vars.time_limit] .. text('secs'), 190, 111, kTextAlignment.right)
@@ -198,6 +187,7 @@ function pauseimage(mode)
 				full_circle:drawText(text('clear_goal'), 10, 111)
 				full_circle:drawTextAligned(text('command_' .. vars.clear_goals[vars.clear_goal]), 190, 111, kTextAlignment.right)
 			end
+
 			full_circle:drawText(text('need_help'), 90, 176)
 			gfx.setImageDrawMode(gfx.kDrawModeCopy)
 			manual_qr:draw(0, 158)
@@ -206,63 +196,82 @@ function pauseimage(mode)
 		else
         	pd.setMenuImage(pause_luci)
 		end
-    else
+    elseif vars.game ~= nil then
         local image = gfx.getDisplayImage()
         local pauseimg = pause:copy()
+
         gfx.pushContext(image)
-            if mode == "picture" then
-              assets.ui:draw(0, 0)
-              for i = 1, 19 do
-                game:tri(tris_x[i], tris_y[i], tris_flip[i], vars.goal[i].color, vars.goal[i].powerup)
-              end
-            end
-            if mode == "arcade" or mode == "dailyrun" or mode == "time" or mode == "speedrun" then
-              if save.crank then
-                mask_arcade_true:draw(0, 0)
-              else
-                mask_arcade_false:draw(0, 0)
-              end
-            elseif mode == "zen" or mode == "picture" or mode == "logic" then
-                mask_zen:draw(0, 0)
-            end
-        gfx.popContext()
-        gfx.pushContext(pauseimg)
-        if mode == "arcade" or mode == "dailyrun" or mode == "time" or mode == "speedrun" then
-            image:drawScaled(-45, 65, 0.666)
-        elseif mode == "zen" or mode == "picture" or mode == "logic" then
-            image:drawScaled(-33, 65, 0.666)
+
+        local mask_path = nil
+        local mask_offset_x = 0
+
+        if vars.game.name == 'arcade' or vars.game.name == 'dailyrun' or (vars.game.name == 'mission' and (vars.game.variation == 'time' or vars.game.variation == 'speedrun')) then
+        	mask_path = 'images/mask_arcade_' .. ((save.crank and 'true') or 'false') .. '_' .. tostring(save.lang)
+        	mask_offset_x = -45
+
+        elseif vars.game.name == 'zen' or (vars.game.name == 'mission' and (vars.game.variation == 'picture' or vars.game.variation == 'logic')) then
+        	mask_path = 'images/mask_zen'
+        	mask_offset_x = -33
         end
-        if vars.mode == "time" or vars.mode == "speedrun" or vars.mode == "picture" or vars.mode == "logic" then
+
+        if vars.game.goal ~= nil then
+          assets.ui:draw(0, 0)
+
+          for i = 1, 19 do
+            game:tri(tris_x[i], tris_y[i], tris_flip[i], vars.game.goal[i].color, vars.game.goal[i].powerup)
+          end
+        end
+
+        if mask_path ~= nil then
+          local mask_img = gfx.image.new(mask_path)
+          mask_img:draw(0, 0)
+        end
+
+        gfx.popContext()
+
+        gfx.pushContext(pauseimg)
+
+        image:drawScaled(mask_offset_x, 65, 0.666)
+
+        if vars.game.mission ~= nil then
 			local x = 0
 			local y = 0
 			local width = 200
 			local height = 80
 			local column = vars.mission
+			local mission_text = ''
+
+			if vars.game.variation ~= nil then
+				if vars.game.variation == 'picture' then
+					mission_text = text('mission_picture1') .. vars.mission.name .. text('mission_picture2')
+				elseif vars.game.variation == 'logic' or vars.game.variation == 'speedrun' then
+					mission_text = text('mission_' .. vars.game.variation .. '_' .. vars.game.modifier)
+				else
+					mission_text = text('mission_time')
+				end
+			end
+
 			gfx.setColor(gfx.kColorWhite)
 			gfx.fillRect(x, y, width, height)
+
 			gfx.setColor(gfx.kColorBlack)
 			gfx.setDitherPattern(0.75, gfx.image.kDitherTypeBayer2x2)
 			gfx.fillPolygon(x, y, x + width, y, x + width, y + height, x + width - (width * 0.2), y + height, x + width - (width * 0.05), y + (height / 2), x + width - (width * 0.2), y, x + width * 0.2, y, x + width * 0.05, y + (height / 2), x + width * 0.2, y + height, x, y + height, x, y)
+
 			gfx.setColor(gfx.kColorBlack)
-			if missions_list[column] ~= nil then
-				if missions_list[column].type == "picture" then
-					assets.full_circle:drawTextAligned(text('mission_picture1') .. missions_list[column].name .. text('mission_picture2'), x + (width / 2), y + (height / 8), kTextAlignment.center)
-				elseif missions_list[column].type == "logic" or missions_list[column].type == "speedrun" then
-					assets.full_circle:drawTextAligned(text('mission_' .. missions_list[column].type .. '_' .. missions_list[column].modifier), x + (width / 2), y + (height / 8), kTextAlignment.center)
-				else
-					assets.full_circle:drawTextAligned(text('mission_' .. missions_list[column].type), x + (width / 2), y + (height / 8), kTextAlignment.center)
-				end
-			else
-				if vars.mode == "picture" then
-					assets.full_circle:drawTextAligned(text('mission_picture1') .. vars.name .. text('mission_picture2'), x + (width / 2), y + (height / 8), kTextAlignment.center)
-				elseif vars.mode == "logic" or vars.mode == "speedrun" then
-					assets.full_circle:drawTextAligned(text('mission_' .. vars.mode .. '_' .. vars.modifier), x + (width / 2), y + (height / 8), kTextAlignment.center)
-				else
-					assets.full_circle:drawTextAligned(text('mission_time'), x + (width / 2), y + (height / 8), kTextAlignment.center)
-				end
+
+			if mission_text ~= '' then
+				assets.full_circle:drawTextAligned(
+					mission_text,
+					x + (width / 2),
+					y + (height / 8),
+					kTextAlignment.center
+				)
 			end
         end
+
         gfx.popContext()
+
         pd.setMenuImage(pauseimg)
     end
 end
@@ -442,6 +451,6 @@ function pd.update()
     -- Catch-all stuff ...
     gfx.sprite.update()
     pd.timer.updateTimers()
-    -- pd.drawFPS(10, 10)
+    -- pd.drawFPS(385, 0)
 	save.playtime += 1
 end
