@@ -1,0 +1,50 @@
+{
+    "based_on": "arcade",
+    "menu_text_endgame": "endgame",
+    "bg": "bg_arcade",
+    "timer": 45000,
+    "has_powerups": false,
+    "variations": [
+        {
+            "name": "default",
+            "timer_boost": [7000, 1750, 11000, 2750],
+            "statuses": ["score", "high-score", {"label": "status_label_plain_default"}],
+            "save_score_to": "plain_score"
+        },
+
+        {
+            "name": "hard",
+            "timer_boost": [7000, 875, 11000, 1375],
+            "statuses": ["score", "high-score", {"label": "status_label_plain_hard"}],
+            "save_score_to": "hard_plain_score"
+        }
+    ],
+    "lang": {
+       "en": {
+            "title": "Plain Mode",
+            "title_variation_default": "Default",
+            "title_variation_hard": "Hard Mode",
+            "status_label_plain_default": "PLAIN\nMODE",
+            "status_label_plain_hard": "PLAIN\nHARD",
+            "fanfare_messages": [
+                "You're proven to be a\ncontender when powerup-free!",
+                "All will bow to their\nplain hexagonal ruler.",
+                "Who needs\npower-ups anyway?",
+                "Starship HEXA ready for\nthe next launch!"
+            ]
+        },
+        "fr": {
+            "title": "Mode simple",
+            "title_variation_default": "Mode par défaut",
+            "title_variation_hard": "Mode difficile",
+            "status_label_plain_default": "MODE PAR\nDÉFAUT",
+            "status_label_plain_hard": "MODE\nDIFFICILE",
+            "fanfare_messages": [
+                "Vous êtes un prétendant\nsans power-up !",
+                "Tous s'inclineront devant\nleur simple maître hexagonal.",
+                "Qui a besoin de\npower-ups de toute façon?",
+                "Vaisseau HEXA paré\nau redécollage !"
+            ]
+        }
+    }
+}

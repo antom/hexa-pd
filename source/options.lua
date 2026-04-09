@@ -16,6 +16,7 @@ function options:init(...)
 		menu:removeAllMenuItems()
 		if not scenemanager.transitioning and vars.selection > 0 then
 			menu:addMenuItem(text('goback'), function()
+				update_custom_game_mode()
 				scenemanager:transitionscene(title, false, 'options')
 				vars.selection = 0
 			end)
@@ -28,6 +29,7 @@ function options:init(...)
 		full_circle = gfx.font.new('fonts/full-circle'),
 		half_circle = gfx.font.new('fonts/full-circle-halved'),
 		sfx_move = smp.new('audio/sfx/swap'),
+		sfx_bonk = smp.new('audio/sfx/bonk'),
 		sfx_select = smp.new('audio/sfx/select'),
 		sfx_back = smp.new('audio/sfx/back'),
 		sfx_boom = smp.new('audio/sfx/boom'),
@@ -42,7 +44,7 @@ function options:init(...)
 		anim_stars_large_x = pd.timer.new(2500, 0, -399),
 		anim_stars_large_y = pd.timer.new(1250, 0, -239),
 		anim_fg_hexa = pd.timer.new(3000, 0, 7, pd.easingFunctions.inOutSine),
-		selections = {'lang', 'music', 'sfx', 'flip', 'crank', 'skipfanfare', 'flashing', 'olddelay', 'reset'},
+		selections = {'lang', 'music', 'sfx', 'flip', 'crank', 'skipfanfare', 'custommode', 'flashing', 'olddelay', 'reset'},
 		selection = 0,
 		resetprogress = 1,
 		flashing_text = {text('flashing_auto'), text(true), text(false)},
@@ -151,6 +153,8 @@ function options:init(...)
 					save.flash_int = 2
 				end
 				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "custommode" then
+				self:changeCustomMode(-1)
 			end
 		end,
 
@@ -214,12 +218,15 @@ function options:init(...)
 					save.flash_int = 1
 				end
 				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "custommode" then
+				self:changeCustomMode(1)
 			end
 		end,
 
 		BButtonDown = function()
 			if vars.keytimer ~= nil then vars.keytimer:remove() end
 			playsound(assets.sfx_back)
+			update_custom_game_mode()
 			scenemanager:transitionscene(title, false, 'options')
 			vars.selection = 0
 		end,
@@ -311,6 +318,8 @@ function options:init(...)
 					save.flash_int = 1
 				end
 				playsound(assets.sfx_select)
+			elseif vars.selections[vars.selection] == "custommode" then
+				self:changeCustomMode(1)
 			end
 			playsound(assets.sfx_select)
 		end,
@@ -379,6 +388,8 @@ function options:selectionText(selection)
 		return text('options_flashing') .. text(tostring(vars.flashing_text[save.flashing]))
 	elseif selection == "olddelay" then
 		return text('options_olddelay') .. text(tostring(vars.olddelay_text[save.flash_int]))
+	elseif selection == "custommode" then
+		return text('custom_mode') .. text('divvy') .. ((save.custom_mode ~= nil and save.custom_mode) or text('false'))
 	elseif selection == "reset" then
 		return text('options_reset_' .. vars.resetprogress)
 	end
@@ -397,5 +408,30 @@ function options:update()
 		elseif vars.selection > #vars.selections then
 			vars.selection = 1
 		end
+	end
+end
+
+function options:changeCustomMode(value)
+	if #custom_game_modes > 0 then
+		local next_index
+		local custom_mode_index = table.contains(custom_game_modes, save.custom_mode) or nil
+
+		if custom_mode_index then
+			next_index = custom_mode_index + value
+		elseif save.custom_mode == nil then
+			next_index = (value < 0 and #custom_game_modes) or 1
+		end
+
+		if custom_game_modes[next_index] ~= nil then
+			save.custom_mode = custom_game_modes[next_index]
+		else
+			save.custom_mode = nil
+			save.custom_mode_variation = nil
+		end
+
+		playsound(assets.sfx_select)
+	else
+		shakies()
+		playsound(assets.sfx_bonk)
 	end
 end

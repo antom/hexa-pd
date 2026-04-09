@@ -1,0 +1,40 @@
+{
+    "based_on": "arcade",
+    "menu_text_endgame": "endgame",
+    "bg": "bg_arcade",
+    "has_powerups": false,
+    "variations": [
+        {
+            "name": "default",
+            "timer": 60,
+            "statuses": ["score", "high-score", {"label": "TIMER\n60s"}],
+            "save_score_to": "timer_score"
+        },
+
+        {
+            "name": "45",
+            "timer": 45,
+            "statuses": ["score", "high-score", {"label": "TIMER\n45s"}],
+            "save_score_to": "timer_45_score"
+        },
+
+        {
+            "name": "30",
+            "timer": 30,
+            "statuses": ["score", "high-score", {"label": "TIMER\n30s"}],
+            "save_score_to": "timer_30_score"
+        }
+    ],
+    "lang": {
+        "en": {
+            "title": "Timer Mode",
+            "title_variation_45": "45 Seconds",
+            "title_variation_30": "30 Seconds"
+        },
+        "fr": {
+            "title": "Mode minuterie",
+            "title_variation_45": "45 secondes",
+            "title_variation_30": "30 secondes"
+        }
+    }
+}

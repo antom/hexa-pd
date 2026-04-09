@@ -121,6 +121,43 @@ end
 -- ... now we run that!
 savecheck()
 
+-- Build a list of custom game modes available in the Shared folder
+custom_game_modes = {}
+
+for i, file in ipairs(pd.file.listFiles('/Shared/' .. playdate.metadata.bundleID .. '/game-modes') or {}) do
+	if string.sub(file, -5) == '.json' then
+		custom_game_modes[i] = string.sub(file, 1, -6)
+	end
+end
+
+-- Add a custom game mode if set/available
+
+function update_custom_game_mode()
+	local custom_game_mode = false
+	local custom_game_mode_key = table.contains(table.column(game_mode_presets, 'name'), 'custom')
+
+	if save.custom_mode ~= nil and table.contains(custom_game_modes, save.custom_mode) ~= false then
+		custom_game_mode = playdate.datastore.read('/Shared/' .. playdate.metadata.bundleID .. '/game-modes/' .. save.custom_mode) or false
+	end
+
+	if custom_game_mode ~= false then
+		if custom_game_mode_key == false then
+			table.insert(game_mode_presets, custom_game_mode)
+			custom_game_mode_key = #game_mode_presets
+		else
+			game_mode_presets[custom_game_mode_key] = custom_game_mode
+		end
+
+		game_mode_presets[custom_game_mode_key].name = 'custom'
+	else
+		game_mode_presets[custom_game_mode_key] = nil
+		save.custom_mode = nil
+		save.custom_mode_variation = nil
+	end
+end
+
+update_custom_game_mode()
+
 achievements.initialize(achievementData, true)
 
 function updatecheevos()
@@ -205,10 +242,9 @@ function pauseimage()
         local mask_path = nil
         local mask_offset_x = 0
 
-        if vars.game.name == 'arcade' or vars.game.name == 'dailyrun' or (vars.game.name == 'mission' and (vars.game.variation == 'time' or vars.game.variation == 'speedrun')) then
+        if vars.game.name == 'arcade' or vars.game.name == 'dailyrun' or (vars.game.name == 'mission' and (vars.game.variation == 'time' or vars.game.variation == 'speedrun')) or vars.game.name == 'custom' then
         	mask_path = 'images/mask_arcade_' .. ((save.crank and 'true') or 'false') .. '_' .. tostring(save.lang)
         	mask_offset_x = -45
-
         elseif vars.game.name == 'zen' or (vars.game.name == 'mission' and (vars.game.variation == 'picture' or vars.game.variation == 'logic')) then
         	mask_path = 'images/mask_zen'
         	mask_offset_x = -33
