@@ -530,6 +530,8 @@ function game:setup(mode, variation, mission)
 	-- pre-pick a random message for the fanfare
 	if values.lang['fanfare_messages'] then
 		values.fanfare_message = values.lang['fanfare_messages'][random(1, #values.lang['fanfare_messages'])]
+	elseif type(values.based_on) == 'string' then
+		values.fanfare_message = text(values.based_on .. '_message' .. random(1, 10))
 	else
 		values.fanfare_message = text(mode .. '_message' .. random(1, 10))
 	end
