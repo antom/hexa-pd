@@ -25,7 +25,7 @@ function mission_command:init(...)
 		if not scenemanager.transitioning then
 			if vars.mode == 'start' then
 				menu:addMenuItem(text('goback'), function()
-					scenemanager:transitionscene(missions, vars.custom)
+					scenemanager:transitionscene(missions, vars.config, vars.custom)
 					fademusic()
 				end)
 			elseif vars.mode == 'edit' then
@@ -83,7 +83,8 @@ function mission_command:init(...)
 	}
 
 	vars = {
-		custom = args[1],
+		config = args[1],
+		custom = args[2],
 		mode = 'start', -- "start", "edit", or "save"
 		start_selection = 1,
 		start_selections = {'type', 'timelimit', 'cleargoal', 'seed', 'start'},
@@ -248,7 +249,7 @@ function mission_command:init(...)
 
 		BButtonDown = function()
 			playsound(assets.sfx_back)
-			scenemanager:transitionscene(missions, vars.custom)
+			scenemanager:transitionscene(missions, vars.config, vars.custom)
 			fademusic()
 		end,
 	}
@@ -647,12 +648,12 @@ function mission_command:init(...)
 	}
 	vars.mission_command_doneHandlers = {
 		AButtonDown = function()
-			scenemanager:transitionscene(missions, vars.custom)
+			scenemanager:transitionscene(missions, vars.config, vars.custom)
 			fademusic()
 		end,
 
 		BButtonDown = function()
-			scenemanager:transitionscene(missions, vars.custom)
+			scenemanager:transitionscene(missions, vars.config, vars.custom)
 			fademusic()
 		end,
 	}

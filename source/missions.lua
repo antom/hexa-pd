@@ -20,7 +20,7 @@ function missions:init(...)
 		menu:removeAllMenuItems()
 		if not scenemanager.transitioning then
 			menu:addMenuItem(text('create'), function()
-				scenemanager:transitionscene(mission_command, vars.custom)
+				scenemanager:transitionscene(mission_command, vars.config, vars.custom)
 				fademusic()
 			end)
 			menu:addMenuItem(text('goback'), function()
