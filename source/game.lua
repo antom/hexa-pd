@@ -246,7 +246,7 @@ function game:init(...)
 			if (vars.game.text_endgame_button_a or 'newgame') == 'showsdailyscores' then
 				if catalog then
 					fademusic()
-					scenemanager:transitionscene(highscores, vars.mode)
+					scenemanager:transitionscene(highscores, vars.mode, vars.variation)
 				end
 			else
 				fademusic()
@@ -297,10 +297,6 @@ function game:init(...)
 	vars.anim_cursor.discardOnCompletion = false
 
 	assets.ui = gfx.image.new('images/' .. ((vars.game.timer and 'ui_arcade') or 'ui_zen'))
-
-	if vars.game.scoreboard or false then
-		save.lbs_lastmode = vars.mode
-	end
 
 	if vars.game.timer or false then
 		vars.timer = pd.timer.new(vars.game.timer, vars.game.timer, 0)
@@ -1319,23 +1315,38 @@ function game:endround()
 			if vars.game.scoreboard or false then
 				local can_post_to_scoreboard = catalog
 
+				local scoreboard_callback = function(status, result)
+					if debugging then
+						printTable({
+							status = status,
+							result = result,
+						})
+					end
+				end
+
 				if vars.game.is_daily then
 					save.lastdaily.mode = vars.mode
+					save.lastdaily.variation = vars.variation
 					save.lastdaily.score = vars.score
 					can_post_to_scoreboard = (save.lastdaily.year == pd.getGMTTime().year and save.lastdaily.month == pd.getGMTTime().month and save.lastdaily.day == pd.getGMTTime().day)
+					scoreboard_callback = function(status, result)
+						save.lastdaily.sent = (status.code == 'OK')
+
+						if debugging then
+							printTable({
+								status = status,
+								result = result,
+							})
+						end
+					end
 				end
 
 				if can_post_to_scoreboard then
-					pd.scoreboards.addScore(vars.game.scoreboard, vars.score, function(status, result)
-						if vars.game.is_daily then
-							save.lastdaily.sent = (status.code == 'OK')
-						end
+					if debugging then
+						print('--- posting score of ' .. commalize(vars.score) .. ' to ' .. vars.game.scoreboard .. ' ---')
+					end
 
-						if pd.isSimulator == 1 then
-							printTable(status)
-							printTable(result)
-						end
-					end)
+					pd.scoreboards.addScore(vars.game.scoreboard, vars.score, scoreboard_callback)
 				end
 			end
 

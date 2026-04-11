@@ -90,7 +90,6 @@ function savecheck()
     save.swaps = save.swaps or 0
     save.hexas = save.hexas or 0
     save.highest_mission = save.highest_mission or 1
-	save.lbs_lastmode = save.lbs_lastmode or 'arcade'
     if save.mission_bests == nil then save.mission_bests = {} end
 	if save.author_name == nil then save.author_name = '' end
 	if save.hardmode == nil then save.hardmode = false end

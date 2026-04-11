@@ -146,7 +146,7 @@ function title:init(...)
 					playsound(assets.sfx_bonk)
 				end
 			elseif vars.selections[vars.selection] == "highscores" then
-				scenemanager:transitionscene(highscores, save.lbs_lastmode)
+				scenemanager:transitionscene(highscores)
 			elseif vars.selections[vars.selection] == "statistics" then
 				scenemanager:transitionscene(statistics)
 			elseif vars.selections[vars.selection] == "howtoplay" then
@@ -268,7 +268,7 @@ function title:init(...)
 				local selected_variation_title = selected_game_mode.lang ~= nil and selected_game_mode.lang[save.lang] ~= nil and selected_game_mode.lang[save.lang]['title_variation_' .. selected_variation_name] or text(selected_variation.name)
 
 				if selected_game_mode.is_daily then
-					if save.lbs_lastmode == selected_game_mode.name and save.lastdaily.score ~= 0 then
+					if save.lastdaily.mode == selected_game_mode.name and save.lastdaily.variation == selected_variation_name and save.lastdaily.score ~= 0 then
 						subtitle_text = text('todaysscore') .. text('divvy') .. commalize(save.lastdaily.score)
 
 						if save.lastdaily.mode == 'harddailyrun' then
