@@ -26,10 +26,8 @@ local smp <const> = pd.sound.sampleplayer
 local fle <const> = pd.sound.fileplayer
 local text <const> = getLocalizedText
 
-catalog = false
-if pd.metadata.bundleID == "wtf.rae.hexa" then
-    catalog = true
-end
+debugging = false
+catalog = (pd.metadata.bundleID == "wtf.rae.hexa")
 
 pd.display.setRefreshRate(30)
 gfx.setBackgroundColor(gfx.kColorBlack)
@@ -487,6 +485,10 @@ function pd.update()
     -- Catch-all stuff ...
     gfx.sprite.update()
     pd.timer.updateTimers()
-    -- pd.drawFPS(385, 0)
+
+    if debugging then
+    	pd.drawFPS(385, 0)
+    end
+
 	save.playtime += 1
 end

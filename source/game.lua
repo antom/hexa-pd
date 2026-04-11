@@ -1121,6 +1121,11 @@ function game:reset()
 		vars.mission
 	)
 
+	if debugging then
+		print('--- game mode ---')
+		printTable(vars.game)
+	end
+
 	vars.can_do_stuff = false
 	vars.time = 0
 	vars.score = 0
