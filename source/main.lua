@@ -445,7 +445,7 @@ end
 
 function ratiotext(x, y)
 	if x > 0 and y > 0 then
-		return commalize(string.gsub(string.format("%.2f", x / y), ".00", "")) .. ':1'
+		return commalize(string.gsub(string.format('%.2f', x / y), '%.?0+$', '')) .. ':1'
 	else
 		return false
 	end
