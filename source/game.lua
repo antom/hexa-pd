@@ -268,7 +268,6 @@ function game:init(...)
 
 	assets.bg = gfx.image.new('images/' .. vars.game.bg)
 
-
 	if vars.game.has_bg_tile then
 		if vars.flash then
 			vars.anim_bg_tile_x = pd.timer.new(1, 0, 0)
@@ -296,7 +295,12 @@ function game:init(...)
 	vars.anim_bg_stars_y.repeats = true
 	vars.anim_cursor.discardOnCompletion = false
 
-	assets.ui = gfx.image.new('images/' .. ((vars.game.timer and 'ui_arcade') or 'ui_zen'))
+	assets.ui = self:ui_img(
+		vars.game.statuses.left ~= nil or vars.game.statuses ~= nil,
+		vars.game.statuses.right ~= nil and not vars.game.timer,
+		false,
+		vars.game.timer or false
+	)
 
 	if vars.game.timer or false then
 		vars.timer = pd.timer.new(vars.game.timer, vars.game.timer, 0)
@@ -332,43 +336,60 @@ function game:init(...)
 		self:setOpaque(true)
 		self:add()
 	end
+	function classes.game_canvas:draw_statuses(values, status_offset_x, status_offset_y, alignment)
+		local statuses = deepcopy(values)
+
+		for i = 1, #statuses do
+			local status_type = type(statuses[i])
+
+			if status_type == 'string' then
+				statuses[i] = game:status(statuses[i])
+			elseif status_type == 'function' then
+				statuses[i] = statuses[i]()
+			end
+
+			if statuses[i].label ~= nil then
+				assets.half_circle:drawTextAligned(vars.game.lang[statuses[i].label] or statuses[i].label, status_offset_x, status_offset_y, kTextAlignment[alignment])
+			end
+
+			if statuses[i].value ~= nil then
+				assets.full_circle:drawTextAligned(statuses[i].value, status_offset_x, status_offset_y + 15, kTextAlignment[alignment])
+			end
+
+			status_offset_y += 35
+		end
+	end
 	function classes.game_canvas:draw()
 		assets.bg:draw(0, 0)
 		if vars.game.has_bg_tile then
 			assets.bg_tile:draw((floor(vars.anim_bg_tile_x.value / 2) * 2) - 1, (floor(vars.anim_bg_tile_y.value / 2) * 2) - 1)
 		end
+
 		assets.stars:draw(vars.anim_bg_stars_x.value, vars.anim_bg_stars_y.value)
+
 		if assets.draw_label ~= nil then assets.draw_label:draw(vars.anim_label.value, -13) end
+
 		assets.ui:draw(0, 0)
+
 		for i = 1, 19 do
 			game:tri(tris_x[i], tris_y[i], tris_flip[i], vars.tris[i].color, vars.tris[i].powerup)
 		end
+
 		local cursor = floor(vars.anim_cursor.value) or 1
 		assets.cursor[cursor]:draw(vars.anim_cursor_x.value - (2 * (cursor - 1)), vars.anim_cursor_y.value - (3 * (cursor - 1)))
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 
 		if vars.game.statuses ~= nil then
-			local statuses = deepcopy(vars.game.statuses)
-			local status_offset_y = 10
-
-			for i = 1, #statuses do
-				local status_type = type(statuses[i])
-
-				if status_type == 'string' then
-					statuses[i] = game:status(statuses[i])
-				elseif status_type == 'function' then
-					statuses[i] = statuses[i]()
+			if vars.game.statuses ~= nil and vars.game.statuses.left == nil  and vars.game.statuses.right == nil then
+				self:draw_statuses(vars.game.statuses, 10, 10, 'left')
+			else
+				if vars.game.statuses.left ~= nil then
+					self:draw_statuses(vars.game.statuses.left, 10, 10, 'left')
 				end
 
-				if statuses[i].label ~= nil then
-					assets.half_circle:drawText(vars.game.lang[statuses[i].label] or statuses[i].label, 10, status_offset_y)
+				if vars.game.statuses.right ~= nil then
+					self:draw_statuses(vars.game.statuses.right, 390, 10, 'right')
 				end
-
-				if statuses[i].value ~= nil then
-					assets.full_circle:drawText(statuses[i].value, 10, status_offset_y + 15)
-				end
-
-				status_offset_y += 35
 			end
 		end
 
@@ -533,6 +554,28 @@ function game:setup(mode, variation, mission)
 	end
 
 	return values
+end
+
+function game:ui_img(status_left, status_right, strip_left, strip_right)
+	local img = gfx.image.new(400, 200)
+
+	gfx.pushContext(img)
+		if status_left then
+			gfx.image.new('images/ui_status_left'):draw(0, 0)
+		elseif strip_left then
+			gfx.image.new('images/ui_strip_left'):draw(0, 50)
+		end
+
+		if status_right then
+			gfx.image.new('images/ui_status_right'):draw(285, 0)
+		elseif strip_right then
+			gfx.image.new('images/ui_strip_right'):draw(271, 50)
+		end
+
+		gfx.image.new('images/ui_hexaplex'):draw(75, 40)
+	gfx.popContext()
+
+	return img
 end
 
 function game:status(handle)
@@ -754,6 +797,8 @@ function game:swap(slot, dir)
 end
 
 function game:check()
+	if not vars.can_do_stuff then return end
+
 	if vars.game.goal ~= nil then
 		local layout_goal_achieved = true
 
@@ -772,8 +817,6 @@ function game:check()
 
 		return
 	end
-
-	if not vars.can_do_stuff then return end
 
 	local temp1
 	local temp2
