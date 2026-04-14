@@ -1,0 +1,40 @@
+{
+    "based_on": "arcade",
+    "menu_text_endgame": "endgame",
+    "bg": "bg_arcade",
+    "limit": "moves",
+    "limit_value": 12,
+    "limit_step": -1,
+    "variations": [
+        {
+            "name": "default",
+            "statuses": {
+                "left": ["score", "high-score"],
+                "right": ["moves", "limit"]
+            },
+            "save_score_to": "swap_survival_score"
+        },
+
+        {
+            "name": "plain",
+            "statuses": {
+                "left": ["score", "high-score", {"label": "status_label_swap_survival_plain"}],
+                "right": ["moves", "limit"]
+            },
+            "has_powerups": false,
+            "save_score_to": "swap_survival_plain_score"
+        }
+    ],
+    "lang": {
+        "en": {
+            "title": "Swap Survival",
+            "title_variation_plain": "Plain",
+            "status_label_swap_survival_plain": "PLAIN\nMODE"
+        },
+        "fr": {
+            "title": "Survie en échange",
+            "title_variation_plain": "Simple",
+            "status_label_swap_survival_plain": "MODE PAR\nDÉFAUT"
+        }
+    }
+}

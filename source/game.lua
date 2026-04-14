@@ -24,6 +24,7 @@ local exp <const> = math.exp
 local flash_opts <const> = {pd.getReduceFlashing(), false, true}
 local flash_int_opts <const> = {70, 100}
 local initial_moves_bonus <const> = 5
+local moves_limit_hexa_bonus <const> = 2
 
 class('game').extends(gfx.sprite) -- Create the scene's class
 function game:init(...)
@@ -641,9 +642,14 @@ function game:status(handle)
 		return {
 			label = (save.hardmode and text('hardmodeg')) or '',
 		}
+	elseif handle == 'limit' then
+		return {
+			label = text('limit'),
+			value = vars.game.limit_value or '?'
+		}
 	end
 
-	return nil
+	return {}
 end
 
 function game:seed()
@@ -763,6 +769,11 @@ function game:swap(slot, dir)
 		vars.anim_cursor:resetnew(75, 2.99, 1)
 		vars.moves += 1
 		save.swaps += 1
+
+		if vars.game.limit == 'moves' and vars.game.limit_value > 0 then
+			vars.game.limit_value += vars.game.limit_step or -1
+		end
+
 		playsound(assets.sfx_swap)
 		local tochange
 		temp1, temp2, temp3, temp4, temp5, temp6 = self:findslot(slot)
@@ -864,6 +875,10 @@ function game:check()
 	end
 	if vars.combo > 0 then
 		vars.combo = 0
+	end
+
+	if vars.game.limit ~= nil and vars.game.limit_value == (vars.game.limit_end or 0) then
+		self:endround()
 	end
 end
 
@@ -970,7 +985,13 @@ function game:hexa(temp1, temp2, temp3, temp4, temp5, temp6)
 
 			vars.score += 10 * vars.movesbonus
 			save.total_score += 10 * vars.movesbonus
+
+			if vars.game.limit == 'moves' then
+				vars.game.limit_value += ((2 + (vars.movesbonus + 1)) * multiplier) * vars.combo
+			end
+
 			vars.movesbonus = initial_moves_bonus
+
 			if temp1.powerup == "bomb" or temp2.powerup == "bomb" or temp3.powerup == "bomb" or temp4.powerup == "bomb" or temp5.powerup == "bomb" or temp6.powerup == "bomb" then
 				save.bomb_match += 1
 				self:randomizehexaplex()
